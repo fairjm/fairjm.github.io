@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>使用maven插件构建docker镜像 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">使用maven插件构建docker镜像</p>
+            <br>
+            
+            <p>星期五, 十二月 22日 2017, 9:22 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <h1 id="为什么要用插件"><a href="#为什么要用插件" class="headerlink" title="为什么要用插件"></a>为什么要用插件</h1><p>主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar/war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。  </p>
+<h1 id="插件选择"><a href="#插件选择" class="headerlink" title="插件选择"></a>插件选择</h1><p>使用比较多的是spotify的插件:<a href="https://github.com/spotify/docker-maven-plugin" target="_blank" rel="noopener">https://github.com/spotify/docker-maven-plugin</a><br>和 <a href="https://github.com/spotify/dockerfile-maven。" target="_blank" rel="noopener">https://github.com/spotify/dockerfile-maven。</a><br>但这里我选择另一款插件：<a href="https://github.com/fabric8io/docker-maven-plugin。" target="_blank" rel="noopener">https://github.com/fabric8io/docker-maven-plugin。</a><br>因为他文档比较详细，在使用上也比较方便。<br>文档地址：<a href="https://dmp.fabric8.io/" target="_blank" rel="noopener">https://dmp.fabric8.io/</a>  </p>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>这里使用一个spring boot项目，只有一个最简单的<code>HelloController</code>，如下：</p>
+<pre><code class="java">@RestController
+public class HelloController {
+    @GetMapping(&quot;/&quot;)
+    public String hello() {
+        return &quot;hello&quot;;
+    }
+}
+</code></pre>
+<p><code>pom.xml</code>改动如下:</p>
+<pre><code class="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.fabric8&lt;/groupId&gt;
+    &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;0.23.0&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;dockerHost&gt;tcp://192.168.99.100:2376&lt;/dockerHost&gt;
+        &lt;certPath&gt;C:\Users\fairjm\.docker\machine\machines\default&lt;/certPath&gt;
+        &lt;images&gt;
+            &lt;image&gt;
+                &lt;name&gt;${project.name}:${project.version}&lt;/name&gt;
+                &lt;build&gt;
+                    &lt;from&gt;openjdk:8-jre&lt;/from&gt;
+                    &lt;args&gt;
+                        &lt;JAR_FILE&gt;${project.name}-${project.version}.jar&lt;/JAR_FILE&gt;
+                    &lt;/args&gt;
+                    &lt;assembly&gt;
+                        &lt;descriptorRef&gt;artifact&lt;/descriptorRef&gt;
+                    &lt;/assembly&gt;
+                    &lt;entryPoint&gt;[&quot;java&quot;]&lt;/entryPoint&gt;
+                    &lt;cmd&gt;[&quot;-jar&quot;,&quot;maven/${project.name}-${project.version}.jar&quot;]&lt;/cmd&gt;
+                &lt;/build&gt;
+                &lt;run&gt;
+                    &lt;ports&gt;
+                        &lt;port&gt;8888:8080&lt;/port&gt;
+                    &lt;/ports&gt;
+                &lt;/run&gt;
+            &lt;/image&gt;
+        &lt;/images&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;
+</code></pre>
+<p>这里使用了在xml里写操作而不是使用Dockerfile的方式，个人感觉这种方式更加简单一点，不需要额外再维护一份文件，和Dockerfile相比使用的语法(注意entrypoint和cmd)也类似。  </p>
+<p>接下来介绍一下configuration配置。<br><code>dockerHost</code>和<code>certPath</code>是连接docker使用，毕竟插件本身不包含docker和对应功能只是调用docker提供的API。<br>这两个值在docker toolbox上可以通过<code>docker-machine env</code>获得。  </p>
+<pre><code class="bash">$ docker-machine env
+export DOCKER_TLS_VERIFY=&quot;1&quot;
+export DOCKER_HOST=&quot;tcp://192.168.99.100:2376&quot;
+export DOCKER_CERT_PATH=&quot;C:\Users\fairjm\.docker\machine\machines\default&quot;
+export DOCKER_MACHINE_NAME=&quot;default&quot;
+export COMPOSE_CONVERT_WINDOWS_PATHS=&quot;true&quot;
+# Run this command to configure your shell:
+# eval $(&quot;D:\Docker Toolbox\docker-machine.exe&quot; env)
+</code></pre>
+<p>image的build指定了构建相关的设置：  </p>
+<ul>
+<li>name指定image名，这里使用了项目名，tag使用项目版本；   </li>
+<li>from指定基于的image，和Dockerfile的FROM一致；  </li>
+<li>args和ARG一致（在这个例子中没有实际意义）；  </li>
+<li>assembly用来定义哪些文件进入镜像中，使用了插件已经定义好的行为，spring-boot生成的是fat jar不需要拷贝依赖所以选择了artifact。这个的配置比较丰富，可以查看文档获取更多的信息。  </li>
+<li>entryPoint和cmd也对应同样的Dockerfile命令。 </li>
+</ul>
+<p>接着通过<code>mvn clean package docker:build</code>执行打包和build</p>
+<pre><code class="bash">[INFO] --- maven-jar-plugin:2.6:jar (default-jar) @ docker-test ---
+[INFO] Building jar: D:\sts_workspace\docker-test\target\docker-test-0.0.1-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:1.5.9.RELEASE:repackage (default) @ docker-test ---
+[INFO]
+[INFO] --- docker-maven-plugin:0.23.0:build (default-cli) @ docker-test ---
+[INFO] Copying files to D:\sts_workspace\docker-test\target\docker\docker-test\0.0.1-SNAPSHOT\build\maven
+[INFO] Building tar: D:\sts_workspace\docker-test\target\docker\docker-test\0.0.1-SNAPSHOT\tmp\docker-build.tar
+[INFO] DOCKER&gt; [docker-test:0.0.1-SNAPSHOT]: Created docker-build.tar in 1 second
+[INFO] DOCKER&gt; [docker-test:0.0.1-SNAPSHOT]: Built image sha256:303c3
+[INFO] DOCKER&gt; [docker-test:0.0.1-SNAPSHOT]: Removed old image sha256:ea8a7
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+</code></pre>
+<p>完成打包，在对应连接的docker上也会出现这个镜像：  </p>
+<pre><code class="bash">$ docker image ls
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+docker-test                       0.0.1-SNAPSHOT      303c39c7d253        13 seconds ago      552MB
+</code></pre>
+<p>run指定了运行参数 这里将host的8888和容器的8080绑定，可以使用<code>mvn docker:start</code>启动，访问8888端口即可连接到服务器。<br>与其配对的是<code>mvn docker:stop</code>，可以停止并移除启动的容器。  </p>
+<h1 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h1><p>上述使用xml的配置方式，这里再简单描述一下使用<code>Dockerfile</code>的配置方式。<br>在进行一些操作的时候，可以发现使用xml会有些问题，比如指令的执行顺序。<br>该插件xml的执行顺序和命令的定义顺序不一定一致，可能会带来一些问题，比如将<code>&lt;user&gt;</code>放于<code>&lt;runCmds&gt;</code>前但还是<code>&lt;runCmds&gt;</code>先触发，一些需要root权限的命令就会失败。<br>比如这个issus(但不确定是feature还是bug，感觉是feature)：<a href="https://github.com/fabric8io/docker-maven-plugin/issues/913" target="_blank" rel="noopener">https://github.com/fabric8io/docker-maven-plugin/issues/913</a>  </p>
+<p>这时候就需要直接使用<code>Dockerfile</code>来进行配置。<br>这里取一个实际的打成war的工程。<br>插件配置如下：</p>
+<pre><code>&lt;images&gt;
+    &lt;image&gt;
+        &lt;name&gt;${project.name}:${project.version}&lt;/name&gt;
+        &lt;build&gt;
+            &lt;assembly&gt;
+                &lt;descriptorRef&gt;rootWar&lt;/descriptorRef&gt;
+            &lt;/assembly&gt;
+            &lt;dockerFile&gt;Dockerfile&lt;/dockerFile&gt;
+        &lt;/build&gt;
+        &lt;run&gt;
+            &lt;ports&gt;
+                &lt;port&gt;8888:8080&lt;/port&gt;
+            &lt;/ports&gt;
+        &lt;/run&gt;
+    &lt;/image&gt;
+&lt;/images&gt;
+</code></pre><p>这里更改了<code>descriptorRef</code>，换成<code>rootWar</code>，这会将target下的项目war拷贝到<code>maven\</code>下并且取名为<code>ROOT.war</code>。<br><code>Dockerfile</code>默认放置的位置是<code>src/main/docker</code>，我们在这里建对应的文件：  </p>
+<pre><code>FROM jetty
+USER root
+ENV JAVA_OPTIONS=-Xmx1g
+RUN mkdir -p /root/xxx &amp;&amp; touch /root/xxx/yyy &amp;&amp; echo zz &gt; /root/xxx/yyy
+COPY maven/ /var/lib/jetty/webapps
+</code></pre><p>基本和上面的配置类似，base image改为了jetty，查看jetty的<code>Dockerfile</code>可以发现他使用了一个新用户<code>jetty</code>，使用这个用户无法在root下建立目录，并且由于项目本身之前使用sudo执行的，所以为了能正常运行选择使用root用户。<br>最后一步将<code>ROOT.war</code>拷贝到jetty的webapps目录下。    </p>
+<p>关于<code>maven/</code>这个目录，在打包后，会在target下生成<code>target\docker\项目名\0.0.1-SNAPSHOT\build</code>，对应的<code>Dockerfile</code>和<code>maven\</code>就在这个目录下，实际执行的不是<code>src/main/docker/Dockerfile</code>，而是拷贝到上述目录下的<code>Dockerfile</code>，此外使用xml的方式也是在这个位置生成了一份<code>Dockerfile</code>（USER 总是被放置于最后…）。</p>
+<h1 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h1><p>本文简要说明了使用<code>fabric8</code>的docker maven插件进行构建运行相关的操作，该插件还有其他的功能可以通过上面的文档获取帮助。  </p>
+<h1 id="源码下载-示例1"><a href="#源码下载-示例1" class="headerlink" title="源码下载(示例1)"></a>源码下载(示例1)</h1><p><a href="https://github.com/fairjm/spring-boot-docker" target="_blank" rel="noopener">https://github.com/fairjm/spring-boot-docker</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

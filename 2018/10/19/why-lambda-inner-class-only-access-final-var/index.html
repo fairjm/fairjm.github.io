@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>lambda和匿名内部类使用外部变量为什么要语义final? ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">lambda和匿名内部类使用外部变量为什么要语义final?</p>
+            <br>
+            
+            <p>星期五, 十月 19日 2018, 4:00 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>今天群里讨论<code>java</code>的<code>lambda</code>实现.<br>后来不断衍生谈到了为什么lambda和匿名内部类只能使用语义<code>final</code>的外部变量.  </p>
+<p>最开始以为是java的lambda实现问题,编译期魔法会把外部引用作为参数传入所以在内部变化也影响不了下次调用的值,所以就干脆final了,如果用类的属性来保管这个变量就可以了.  </p>
+<pre><code class="python">In [64]:  def outer(a:int):
+    ...:      def inner():
+    ...:          nonlocal a
+    ...:          a = a + a
+    ...:          return a
+    ...:      return inner
+    ...:
+
+In [65]: x = outer(1)
+
+In [66]: x
+Out[66]: &lt;function __main__.outer.&lt;locals&gt;.inner&gt;
+
+In [67]: x()
+Out[67]: 2
+
+In [68]: x()
+Out[68]: 4
+
+In [69]: x()
+Out[69]: 8
+
+</code></pre>
+<p>举例就是这种情况<br>lambda用参数传入外部int,如果在方法里修改了,下次调用这个lambda依旧是以前的值.  </p>
+<p>后来又去看了眼匿名内部类的实现</p>
+<pre><code class="java">public class InnerTest {
+
+    public static void main(String[] args) {
+        String name = &quot;123&quot;;
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(name);
+            }
+        };
+        r.run();
+    }
+}
+</code></pre>
+<pre><code> InnerTest$1(java.lang.String val$name);
+     0  aload_0 [this]
+     1  aload_1 [val$name]
+     2  putfield InnerTest$1.val$name : java.lang.String [12]
+     5  aload_0 [this]
+     6  invokespecial java.lang.Object() [14]
+     9  return
+      Line numbers:
+        [pc: 0, line: 1]
+        [pc: 5, line: 11]
+      Local variable table:
+        [pc: 0, pc: 10] local: this index: 0 type: new InnerTest(){}
+      Method Parameters:
+        final synthetic val$name
+</code></pre><p>构造方法字节码明明都存下来了呀…为什么那时候就要求<code>final</code>了  </p>
+<p>查阅了一下,发现这样有个很大的问题.<br>这个外部变量在匿名内部类初始化之后就被固定了下来,之后他如果被重新赋值(引用类型内部状态修改除外),就会出现内部无法看见外部,外部也无法看见内部的问题… …<br>举个简单的例子:  </p>
+<pre><code class="python">In [101]: def outer(x):
+     ...:     def inner():
+     ...:         nonlocal x
+     ...:         x = x+1
+     ...:         print(&quot;inner&quot;+str(x))
+     ...:     inner()
+     ...:     print(&quot;outer&quot;+str(x))
+     ...:     x = x+1
+     ...:     inner()
+     ...:
+
+In [102]: outer(1)
+inner2(inner内部+1)
+outer2(外部看到这个变化)
+inner4(外部+1 内部+1)
+</code></pre>
+<p>这段在py下能正常工作的代码,如果java没有<code>final</code>限制的话,就会变成</p>
+<pre><code>inner2(inner内部+1)
+outer1(外部看不到inner变化)
+inner3(inner内部+1)
+</code></pre><p>所以这个约定和闭包实现没关系…<br>还是考虑在定义变量的作用域下规避掉因为java实现问题导致上面的结果返回…我既然没有<code>nonlocal</code>这样的机制(毕竟不支持引用传递….),索性就用<code>final</code>限制起来.  </p>
+<p>呜呼哀哉  </p>
+<hr>
+<p>参考资料:</p>
+<p><a href="https://stackoverflow.com/questions/4732544/why-are-only-final-variables-accessible-in-anonymous-class" target="_blank" rel="noopener">https://stackoverflow.com/questions/4732544/why-are-only-final-variables-accessible-in-anonymous-class</a> </p>
+<p><a href="https://en.wikipedia.org/wiki/Closure_(computer_programming" target="_blank" rel="noopener">Closure_(computer_programming)</a>)</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

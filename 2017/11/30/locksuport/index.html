@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>LockSupport浅析 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">LockSupport浅析</p>
+            <br>
+            
+            <p>星期四, 十一月 30日 2017, 1:43 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。<br>但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。</p>
+<hr>
+<p>基本的线程阻塞原语，被用于创建锁和其他同步类上。  </p>
+<p>这个类的作用有点类似于<code>Semaphore</code>，通过许可证(<code>permit</code>)来联系使用它的线程。如果许可证可用，调用<code>park</code>方法会立即返回并在这个过程中消费这个许可，不然线程会阻塞。调用<code>unpark</code>会使许可证可用。(和<code>Semaphores</code>有些许区别,许可证不会累加，最多只有一张） </p>
+<p>因为有了许可证，所以调用<code>park</code>和<code>unpark</code>的先后关系就不重要了，这里可以对比一下Object的<code>wait</code>和<code>notify</code>,如果先调用同一个对象的<code>notify</code>再<code>wait</code>，那么调用<code>wait</code>的线程依旧会被阻塞，依赖方法的调用顺序。在一些场景下，<code>LockSupport</code>的方法都可以取代<code>notify</code>和<code>wait</code>。举个简单的例子:  </p>
+<pre><code>final Object lock = new Object();
+Thread t1 = new Thread() {
+    public void run() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        synchronized (lock) {
+            lock.notifyAll();
+        }
+    };
+};
+
+Thread t2 = new Thread() {
+    public void run() {
+        synchronized (lock) {
+            try {
+                lock.wait();
+                System.out.println(&quot;I am alive&quot;);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+};
+t1.start();
+t2.start();
+</code></pre><p>这段代码，只有确保t2先进入临界区并执行wait后才能正常打印内容。<br>换成<code>LockSupport</code>就没有这种担心了。  </p>
+<pre><code>Thread t2 = new Thread() {
+    public void run() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(&quot;t2 end sleep&quot;);
+        LockSupport.park(this);
+        System.out.println(&quot;I am alive&quot;);
+    };
+};
+
+Thread t1 = new Thread() {
+    public void run() {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        LockSupport.unpark(t2);
+        System.out.println(&quot;I am done&quot;);
+    };
+};
+t1.start();
+t2.start();
+</code></pre><p>可以先<code>unpark</code>再<code>park</code>，但如API文档所说，<code>unpark</code>需要传入的线程已经启动。在上述<code>t1.start()</code>后用<code>t1.join()</code>等方法在<code>t2</code>启动前调用了<code>unpark</code>就无效了。  </p>
+<p>但也不意味着<code>wait</code>,<code>notify</code>就没用了。<code>wait</code>是调用对象的方法，和这个对象资源绑定，线程间不需要彼此感知到对方（能获取对方引用），只需要共有这个资源即可，另一方面<code>LockSupport</code>可以指定<code>unpark</code>的线程，这点也是前者无法做到的，两者间不能完全取代彼此。</p>
+<p><code>park</code>方法也有可能在没有”任何理由”的情况下返回，所以通常要在一个循环中使用它并重新判断可以返回的条件。这一点和<code>Object.wait</code>方法一样，可以参考<a href="https://en.wikipedia.org/wiki/Spurious_wakeup" target="_blank" rel="noopener">wiki</a>，大致可以理解为底层系统因为优化需要允许出现这样的情况，JVM的线程就是系统线程这种情况也无法避免。可以作为”忙等待”的优化,但是必须要注意要有配对的unpark方法。<br>使用模式如下：  </p>
+<pre><code>while (!canProceed()) { ... LockSupport.park(this); }}  
+</code></pre><p>在提供的方法中可以看到有一组传入名为blocker对象作为参数的方法，记录这个对象可以方便许可证监视和诊断工具分析。  </p>
+<p>取上述代码，不启动t1的情况直接运行t2进入阻塞，jstack可以看到:  </p>
+<pre><code>&quot;Thread-0&quot; #10 prio=5 os_prio=0 tid=0x000000001b586800 nid=0x37f0 waiting on condition [0x000000001c0ae000]
+java.lang.Thread.State: WAITING (parking)
+        at sun.misc.Unsafe.park(Native Method)
+        - parking to wait for  &lt;0x00000000d603a6e8&gt; (a test.TestLockSupport$1)
+        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+        at test.TestLockSupport$1.run(TestLockSupport.java:21)  
+</code></pre><p>会将传入的对象打出。  </p>
+<hr>
+<p>更多资料：<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/LockSupport.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/LockSupport.html</a>  </p>
+<p><a href="http://agapple.iteye.com/blog/970055" target="_blank" rel="noopener">http://agapple.iteye.com/blog/970055</a>  </p>
+<p><a href="http://blog.csdn.net/hengyunabc/article/details/28126139" target="_blank" rel="noopener">http://blog.csdn.net/hengyunabc/article/details/28126139</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>异步请求中jetty处理ServletRequestListener的坑 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">异步请求中jetty处理ServletRequestListener的坑</p>
+            <br>
+            
+            <p>星期日, 十一月 19日 2017, 5:51 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>标题起得比较诡异，其实并不是坑，而是jetty似乎压根就没做对异步request的<code>ServletRequestListener</code>的特殊处理，如果文中有错误欢迎提出，可能自己有所疏漏了。</p>
+<p>之前遇到了一个bug，在Listener中重写<code>requestDestroyed</code>清理资源后，这些资源在异步任务中就不可用了。<br>这与预期不符，直觉上request应该在任务完成之后才触发<code>requestDestroyed</code>，而不应该是开始异步操作返回后就触发。<br>正确的触发时机应该是异步任务完成之后。<br>后来查阅了下，发现<code>servlet 3</code>的规范中只是增加了异步servlet和异步filter的支持，listener如何处理没有定义，也就是各个容器的实现可能会差异（我们自己使用的是jetty）。<br>但讲道理的话，合理的实现应该判断当前request是否处于异步处理中，如果是的话将销毁的触发的时机放置在<code>AsyncContext</code>完成之后。</p>
+<p>自己试了下使用两个容器：<code>Tomcat 8.5.15</code>和<code>Jetty 9.4.7.v20170914</code>。</p>
+<p>测试代码比较简单，为了去除其他框架的影响使用纯的servlet api。<br>servlet：   </p>
+<pre><code class="java">@WebServlet(asyncSupported = true, urlPatterns = { &quot;/test&quot; })
+public class TestServlet extends HttpServlet {
+    private static final long serialVersionUID = 7395865716615939512L;
+
+    private ExecutorService pool = Executors.newCachedThreadPool();
+
+    @Override
+    public void destroy() {
+        pool.shutdown();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        System.out.println(LocalDateTime.now() + &quot; get start &quot; + request);
+        AsyncContext context = request.startAsync();
+        context.addListener(new AsyncListener() {
+            @Override
+            public void onTimeout(AsyncEvent event) throws IOException {
+                System.out.println(LocalDateTime.now() + &quot; async onTimeout &quot; + event.getSuppliedRequest());
+            }
+
+            @Override
+            public void onStartAsync(AsyncEvent event) throws IOException {
+                System.out.println(LocalDateTime.now() + &quot; async onStartAsync &quot; + event.getSuppliedRequest());
+            }
+
+            @Override
+            public void onError(AsyncEvent event) throws IOException {
+                System.out.println(LocalDateTime.now() + &quot; async onError &quot; + event.getSuppliedRequest());
+            }
+
+            @Override
+            public void onComplete(AsyncEvent event) throws IOException {
+                System.out.println(LocalDateTime.now() + &quot; async onComplete &quot; + event.getSuppliedRequest());
+            }
+        }, request, response);
+        pool.execute(() -&amp;gt; {
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                System.out.println(LocalDateTime.now() + &quot; job done&quot;);
+                context.complete();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        System.out.println(LocalDateTime.now() + &quot; get return&quot;);
+    }
+
+}
+</code></pre>
+<p>listener:  </p>
+<pre><code class="java">@WebListener
+public class TestListener implements ServletRequestListener {
+
+    @Override
+    public void requestDestroyed(ServletRequestEvent event) {
+        System.out.println(LocalDateTime.now() + &quot; TestListener requestDestroyed &quot; + event.getServletRequest());
+    }
+
+    @Override
+    public void requestInitialized(ServletRequestEvent event) {
+        System.out.println(LocalDateTime.now() + &quot; TestListener requestInitialized &quot; + event.getServletRequest());
+    }
+
+}
+</code></pre>
+<p>使用tomcat返回的结果:    </p>
+<pre><code>2017-11-19T16:42:04.256 TestListener requestInitialized org.apache.catalina.connector.RequestFacade@7c2df671
+2017-11-19T16:42:04.257 get start org.apache.catalina.connector.RequestFacade@7c2df671
+2017-11-19T16:42:04.261 get return
+2017-11-19T16:42:09.261 job done
+2017-11-19T16:42:09.261 async onComplete org.apache.catalina.connector.RequestFacade@7c2df671
+2017-11-19T16:42:09.261 TestListener requestDestroyed org.apache.catalina.connector.RequestFacade@7c2df671
+</code></pre><p>使用jetty返回的结果：    </p>
+<pre><code>2017-11-19T16:46:35.231 TestListener requestInitialized (GET //localhost:8080/test)@1124787543 org.eclipse.jetty.server.Request@430ae557
+2017-11-19T16:46:35.232 get start (GET //localhost:8080/test)@1124787543 org.eclipse.jetty.server.Request@430ae557
+2017-11-19T16:46:35.234 get return
+2017-11-19T16:46:35.235 TestListener requestDestroyed [GET //localhost:8080/test]@1124787543 org.eclipse.jetty.server.Request@430ae557
+2017-11-19T16:46:40.235 job done
+2017-11-19T16:46:58.019 async onComplete [GET //localhost:8080/test]@1124787543 org.eclipse.jetty.server.Request@430ae557
+</code></pre><p>jetty果然没有讲道理… …  </p>
+<p>先看下讲道理的tomcat，果不其然他做了特殊判断。<br>在<code>StandardHostValve</code>的<code>invoke</code>方法中：  </p>
+<pre><code class="java">if (!request.isAsync() &amp;amp;&amp;amp; !asyncAtStart) {
+    context.fireRequestDestroyEvent(request.getRequest());
+}
+</code></pre>
+<p>并且销毁的时机和预想的一样是在<code>AsyncContext</code>完成之后：  </p>
+<p><img src="/images/1244488-20171119174205312-2127854720.png" alt>  </p>
+<pre><code class="java">    public void fireOnComplete() {
+        List&amp;lt;AsyncListenerWrapper&amp;gt; listenersCopy = new ArrayList&amp;lt;&amp;gt;();
+        listenersCopy.addAll(listeners);
+
+        ClassLoader oldCL = context.bind(Globals.IS_SECURITY_ENABLED, null);
+        try {
+            for (AsyncListenerWrapper listener : listenersCopy) {
+                try {
+                    listener.fireOnComplete(event);
+                } catch (Throwable t) {
+                    ExceptionUtils.handleThrowable(t);
+                    log.warn(&quot;onComplete() failed for listener of type [&quot; +
+                            listener.getClass().getName() + &quot;]&quot;, t);
+                }
+            }
+        } finally {
+            context.fireRequestDestroyEvent(request.getRequest());
+            clearServletRequestResponse();
+            context.unbind(Globals.IS_SECURITY_ENABLED, oldCL);
+        }
+    }
+</code></pre>
+<p>而jetty没有处理，在<code>ContextHandler</code>的<code>doHandle</code>中没有异步请求的判断：  </p>
+<pre><code class="java">finally
+        {
+            // Handle more REALLY SILLY request events!
+            if (new_context)
+            {
+                if (!_servletRequestListeners.isEmpty())
+                {
+                    final ServletRequestEvent sre = new ServletRequestEvent(_scontext,request);
+                    for (int i=_servletRequestListeners.size();i--&amp;gt;0;)
+                        _servletRequestListeners.get(i).requestDestroyed(sre);
+                }
+
+                if (!_servletRequestAttributeListeners.isEmpty())
+                {
+                    for (int i=_servletRequestAttributeListeners.size();i--&amp;gt;0;)
+                        baseRequest.removeEventListener(_servletRequestAttributeListeners.get(i));
+                }
+            }
+        }
+</code></pre>
+<p>new_content用来在第一次调用返回true之后是false，和异步处理无关。  </p>
+<p>网上查了些也不清楚为什么jetty没有像tomcat那样实现这个，还是jetty希望用户通过<code>AsyncListener</code>来做处理呢。</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

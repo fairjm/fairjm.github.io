@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>记一次令人窒息的线上fullgc调优 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">记一次令人窒息的线上fullgc调优</p>
+            <br>
+            
+            <p>星期五, 六月 22日 2018, 2:19 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>今天第二篇采坑了… …<br>现场因为处理太急促没有保留,而且是一旁协助,没有收集到所有信息实在是有些遗憾…只能靠记忆回想一些细节  </p>
+<hr>
+<p>情况是一台服务器一启动就开始full gc,短短1分钟可以有几十次的full gc.<br>主要几个配置参数为<code>-Xmx2g</code> <code>-XX:NewRatio=3</code>(CMS相关和其他的和这次无关不列了) 很简单的参数.<br>下意识dump了heap,结果并没什么特别明显的问题.<br>在想是不是内存不够,加到3g还是一样的问题.  </p>
+<p>那似乎只能看是不是业务代码有内存泄漏了.<br>用<code>jmap -histo:live</code>看了下也是很常见的一些类(而且上面还做过heap分析).  </p>
+<p>开始陷入沉思,突然发现了一个诡异的点…<code>jmap -heap</code> old区很小… …多试了几次依旧是很小…<br>这不科学 </p>
+<p>用<code>jstat -gcold</code>和<code>jstat -gcnew</code>一看….old的容量只有400M 而young的只有100多M 差不多是设置的newRatio的值<br>使用<code>jcmd pid VM.flags</code>一看,发现<code>-XX:MaxNewSize</code>被设置成了100多M… …就算是Xmx2g,实际使用才400多M,这点内存完全不能满足应用的正常使用.<br><img src="/images/1244488-20180622013849504-1123204511.png" alt></p>
+<p>之后添加了<code>-Xms</code>解决.(这点存疑 估计还修改了其他配置 见下面分析)  </p>
+<p>但其实还是有些问题遗留,默认的MaxNewSize为什么只有100多M…<br>简单的分析,MaxNewSize没有默认设置,那他的值来源于Xmx和NewRatio(Xmx / (newRatio + 1)),验证如下:<br><code>java -XX:NewRatio=3 -XX:+PrintFlagsFinal -version | grep New</code>(不去连线上了..本地操作 windows下用findstr)<br><img src="/images/1244488-20180622020301776-186647314.png" alt><br>的确如此.  </p>
+<p>线上出问题的只有100多M,也就是Xmx参数可能被错误配置或者被覆盖了(模拟后面的Xmx覆盖了前面的)<br><img src="/images/1244488-20180622020355675-166184672.png" alt>  </p>
+<p>最后的配置修改不是亲手做的一些项也无法确定了…  </p>
+<hr>
+<p>不过这次发现的问题也很明显<br>首先是监控,这台服务的gc日志没有被收集导致一开始没有历史记录(图1),有的话一眼就看出heap过小.<br>其次是思维定势了,遇到fgc想当然先去分析dump,浪费了时间.  </p>
+<hr>
+<p>总结一下这次使用的命令:<br>寻找java进程:<br><code>jps</code>  </p>
+<p>查看gc情况(最后两个数字是间隔ms和打印次数):<br><code>jstat -gcutil|gcold|gcnew pid 1000 10</code>   </p>
+<p>查看系统属性:<br><code>jcmd process_id VM.system_properties</code>  </p>
+<p>JVM启动用的命令行:<br><code>jcmd process_id VM.command_line</code>  </p>
+<p>显示调优标志:<br><code>jcmd process_id VM.flags [-all]</code></p>
+<p>heap dump:<br><code>jmap -dump:format=b,file=test.bin pid</code>  </p>
+<p>查看堆使用情况:<br><code>jmap -heap pid</code>  </p>
+<p>查看存活对象:<br><code>jmap -histo:live pid</code>  </p>
+<p>查看默认配置:<br><code>java -XX:+PrintFlagsFinal -version | grep HeapSize</code>  </p>
+<hr>
+<p>参考资料:<br><a href="https://docs.oracle.com/cd/E19900-01/819-4742/abeik/index.html" target="_blank" rel="noopener">https://docs.oracle.com/cd/E19900-01/819-4742/abeik/index.html</a><br><a href="https://stackoverflow.com/questions/4667483/how-is-the-default-java-heap-size-determined" target="_blank" rel="noopener">https://stackoverflow.com/questions/4667483/how-is-the-default-java-heap-size-determined</a><br><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

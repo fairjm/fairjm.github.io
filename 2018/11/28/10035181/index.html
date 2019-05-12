@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>Akka实践一些总结 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">Akka实践一些总结</p>
+            <br>
+            
+            <p>星期三, 十一月 28日 2018, 9:46 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近在一些服务中使用了akka,主要用来做异步解耦和本地消息分发(路由),这里简单总结一下用法.  </p>
+<h1 id="与spring集成"><a href="#与spring集成" class="headerlink" title="与spring集成"></a>与spring集成</h1><p>网上有不少集成的例子,要使用到spring的扩展.<br>我这边没有这样处理,而是简单把<code>ActorSystem</code>创建的actor的过程放在了spring configuration里,把<code>ActorRef</code>作为bean,毕竟actor本身不能为单例但是ref可以.  </p>
+<p>actor要使用一些bean的话就全部都由构造函数传入.<br>如下:</p>
+<pre><code class="java">public class UserActor extends AbstractLoggingActor {
+
+    private UserService userService;
+
+    public static Props props(UserService userService) {
+        return Props.create(UserActor.class, () -&gt; new UserActor(userService));
+    }
+
+    public UserActor(UserService userService) {
+        this.userService = userService;
+    }
+</code></pre>
+<h1 id="在java中使用"><a href="#在java中使用" class="headerlink" title="在java中使用"></a>在java中使用</h1><p>使用中能感觉和java还是有些隔阂的…<br>特别是容器(Collection)之间的转换和处理.<br>给出一些例子,可能是我没发现更方便的写法..  </p>
+<pre><code class="java">List&lt;Routee&gt; routees = new ArrayList&lt;&gt;();
+senders.forEach(e -&gt; {
+            try {
+                ActorRef ref = getContext().actorOf(createdProps.apply(e), prefix + &quot;-&quot; + e.getId());
+                routees.add(new ActorRefRoutee(ref));
+            } catch (InvalidActorNameException ex) {
+                log().error(ex, &quot;name already in use&quot;);
+            }
+        });
+router = new Router(new RoundRobinRoutingLogic(), routees);
+</code></pre>
+<p>这边本来用一个map就能解决了,但会要求类型强转Router的第二个参数是<code>java.lang.Iterable&lt;Routee&gt;</code>而不是<code>java.lang.Iterable&lt;? extends Routee&gt;</code>(ActorRefRoutee是其子类),再加上还要处理重名错误,还是用了这种错误的forEach使用方式.  </p>
+<pre><code class="java">    private void stopRoutee(Router router) {
+        List&lt;Routee&gt; routees = new ArrayList&lt;&gt;(seqAsJavaList(router.routees()));
+        routees.forEach(e -&gt; {
+            ActorRefRoutee ae = (ActorRefRoutee) e;
+            ActorRef ref = ae.ref();
+            // 移除这个routee
+            router.removeRoutee(ae);
+            // 停止这个ref
+            context().stop(ref);
+        });
+    }
+</code></pre>
+<p>router.routees()返回的是个IndexSeq…和java的没有兼容和对应.<br>最开始找了一些,后来发现有<code>scala.collection.JavaConversions</code>可以做兼容…感受到了隔阂.  </p>
+<p>此外ask模式,akka为java提供了<code>PatternsCS</code>.这个类返回的是java的<code>CompletionStage</code>类型相比<code>Patterns</code>,比较友好.  </p>
+<h1 id="使用误区"><a href="#使用误区" class="headerlink" title="使用误区"></a>使用误区</h1><p>最容易误用的一点就是消息处理中有阻塞操作,比如直接在actor中进行数据库操作和处理网络请求,而使用的actor也没有和线程绑定,这种情况需要使用额外的线程池,这个其实和用netty是一样的情况,用来进行应用调度的线程数有限.  </p>
+<p>由于上面提到的点,于是在actor内可能就会存在一些回调,一不小心就可能直接调用/改变actor内部的状态(例如在回调直接访问field).  </p>
+<pre><code class="java">private List&lt;String&gt; list;
+... ...
+public Receive createReceive() {
+    return receiveBuilder()
+            .match(Message.class, e -&gt; xxxx.onSuccess(r -&gt; list.add(r)))
+            ... ...
+</code></pre>
+<p>这样等于内部状态被多线程访问,破坏了actor内部的状态,正确的做法是在回调中给自己发送消息.</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

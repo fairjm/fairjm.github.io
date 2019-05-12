@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+</head>
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("/images/index.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2"></p>
+            <br>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+    
+  <div class="container">
+    <div class="py-5 z-depth-3 main">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-10 offset-1">
+            
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/11/30/locksuport/" class="h4" style="font-weight: 700;">LockSupport浅析</a>
+    
+      <p class="mb-1">最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。
+
+基本的线程阻塞原语，被用于创建锁和其他同步类上。  
+这个类的作用有点类似于Semaphore，通过许可证(permit)来联系使用它的线程。如果许可证可用，调用park方法会立即返回并在这个过程中消费这个许可，不然线程会阻塞。调用unpark会使许可证可用。(和Semaphores有些许区别,许可证不会累加，最多只有一张） 
+因为有了许可证，所以调用park和unpark的先后关系就不重要了，这里可以对比一下Obje...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-11-30
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/11/19/jetty-ServletRequestListener-async/" class="h4" style="font-weight: 700;">异步请求中jetty处理ServletRequestListener的坑</a>
+    
+      <p class="mb-1">标题起得比较诡异，其实并不是坑，而是jetty似乎压根就没做对异步request的ServletRequestListener的特殊处理，如果文中有错误欢迎提出，可能自己有所疏漏了。
+之前遇到了一个bug，在Listener中重写requestDestroyed清理资源后，这些资源在异步任务中就不可用了。这与预期不符，直觉上request应该在任务完成之后才触发requestDestroyed，而不应该是开始异步操作返回后就触发。正确的触发时机应该是异步任务完成之后。后来查阅了下，发现servlet 3的规范中只是增加了异步servlet和异步filter的支持，listener如何处理没有定...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-11-19
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/11/11/microservice-thought/" class="h4" style="font-weight: 700;">微服务化路上的只言片语</a>
+    
+      <p class="mb-1">类似于杂谈性质的文，总结下公司实行微服务化上遇到的一些问题。虽然参与了开发过程，但整体更像是个旁观者，前期还是大家讨论怎么做，后来慢慢就由负责架构的同事专职做规划，拆分任务去完成。  
+万事开头难最初的架构(数据库和其他部分都做了简化)
+初衷并不是为了赶时髦，为了团队KPI之类的，而是遇到了一个很现实的问题。研发团队慢慢从几个人发展为十几，几十人，所有人都在一个项目上开发，代码仓库越来越大，merge冲突越来越频繁，部署时也往往会因为一些bug导致全站部署拖延。再加上访问量越来越高，带来的不确定性越来越大，一些流量较大的业务可能会导致整站都挂掉。内部和外部都出现了问题。
+当时虽然研发团队的人比...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-11-11
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/10/21/html5-flash-video-speed-up/" class="h4" style="font-weight: 700;">几种方式加速网页视频播放速度</a>
+    
+      <p class="mb-1">现在有不少视频网站,自带了播放加速功能,例如油管,bilibili,慕课等等.节省了很多看视频的时间,特别是看一些技术教程类的视频,不管是念ppt还是手把手演示.  
+在自己付费的一些网站中,一些是自带播放器不支持视频加速的.因为已经被加速惯坏,变得很不习惯,今天特意研究了一下,对于几种形式给出一些解决方法.  
+html5播放器主要标志是&lt;video&gt;,这种是最方便实现加速的,因为原生支持.主要依靠这两个属性:  
+
+defaultPlaybackRate (float): The playback speed at which the video should be playe...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-10-21
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/10/08/netty-common-pattern/" class="h4" style="font-weight: 700;">netty常用使用方式</a>
+    
+      <p class="mb-1">最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看SimpleChannelInboundHandler是否有一个messageReceived方法 有的话就是5)，netty3是以org.jboss开头为包名。
+统一模板大多数情况下使用netty的步骤是定义好EventLoopGroup,定义好Bootstrap(ServerBootstrap)以及使用的channel类型（一般就是NioSocketChannel，服务端是NioServ...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-10-08
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/09/28/kafka-note-producer/" class="h4" style="font-weight: 700;">kafka学习笔记2:生产者</a>
+    
+      <p class="mb-1">这次的笔记主要记录一下kafka的生产者的使用和一些重要的参数。文中主要截图均来自kafka权威指南
+主要涉及到两个类KafkaProducer和ProducerRecord.   
+
+总览生产者的主要架构如下：
+首先创建了一个ProducerRecord进行序列化 kv变为ByteArray进入Partitioner 如果之前指定了分区 那这一步什么都不会做接着将Record放入要被发送到的同样的topic和分区的batch中另一个单独的thread会进行发送操作发送成功会返回RecordMetadata(包含topic 分区 偏移量)失败的话会返回错误 producer会重试几次(retr...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-09-28
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/09/24/kafka-note-install/" class="h4" style="font-weight: 700;">kafka学习笔记1:测试环境搭建</a>
+    
+      <p class="mb-1">最近因为架构中引入了kafka,一些之前在代码中通过RPC调用强耦合但是适合异步处理的内容可以用kafka重构一下.考虑从头学一下kafka了解其特性和使用场景。  
+环境选择首先是测试环境的搭建,平时使用的是win,但kafka以及zk在win上会存在一些bug(例如 https://issues.apache.org/jira/browse/KAFKA-1194),最好还是在linux平台上搭建.虚拟机是一个不错的选择但开销比较大,日常使用的笔记本8G内存开启虚拟机不是很方便,bash on windows是个不错的选择.(另在Store中可以下载ubuntu等子系统,现在只限于insid...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-09-24
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+ 
+<br><br>
+
+
+<nav aria-label="index posts navigation">
+<ul class="pagination pg-blue justify-content-center mt-5">
+    
+        <li class="page-item">
+        <a class="page-link" href="/page/3/">Previous</a>
+        </li>
+    
+    
+</ul>
+</nav>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+</body>
+</html>

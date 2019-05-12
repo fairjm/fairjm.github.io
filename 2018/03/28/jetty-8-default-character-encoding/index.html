@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>jetty8 text/plain默认字符编码的坑 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">jetty8 text/plain默认字符编码的坑</p>
+            <br>
+            
+            <p>星期三, 三月 28日 2018, 9:48 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>今天在测试一个content-type为<code>text/plain</code>的API时发现后端requestBody乱码了，而线上正常。<br>自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。<br>最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。<br>检查了下发送的请求中没有设置charset，但项目里是设置了spring的编码过滤器，CharacterEncodingFilter中的逻辑：</p>
+<pre><code class="java">String encoding = getEncoding();
+if (encoding != null) {
+    if (isForceRequestEncoding() || request.getCharacterEncoding() == null) {
+        request.setCharacterEncoding(encoding);
+    }
+    if (isForceResponseEncoding()) {
+        response.setCharacterEncoding(encoding);
+    }
+}
+</code></pre>
+<p>encoding配置里设置为<code>UTF-8</code>，强制设置没有开启，所以在request没有设置字符编码时会进行设置。<br>但奇怪的是乱码的请求里是先被设置成了<code>ISO-8859-1</code>，在想会不会是gateway转发影响，进行抓包分析但还是没有看见charset。<br>远程debug了正常的测试环境发现字符编码没有被预先设置。<br>这就非常尴尬了，虽然测试环境没有问题，但本地这个问题的确是存在的，万一上了预发环境也有问题就麻烦了，看了一会儿diff没发现有配置上的变更。<br>在同事的提醒下，也只有jetty版本的原因了。   </p>
+<p>拉取了下jetty8的源码（jetty-8.8.0-SNAPSHOT），查看了一下，发现的确有个坑。</p>
+<p><code>AbstractHttpConnection</code>中的<code>parsedHeader</code>负责解析header，其中对应charset的解析代码:</p>
+<pre><code class="java">case HttpHeaders.CONTENT_TYPE_ORDINAL:
+    value = MimeTypes.CACHE.lookup(value);
+    _charset=MimeTypes.getCharsetFromContentType(value);
+    break;
+</code></pre>
+<p>解析出来的_charset会在<code>headerComplete</code>中设置进request内:</p>
+<pre><code class="java">if(_charset!=null)
+    _request.setCharacterEncodingUnchecked(_charset);
+</code></pre>
+<p>主要的判断代码在<code>MimeTypes</code>中</p>
+<pre><code class="java">    public static String getCharsetFromContentType(Buffer value)
+    {
+        if (value instanceof CachedBuffer)
+        {
+            switch(((CachedBuffer)value).getOrdinal())
+            {
+                case TEXT_HTML_8859_1_ORDINAL:
+                case TEXT_PLAIN_8859_1_ORDINAL:
+                case TEXT_XML_8859_1_ORDINAL:
+                    return StringUtil.__ISO_8859_1;
+
+                case TEXT_HTML_UTF_8_ORDINAL:
+                case TEXT_PLAIN_UTF_8_ORDINAL:
+                case TEXT_XML_UTF_8_ORDINAL:
+                case TEXT_JSON_UTF_8_ORDINAL:
+                    return StringUtil.__UTF8;
+            }
+        }
+        //下面是用来解析charset的
+        int i=value.getIndex();
+        final int end=value.putIndex();
+        int state=0;
+        int start=0;
+        boolean quote=false;
+        for (;i&lt;end;i++)
+        {
+            final byte b = value.peek(i);
+
+            if (quote &amp;&amp; state!=10)
+            {
+                if (&#39;&quot;&#39;==b)
+                    quote=false;
+                continue;
+            }
+
+            switch(state)
+            {
+                case 0:
+                    if (&#39;&quot;&#39;==b)
+                    {
+                        quote=true;
+                        break;
+                    }
+                    if (&#39;;&#39;==b)
+                        state=1;
+                    break;
+
+                case 1: if (&#39;c&#39;==b) state=2; else if (&#39; &#39;!=b) state=0; break;
+                case 2: if (&#39;h&#39;==b) state=3; else state=0;break;
+                case 3: if (&#39;a&#39;==b) state=4; else state=0;break;
+                case 4: if (&#39;r&#39;==b) state=5; else state=0;break;
+                case 5: if (&#39;s&#39;==b) state=6; else state=0;break;
+                case 6: if (&#39;e&#39;==b) state=7; else state=0;break;
+                case 7: if (&#39;t&#39;==b) state=8; else state=0;break;
+
+                case 8: if (&#39;=&#39;==b) state=9; else if (&#39; &#39;!=b) state=0; break;
+
+                case 9:
+                    if (&#39; &#39;==b)
+                        break;
+                    if (&#39;&quot;&#39;==b)
+                    {
+                        quote=true;
+                        start=i+1;
+                        state=10;
+                        break;
+                    }
+                    start=i;
+                    state=10;
+                    break;
+
+                case 10:
+                    if (!quote &amp;&amp; (&#39;;&#39;==b || &#39; &#39;==b )||
+                        (quote &amp;&amp; &#39;&quot;&#39;==b ))
+                        return CACHE.lookup(value.peek(start,i-start)).toString(StringUtil.__UTF8);
+            }
+        }
+        if (state==10)
+            return CACHE.lookup(value.peek(start,i-start)).toString(StringUtil.__UTF8);
+        //默认路径
+        return (String)__encodings.get(value);
+    }
+</code></pre>
+<p> 简单来看首先检查是否是预设的一些content-type，如果是的话直接返回。<br> 而传入的<code>text/plain</code>不在默认的范围内，接下里的代码是寻找charset或者”charset”，而传入的内容里并没有。<br> 最后走到了<code>return (String)__encodings.get(value);</code>，通过上面的代码可以找到这个属性的设置:</p>
+<pre><code class="java">final ResourceBundle encoding = ResourceBundle.getBundle(&quot;org/eclipse/jetty/http/encoding&quot;);
+final Enumeration i = encoding.getKeys();
+while(i.hasMoreElements())
+{
+    final Buffer type = normalizeMimeType((String)i.nextElement());
+    __encodings.put(type,encoding.getString(type.toString()));
+}
+</code></pre>
+<p>使用了ResourceBundle，对应的资源文件内容：</p>
+<pre><code>text/html    = ISO-8859-1
+text/plain    = ISO-8859-1
+text/xml    = UTF-8
+text/json   = UTF-8
+</code></pre><p>… …默认值为ISO-8859-1。<br>而jetty9呢，切回master分支，jetty9设置的代码直接在<code>Request</code>类中了，如下：</p>
+<pre><code class="java">    @Override
+    public String getCharacterEncoding()
+    {
+        if (_characterEncoding==null)
+            getContentType();
+        return _characterEncoding;
+    }
+
+
+
+    @Override
+    public String getContentType()
+    {
+        MetaData.Request metadata = _metaData;
+        String content_type = metadata==null?null:metadata.getFields().get(HttpHeader.CONTENT_TYPE);
+        if (_characterEncoding==null &amp;&amp; content_type!=null)
+        {
+            MimeTypes.Type mime = MimeTypes.CACHE.get(content_type);
+            String charset = (mime == null || mime.getCharset() == null) ? MimeTypes.getCharsetFromContentType(content_type) : mime.getCharset().toString();
+            if (charset != null)
+                _characterEncoding=charset;
+        }
+        return content_type;
+    }
+</code></pre>
+<p>   类似的逻辑还是继续走<code>MimeTypes</code>的方法，但最后发生了变化:</p>
+<pre><code class="java">           if (state==10)
+            return StringUtil.normalizeCharset(value,start,i-start);
+
+        return null;
+    }
+</code></pre>
+<p>已经没有那个默认逻辑，直接返回null了。<br>这个改动已经非常久远了。<br>避免踩这种坑，勤升版本很重要啊… …<br>感觉又荒废了时光…</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>短信服务构建总结 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">短信服务构建总结</p>
+            <br>
+            
+            <p>星期日, 三月 31日 2019, 7:23 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>又来水文了…<br>但感觉没什么其他内容可写,就将之前做的一个消息平台稍微做点总结.<br>简单说说短信模块的实现,做的东西不复杂,权当总结了~.  </p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><h2 id="功能需求"><a href="#功能需求" class="headerlink" title="功能需求"></a>功能需求</h2><p>功能需求比较直接.<br>需要提供一些短信和统计功能即可:  </p>
+<ul>
+<li>通知短信</li>
+<li>验证码短信</li>
+<li>语音短信</li>
+<li>发送量统计  </li>
+</ul>
+<h2 id="非功能需求"><a href="#非功能需求" class="headerlink" title="非功能需求"></a>非功能需求</h2><p>主要是以下几点  </p>
+<ul>
+<li>稳定的发送保证:<br>分为两部分,一个是服务本身的稳定性,另一个是短信服务提供商的稳定性.<br>服务本身稳定是自己需要实现的,可以通过微服务平台已经有的一些工具保证,这里不进行展开.而另一个是需要外部保证的,外部需要保证的东西永远是脆弱的,所以不能仅仅使用一家服务商,需要使用多家.  </li>
+<li>方便扩展:<br>接着第一点,服务商可能会有更换的需求,需要保证能够方便接入下架服务商.</li>
+<li>资产保护:<br>短信相比邮件,微信通知等的一个不同是他花费比较高,一条的计价在3分左右,较长的短信会被拆为多条,如果不加限制进行保护很容易造成大量的资损.</li>
+</ul>
+<h1 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h1><p>有了上面的需求之后就是选用什么技术了.<br>基础的web服务就使用公司现有的即可.<br>对于存储,因为涉及到发送信息和报告的记录,量可能会很大(其实上线之后也还好,3个月不到千万记录),统计时可能会按照某些发送内容统计,使用MySQL之类的可能会不太靠谱,选择使用ES.<br>对于安全,一定需要做手机号每日发送量和发送频率等的限制,这个用redis可以较为轻松解决.  </p>
+<p>最后一个简化版的架构图如下:<br><img src="/images/1244488-20190331180608613-425422922.png" alt></p>
+<h1 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h1><p>上面都是这个服务战略上的一些东西,这里说一些战术上的.  </p>
+<h2 id="接入多家服务商"><a href="#接入多家服务商" class="headerlink" title="接入多家服务商"></a>接入多家服务商</h2><p>需要有多家服务商的接入,一家服务商可能同时供应多个短信功能.<br>同时同一个短信功能需要轮流调用所有提供的服务商,并在一家失败后进行重试.<br>也需要支持灵活的配置,可以禁用掉一些服务商,也可以方便加入新的.<br>在实现上先定义了各个发送功能接口,例如:  </p>
+<pre><code>interface NotiSmsSender {
+    SmsSubmitResult sendNoti(NotiRequest request);
+}  
+
+
+interface VerifyCodeSmsSender {
+    SmsSubmitResult sendVerifyCode(VerifyCodeRequest request);
+}
+</code></pre><p>对应的服务商实现不同的接口,提供不同的服务,每个对应的实现都有一个id字段,用于之后的配置.  </p>
+<p>现在有了一坨sender,接下来要定义router,用来进行请求的分发.<br>router内含有sender列表,配置router内的sender就可以实现服务商的下线功能了.<br>大致流程如下:<br><img src="/images/1244488-20190401021438477-1987189345.png" alt>  </p>
+<p>实际实现中使用了Akka,各个sender是一个actor,router负责监督各个sender的健康情况,此外天然获得了超时时间的能力(底层使用了异步HttpClient,actor内部不会发生阻塞).</p>
+<h2 id="发送限制设置"><a href="#发送限制设置" class="headerlink" title="发送限制设置"></a>发送限制设置</h2><p>关于手机号和ip的发送数量计数使用<code>reids</code>的<code>incr</code>配合时间戳相关的key就可以很简单完成,这里不累述这个.  </p>
+<p>发送限制的话首先要针对不同功能,因为不同功能的使用量是截然不同的,并且也有隔离的作用,一个功能超限不能影响其他功能.  </p>
+<p>其次,发送的限制需要分层级,当达到了全局最大限制后,就算没有超过单手机限制也不应该发出去了.<br>使用的层次是:<br>功能全局次数(次数) -&gt; 单接入应用限制(次数/白名单/开关) -&gt; 单手机/ip限制(次数/白名单/开关) -&gt; 风控服务(开关)<br>最后次数要根据统计情况和业务更改做适当调整.  </p>
+<h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><p>这个服务很明显是IO密集的,就没什么计算,主要是调用各种外部服务,等IO返回.<br>所以对于这些各个用来做请求的线程池就可以配置稍微大一点,实际最主要的就是HTTP的连接池.但连接超时,读取超时也不适合设置过大.<br>实际测试也没多大问题,平日一天短信请求量也在几w左右,并没有太大的瓶颈.    </p>
+<p>其他的一些点和普通的web服务也大同小异了,没有什么特别的技巧.<br>其实之前一些文章也是在构建这个服务的时候写的,这段时间没写什么就当划水了,比如:<br><a href="https://www.cnblogs.com/fairjm/p/10035181.html" target="_blank" rel="noopener">Akka实践一些总结</a><br><a href="https://www.cnblogs.com/fairjm/p/elasticsearch_in_trouble.html" target="_blank" rel="noopener">ES踩坑笔记</a><br>这个服务构建的时候根据需要用了些之前没有使用的组件,也算额外获得了一些回报吧~</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

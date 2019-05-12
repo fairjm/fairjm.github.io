@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>杂谈20190505 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">杂谈20190505</p>
+            <br>
+            
+            <p>星期一, 五月 6日 2019, 2:24 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>本来说是每个月至少写一篇的,似乎上个月不小心直接鸽了…  </p>
+<p>有一些想写的东西,比如之前看到<code>blazor</code>或者<code>LiveView</code>,写点前后端渲染相关的,但又感觉自己的知识面过于狭窄,内容不够全不说可能还会写错误导别人所以作罢.甚至还想写瓶颈优化类的,但自己写的代码那么屎都没自觉还写文说怎么优化… …<br>就杂聊一些近况吧.<br>(说到<code>blazor</code>,这东西改名真够频繁的,最开始是一个实验性质项目,之后吸收到 .NET Core 3.最开始是blazor,服务端渲染是razor component,在某一次改动后变成了整个叫razor component,blazor是client hosting model,最近因为概念理解起来会造成障碍又改回了第一个….真的是够折腾的) </p>
+<p>最近在(重新)看<code>elixir</code>,上一次似乎是4年多快5年前了,过了这么多年,<code>elixir</code>的流行程序依旧那样,看来是火不了了:(,适合做中间件的语言,结果始终没有火起来,然而新兴的<code>Rust</code>和<code>Go</code>已经在攻城略地.<br>这充分说明语言的流行与否与语言本身优秀与否可能关系不大(举个不恰当的例子,<code>java</code>和<code>C#</code>在国内的流行程度),而与宣发和大厂背书可能关系大一点.<br>更悲惨的是<code>erlang</code>了,在流行度上面.<br>说到这个,上个月<code>erlang</code>之父 Joe Armstrong过世了,非常突然,毕竟前几天还看到在推上和人聊硬件编程相关的事,还有之前的阿怪,一些熟悉的人名不经意间就已经不在了.  </p>
+<p>说到<code>elixir</code>有一些感悟,详细的实现还没看,基本也是看一些说明性质的东西.<br>因为本身就是基于<code>BEAM</code>的,所以天然获得了抢占式的process调度,这点和协作式的协程有很大不同,基于yield主动放弃控制权转移给其他人的协程 vs 每个process有固定的时间片,各有利弊.<br>但这一切也都是基于系统线程上的,所以遇到的问题也是类似,遇上阻塞的系统调用怎么办.<br><code>elixir</code>(BEAM)这边的话还是老套路用IO线程池,调度器发现阻塞调用时会把阻塞的任务丢给线程池,把当前process挂起,让对应的线程去执行其他process,这点和<code>Go</code>的思想是类似的(但<code>Go</code>的做法是将当前P的goroutine交给其他的P).<br>这些本质上其实都是一些魔法.<br>便于编写代码的魔法.<br>回到java的世界,没有这样的运行时,没有这样的发现阻塞调用的机制.这些操作都是手动做的,把阻塞的IO扔到IO线程池做异步化自己写回调,实现的东西是类似的,不过因为是要手写,所以代码的好坏取决于人,又因为是协作的,所以java在少糖少魔法的情况下,代码的质量水平可能会相对堪忧.<br>语法糖和各种魔法还是很重要的.在工程角度上.  </p>
+<p>上面说到<code>Go</code>,想起了群里讨论的时候M P G里的P被说成了核,但是一脸蒙蔽,M已经是系统线程了,M应该是接近调度器之类的东西吧,M下挂个核是什么意思? 后来找了下原文,发现原来是个类比… …</p>
+<blockquote>
+<p>A P can be thought of like a CPU in the OS scheduler and the contents of the p type like per-CPU state.   </p>
+</blockquote>
+<p>一些翻译不走心然后各种引用就这么传下来了…  </p>
+<p>基础概念不也是这样吗,感觉自己年少无知的一些概念完全是错的,最近也是打自己脸打得疼,这些概念可能不直接影响写的代码,但是影响看事的广度和深度.比如把AIO和多线程绑定,觉得使用AIO会造成线程数增多,上下文开销增加,但首先使用IOCP这种和线程无关的实现不会增加多少线程,其次,IO线程池的线程主要被阻塞并不会有运行CPU密集任务那样来的那么大开销,不过开多了内存占用倒是会变多.(上述这些话不知道什么时候又要打脸了)  </p>
+<p>差不多也到这样.<br>本来想写点工作之类的,但想想毕竟和公司相关,还是算了.工作这种每个人有自己感悟,每个人也参与其中,写出来大抵也差不多,还是算了.  </p>
+<hr>
+<p>一些资料:<br><a href="https://dotnet.microsoft.com/apps/aspnet/web-apps/client" target="_blank" rel="noopener">https://dotnet.microsoft.com/apps/aspnet/web-apps/client</a>  </p>
+<p><a href="https://shift.infinite.red/phoenix-liveview-round-up-the-story-so-far-3cbb1648e940" target="_blank" rel="noopener">https://shift.infinite.red/phoenix-liveview-round-up-the-story-so-far-3cbb1648e940</a>  </p>
+<p><a href="https://hackernoon.com/remembering-joe-a-quarter-of-a-century-of-inspiration-and-friendship-3ddded0831ab" target="_blank" rel="noopener">https://hackernoon.com/remembering-joe-a-quarter-of-a-century-of-inspiration-and-friendship-3ddded0831ab</a></p>
+<p><a href="https://github.com/golang/go/blob/master/src/runtime/HACKING.md" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/HACKING.md</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -103,9 +103,217 @@ Run server$ hexo serve...</p>
     
 </div>
 </div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/05/06/snippet-20190505/" class="h4" style="font-weight: 700;">杂谈20190505</a>
+    
+      <p class="mb-1">本来说是每个月至少写一篇的,似乎上个月不小心直接鸽了…  
+有一些想写的东西,比如之前看到blazor或者LiveView,写点前后端渲染相关的,但又感觉自己的知识面过于狭窄,内容不够全不说可能还会写错误导别人所以作罢.甚至还想写瓶颈优化类的,但自己写的代码那么屎都没自觉还写文说怎么优化… …就杂聊一些近况吧.(说到blazor,这东西改名真够频繁的,最开始是一个实验性质项目,之后吸收到 .NET Core 3.最开始是blazor,服务端渲染是razor component,在某一次改动后变成了整个叫razor component,blazor是client hosting model,最近...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-05-06
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/03/31/sms-server-building-summary/" class="h4" style="font-weight: 700;">短信服务构建总结</a>
+    
+      <p class="mb-1">又来水文了…但感觉没什么其他内容可写,就将之前做的一个消息平台稍微做点总结.简单说说短信模块的实现,做的东西不复杂,权当总结了~.  
+需求功能需求功能需求比较直接.需要提供一些短信和统计功能即可:  
+
+通知短信
+验证码短信
+语音短信
+发送量统计  
+
+非功能需求主要是以下几点  
+
+稳定的发送保证:分为两部分,一个是服务本身的稳定性,另一个是短信服务提供商的稳定性.服务本身稳定是自己需要实现的,可以通过微服务平台已经有的一些工具保证,这里不进行展开.而另一个是需要外部保证的,外部需要保证的东西永远是脆弱的,所以不能仅仅使用一家服务商,需要使用多家.  
+方便扩展:接着第一点,服务商可能会有...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-03-31
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/02/25/sync-async-blocking-multithre/" class="h4" style="font-weight: 700;">异步/同步,阻塞/非阻塞,单线程/多线程概念梳理</a>
+    
+      <p class="mb-1">最近看了一文说到异步一定是单线程的,顿时就傻眼了,对相关概念和同事进行了一些讨论和总结.文中的描述是以我的理解来说的,可能不一定准确甚至正确,有错欢迎指正.  
+这三个概念我认为是描述不同的维度的,概念正交.    
+异步 同步异步和同步是不同的流程设计风格.但存在依赖关系的操作之间是同步的,也就是如果操作B依赖操作A的返回,那么B必须要在A结束后才能执行.比如你要读取文件然后对文件内容进行处理,那么读取内容和处理内容就是同步的.  
+而异步这是操作间没有依赖关系,或者先后顺序并不重要.比如用户登陆要给登陆奖励,在确认用户可登陆后之后的登陆流程和发放奖励间并无依赖关系,那么他们就可以异步执行....</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-02-25
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/02/13/Microservices-Patterns-ch2-notes/" class="h4" style="font-weight: 700;">微服务模式笔记:服务分解策略</a>
+    
+      <p class="mb-1">Microservice Patterns第二章的读书笔记原章节链接: https://learning.oreilly.com/library/view/microservices-patterns/9781617294549/kindle_split_010.html  
+Decomposition strategies 
+微服务最关键的挑战 也就是微服务的本质是如何将应用的功能分解到服务中去服务是业务相关而不是技术相关
+2.1. What is the microservice architecture exactly?2.1.1. What is software architectu...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-02-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/01/30/translate-the-various-kinds-of-io-blocking-non/" class="h4" style="font-weight: 700;">[翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步</a>
+    
+      <p class="mb-1">同事推荐,感觉写的不错就试着翻译了下.原文链接: https://www.rubberducking.com/2018/05/the-various-kinds-of-io-blocking-non.html作者: Didier A.
+我发现对于软件程序员来说很难分清楚各种类型的IO.对于阻塞,非阻塞,多路复用和异步IO有很多的混淆点.所以我想尝试解释清楚各种IO类型意味着什么
+在硬件层面.在现代操作系统中,IO(输入/输出)是一种和外围设备交换数据的方式.包括读写磁盘或SSD,通过网络发送和接受数据,在显示器上显示,接入键盘和鼠标输入,等等.  
+现代操作系统和外围设备的交流取决于外围设备的...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-01-30
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/12/05/jvm-crash-troubleshoot/" class="h4" style="font-weight: 700;">[翻译]Java排错指南 - 5 确定崩溃何地发生</a>
+    
+      <p class="mb-1">原文地址: https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/crashes001.html
+这几天公司其他组遇到了一个segmentation fault的问题,找到了这个官方文档,基于Java8,感觉不错就翻译了下.一些地方翻译比较生硬,如有问题请麻烦指正~^_^ by fairjm
+
+5.1 确定崩溃何地发生这一节提供了一些例子来演示如何使用错误日志来找到崩溃的原因,并且给出一些排查这些问题的建议.  
+错误日志的头指出了错误的类型和有问题的帧(frame),thread stack指出了当前的线程和堆...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-12-05
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/11/28/10035181/" class="h4" style="font-weight: 700;">Akka实践一些总结</a>
+    
+      <p class="mb-1">最近在一些服务中使用了akka,主要用来做异步解耦和本地消息分发(路由),这里简单总结一下用法.  
+与spring集成网上有不少集成的例子,要使用到spring的扩展.我这边没有这样处理,而是简单把ActorSystem创建的actor的过程放在了spring configuration里,把ActorRef作为bean,毕竟actor本身不能为单例但是ref可以.  
+actor要使用一些bean的话就全部都由构造函数传入.如下:
+public class UserActor extends AbstractLoggingActor {
+
+    private UserService u...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-11-28
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/11/13/elasticsearch-in-trouble/" class="h4" style="font-weight: 700;">ES踩坑笔记</a>
+    
+      <p class="mb-1">现在开始在业务上使用ES,记录一些踩坑经历,做点笔记.  
+
+2018-11-13  
+source不返回问题使用了角色校验,客户端插入成功之后获取数据没有source,和查询参数无关.检查mapping,发现获取mapping也是空…如下:  
+{&#39;test_index&#39;: {&#39;mappings&#39;: {&#39;test_doc&#39;: {&#39;properties&#39;: {}}}}}  
+排查了一会儿..找不出原因.后来要到了一个高权限的账号去kibana看了眼…发现  
+能获取的fields为空… …emmmmm….设置为*后解决  
+参考链...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-11-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/10/19/why-lambda-inner-class-only-access-final-var/" class="h4" style="font-weight: 700;">lambda和匿名内部类使用外部变量为什么要语义final?</a>
+    
+      <p class="mb-1">今天群里讨论java的lambda实现.后来不断衍生谈到了为什么lambda和匿名内部类只能使用语义final的外部变量.  
+最开始以为是java的lambda实现问题,编译期魔法会把外部引用作为参数传入所以在内部变化也影响不了下次调用的值,所以就干脆final了,如果用类的属性来保管这个变量就可以了.  
+In [64]:  def outer(a:int):
+    ...:      def inner():
+    ...:          nonlocal a
+    ...:          a = a + a
+    ...:          return a
+    ....</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-10-19
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
  
 <br><br>
 
+
+<nav aria-label="index posts navigation">
+<ul class="pagination pg-blue justify-content-center mt-5">
+    
+    
+        <li class="page-item">
+        <a class="page-link" href="/page/2/">Next</a>
+        </li>
+    
+</ul>
+</nav>
 
           </div>
         </div>

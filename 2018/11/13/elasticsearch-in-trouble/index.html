@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>ES踩坑笔记 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">ES踩坑笔记</p>
+            <br>
+            
+            <p>星期二, 十一月 13日 2018, 3:42 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>现在开始在业务上使用ES,记录一些踩坑经历,做点笔记.  </p>
+<hr>
+<p>2018-11-13  </p>
+<h1 id="source不返回问题"><a href="#source不返回问题" class="headerlink" title="source不返回问题"></a>source不返回问题</h1><p>使用了角色校验,客户端插入成功之后获取数据没有source,和查询参数无关.<br>检查mapping,发现获取mapping也是空…<br>如下:  </p>
+<pre><code>{&#39;test_index&#39;: {&#39;mappings&#39;: {&#39;test_doc&#39;: {&#39;properties&#39;: {}}}}}  
+</code></pre><p>排查了一会儿..找不出原因.<br>后来要到了一个高权限的账号去kibana看了眼…发现  </p>
+<p><img src="/images/1244488-20181113154038997-784426282.png" alt><br>能获取的fields为空… …<br>emmmmm….<br>设置为<code>*</code>后解决  </p>
+<p>参考链接:<br><a href="https://www.elastic.co/guide/en/elastic-stack-overview/6.4/field-level-security.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elastic-stack-overview/6.4/field-level-security.html</a>  </p>
+<hr>
+<p>2018-11-16  </p>
+<h1 id="termQuery不返回结果"><a href="#termQuery不返回结果" class="headerlink" title="termQuery不返回结果"></a>termQuery不返回结果</h1><p>emmmmm 一个id是用了dynamic mapping插入,默认使用的是standard分词器.<br>一些id有中划线,分词结果:</p>
+<pre><code>GET /_analyze
+{
+  &quot;analyzer&quot;: &quot;standard&quot;,
+  &quot;text&quot;: &quot;1111-2222-4444-3333-55555&quot;
+}
+</code></pre><pre><code>{
+  &quot;tokens&quot;: [
+    {
+      &quot;token&quot;: &quot;1111&quot;,
+      &quot;start_offset&quot;: 0,
+      &quot;end_offset&quot;: 4,
+      &quot;type&quot;: &quot;&lt;NUM&gt;&quot;,
+      &quot;position&quot;: 0
+    },
+    {
+      &quot;token&quot;: &quot;2222&quot;,
+      &quot;start_offset&quot;: 5,
+      &quot;end_offset&quot;: 9,
+      &quot;type&quot;: &quot;&lt;NUM&gt;&quot;,
+      &quot;position&quot;: 1
+    },
+    {
+      &quot;token&quot;: &quot;4444&quot;,
+      &quot;start_offset&quot;: 10,
+      &quot;end_offset&quot;: 14,
+      &quot;type&quot;: &quot;&lt;NUM&gt;&quot;,
+      &quot;position&quot;: 2
+    },
+    {
+      &quot;token&quot;: &quot;3333&quot;,
+      &quot;start_offset&quot;: 15,
+      &quot;end_offset&quot;: 19,
+      &quot;type&quot;: &quot;&lt;NUM&gt;&quot;,
+      &quot;position&quot;: 3
+    },
+    {
+      &quot;token&quot;: &quot;55555&quot;,
+      &quot;start_offset&quot;: 20,
+      &quot;end_offset&quot;: 25,
+      &quot;type&quot;: &quot;&lt;NUM&gt;&quot;,
+      &quot;position&quot;: 4
+    }
+  ]
+}
+</code></pre><p>然后在代码里使用的是termQuery:  </p>
+<pre><code class="java">SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+searchRequest.types(TYPE_NAME);
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.termQuery(ID, id));
+</code></pre>
+<p>termQuery是不对搜索词分词的…<br>于是就什么都查不出来..<br>解决方式是用dynamic mapping自动生成的keyword field.  </p>
+<p>参考:<br><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html</a>  </p>
+<hr>
+<p>2018-12-14</p>
+<h1 id="处理深分页"><a href="#处理深分页" class="headerlink" title="处理深分页"></a>处理深分页</h1><p>默认的<code>from</code>+<code>size</code>限制是10000,大于这个会报错:  </p>
+<pre><code>{
+  &quot;error&quot;: {
+    &quot;root_cause&quot;: [
+      {
+        &quot;type&quot;: &quot;query_phase_execution_exception&quot;,
+        &quot;reason&quot;: &quot;Result window is too large, from + size must be less than or equal to: [1000000] but was [1000001]. See the scroll api for a more efficient way to request large data sets. This limit can be set by changing the [index.max_result_window] index level setting.&quot;
+      }
+    ],
+</code></pre><p>深分页的操作对coordinator会造成很大的影响,会占用大量heap存放数据并进行排序操作.<br>业务上没有注意,结果就超了… …<br>可以设定<code>index.max_result_window</code>来提高上限.<br>但如果真的要有这么深,还是使用search after比较可靠.又因为是实时业务查询,所以用scroll是不合适的.  </p>
+<p>参考:<br><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html</a><br><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-after.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-after.html</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

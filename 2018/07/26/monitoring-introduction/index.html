@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>监控基础 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">监控基础</p>
+            <br>
+            
+            <p>星期四, 七月 26日 2018, 8:57 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>Monitoring with Prometheus读书笔记<br>原书见:<br><a href="https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/" target="_blank" rel="noopener">https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/</a>  </p>
+<hr>
+<p>监控需要监控技术环境和监控业务情况  </p>
+<p><img src="/images/1244488-20180726204211275-746653901.png" alt></p>
+<h1 id="监控基本原则"><a href="#监控基本原则" class="headerlink" title="监控基本原则"></a>监控基本原则</h1><p>监控需要在开发业务前就进行考虑,结合业务情况和环境,考虑要监控的metric.    </p>
+<p><img src="/images/1244488-20180726204317681-327402975.png" alt>  </p>
+<p>监控设计要从业务逻辑出发 再下沉到应用的监控和操作系统的监控<br>但这不是说通用的系统监控不需要 只是他们不能用来汇报业务价值  </p>
+<p>监控服务的正确性 例如不是单单看health接口是否返回了200 而要确认里面的值  </p>
+<p>不要只使用静态的阈值 阈值应该是根据窗口数据等方式计算获取  </p>
+<p>保存足够多的历史监控数据(用于之后的分析)   </p>
+<p>监控需要容易被设置/部署 需要自动化支持  </p>
+<h1 id="监控机制"><a href="#监控机制" class="headerlink" title="监控机制"></a>监控机制</h1><p>Probe :应用外<br>Introspection:应用内  </p>
+<p>推<br>拉<br>普罗米修斯基本上是基于pull的 但也有push的方式</p>
+<p>监控数据的类型<br>Metrics:时间序列数据 记录应用的度量的状态<br>Logs:应用程序发出的文件事件 通常情况更有用 但这本书不怎么讲 <a href="https://www.logstashbook.com/" target="_blank" rel="noopener">https://www.logstashbook.com/</a>  </p>
+<h1 id="Metrics"><a href="#Metrics" class="headerlink" title="Metrics"></a>Metrics</h1><p>metrics提供了动态的,实时的基础设施状态,帮助你管理环境和给做更好的决定.<br>Metrics are measures of properties of components of software or hardware  </p>
+<p>固定时间间隙收集 -&gt; 颗粒性或者分辨率   </p>
+<h2 id="Metrics类型"><a href="#Metrics类型" class="headerlink" title="Metrics类型"></a>Metrics类型</h2><h3 id="guage"><a href="#guage" class="headerlink" title="guage"></a>guage</h3><p><img src="/images/1244488-20180726204558560-2093206341.png" alt></p>
+<h3 id="counter"><a href="#counter" class="headerlink" title="counter"></a>counter</h3><p>累计数据<br><img src="/images/1244488-20180726204611839-1525545816.png" alt>  </p>
+<h3 id="Histograms"><a href="#Histograms" class="headerlink" title="Histograms"></a>Histograms</h3><p>统计数据<br><img src="/images/1244488-20180726204702984-1305783817.png" alt>  </p>
+<p>其他统计字段:<br>Counter<br>Sum<br>Average<br>Median<br>Percentiles<br>Standard deviation<br>Rates of change  </p>
+<p>平均数的陷阱:<br><img src="/images/1244488-20180726204746075-945944029.png" alt>  </p>
+<p><img src="/images/1244488-20180726204757068-237046767.png" alt>  </p>
+<h1 id="监控方法论"><a href="#监控方法论" class="headerlink" title="监控方法论"></a>监控方法论</h1><h2 id="USE方法"><a href="#USE方法" class="headerlink" title="USE方法"></a>USE方法</h2><p>For every resource, check utilization, saturation, and errors<br>对于每个资源 检查利用率 饱和度和错误<br><a href="http://www.brendangregg.com/USEmethod/use-linux.html" target="_blank" rel="noopener">http://www.brendangregg.com/USEmethod/use-linux.html</a>  </p>
+<h2 id="Google-Four-golden-signals"><a href="#Google-Four-golden-signals" class="headerlink" title="Google Four golden signals"></a>Google Four golden signals</h2><p>Latency<br>Traffic<br>Errors<br>Saturation  </p>
+<h1 id="上下文相关-有用的警报和通知"><a href="#上下文相关-有用的警报和通知" class="headerlink" title="上下文相关 有用的警报和通知"></a>上下文相关 有用的警报和通知</h1><p>Alert和notification是监控的主要输出  </p>
+<ul>
+<li>通知是需要可以指导行动 明确清晰的.  </li>
+<li>在通知上增加上下文信息.  </li>
+<li>只发送有意义的通知.  </li>
+</ul>
+<h1 id="可视化"><a href="#可视化" class="headerlink" title="可视化"></a>可视化</h1><ul>
+<li>清晰地展示数据  </li>
+<li>引导观察者思考背后的实质 而不是专注于视觉效果  </li>
+<li>避免歪曲数据  </li>
+<li>清晰地展示大数据集  </li>
+<li>允许改变视图的粒度而不影响理解</li>
+</ul>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

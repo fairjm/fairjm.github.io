@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>netty常用使用方式 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">netty常用使用方式</p>
+            <br>
+            
+            <p>星期日, 十月 8日 2017, 12:55 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。<br>以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看<code>SimpleChannelInboundHandler</code>是否有一个<code>messageReceived</code>方法 有的话就是5)，netty3是以<code>org.jboss</code>开头为包名。</p>
+<h1 id="统一模板"><a href="#统一模板" class="headerlink" title="统一模板"></a>统一模板</h1><p>大多数情况下使用netty的步骤是定义好<code>EventLoopGroup</code>,定义好<code>Bootstrap</code>(<code>ServerBootstrap</code>)以及使用的channel类型（一般就是<code>NioSocketChannel</code>，服务端是<code>NioServerSocketChannel</code>）。<br>剩下是业务相关，使用的<code>ChannelInitializer</code>和具体的handler。<br>主要就是2+N（N为自定义的handler数量）个类。<br>服务端启动模板（也可以不区分boss和worker 用一个）:  </p>
+<pre><code>public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .childHandler(new MyChannelInitializer());
+            ChannelFuture future = serverBootstrap.bind(8999).sync();
+            future.channel().closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+}
+</code></pre><p>客户端启动模板：</p>
+<pre><code>EventLoopGroup group = new NioEventLoopGroup();
+try {
+    Bootstrap bootstrap = new Bootstrap()
+            .group(group)
+            .channel(NioSocketChannel.class)
+            .handler(new MyChannelInitializer());
+    ChannelFuture future = bootstrap.connect(&quot;localhost&quot;, 8888).sync();
+    future.channel().closeFuture().sync();
+} finally {
+    group.shutdownGracefully();
+}
+</code></pre><p>ChannelInitializer模板（继承ChannelInitializer即可）：  </p>
+<pre><code>public class MyChannelInitializer extends ChannelInitializer&lt;SocketChannel&gt; {
+
+    @Override
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        pipeline.addLast(...);
+    }
+
+}
+</code></pre><p>接下来的例子就以这个模板为骨架，主要涉及到初始化器的代码，启动代码一致。  </p>
+<h1 id="处理Http请求"><a href="#处理Http请求" class="headerlink" title="处理Http请求"></a>处理Http请求</h1><p>netty自带了对用的codec类比较方便。<br><code>pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());</code><br>自己实现的handler最简单的方式用<code>SimpleChannelInboundHandler</code>接收<code>HttpRequest</code>方法即可<br><code>class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt;</code><br>这里简单说下<code>SimpleChannelInboundHandler</code>这个类，他是简化处理接受信息并处理的一个类，主要做两件事。 </p>
+<p>第一件事是根据泛型决定是否处理这个消息，能够处理就自己处理，不行就交给下一个（可以参考<code>acceptInboundMessage</code>和<code>channelRead</code>方法）。<br>第二件事是消息的自动回收（有构造函数支持 默认是true），消息的引用计数会减一（所以在其他地方还要使用记得再retain一下）。<br>使用它可以节省很多冗余代码的编写。<br>一个简单例子：  </p>
+<pre><code>public class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt; {
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
+        System.out.println(msg.getClass());
+        System.out.println(msg.uri());
+        System.out.println(msg.method().name());
+        System.out.println(ctx.channel().remoteAddress());
+        System.out.println(&quot;headers:&quot;);
+        msg.headers().forEach(System.out::println);
+        ByteBuf buf = Unpooled.copiedBuffer(&quot;Hello World&quot;, CharsetUtil.UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, &quot;text/plain&quot;);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
+        ctx.writeAndFlush(response);
+//         ctx.channel().close();
+    }
+}
+</code></pre><p>不过只用这个handler并不能拿到content,还需要配合<code>ChunkedWriteHandler</code>和<code>HttpObjectAggregator</code>得到<code>FullHttpRequest</code>对象。</p>
+<h2 id="处理WebSocket请求"><a href="#处理WebSocket请求" class="headerlink" title="处理WebSocket请求"></a>处理WebSocket请求</h2><p>只需要在上面的基础上增加一个<code>WebSocketServerProtocolHandler</code>即可，完整如下：</p>
+<pre><code>    pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());
+    pipeline.addLast(new ChunkedWriteHandler());
+    pipeline.addLast(new HttpObjectAggregator(8096));
+    pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;));
+</code></pre><p>自己的处理器可以接收并处理<code>WebSocketFrame</code>的子类。  </p>
+<h1 id="自定义文本协议"><a href="#自定义文本协议" class="headerlink" title="自定义文本协议"></a>自定义文本协议</h1><p>netty提供了几个比较方便的用于自定义文本协议的编解码器。  </p>
+<h2 id="基于长度"><a href="#基于长度" class="headerlink" title="基于长度"></a>基于长度</h2><pre><code>pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
+pipeline.addLast(new LengthFieldPrepender(4));
+pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
+pipeline.addLast(new MyHandler());  
+</code></pre><p>上述参数的意义直接搬了文档：  </p>
+<pre><code> lengthFieldOffset   = 0
+ lengthFieldLength   = 2
+ lengthAdjustment    = 0
+ initialBytesToStrip = 2 (= the length of the Length field)
+
+ BEFORE DECODE (14 bytes)         AFTER DECODE (12 bytes)
+ +--------+----------------+      +----------------+
+ | Length | Actual Content |-----&gt;| Actual Content |
+ | 0x000C | &quot;HELLO, WORLD&quot; |      | &quot;HELLO, WORLD&quot; |
+ +--------+----------------+      +----------------+
+</code></pre><h2 id="基于分隔符"><a href="#基于分隔符" class="headerlink" title="基于分隔符"></a>基于分隔符</h2><pre><code>    ChannelPipeline pipeline = ch.pipeline();
+    pipeline.addLast(new DelimiterBasedFrameDecoder(4096, Delimiters.lineDelimiter()));
+    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));  
+</code></pre><p>第二个参数需要一个<code>ByteBuf[]</code>，自己指定下分隔符即可。<br>注意使用这种发消息的时候要带上那个分隔符，不然会处理失败（被当做未结束）。  </p>
+<h1 id="广播实现"><a href="#广播实现" class="headerlink" title="广播实现"></a>广播实现</h1><p>利用了netty提供的一个很便利的类，<code>ChannelGroup</code>.<br>首先要了解一下Channel生命周期函数的调用：<br><code>channel added -&gt; channel registered -&gt; channel active -&gt; channel inactive -&gt; channel unregistered -&gt; channel removed</code><br>我们可以定义一个静态（保证共享和唯一）的<code>ChannelGroup</code>在channel added的时候把对应channel增加到<code>ChannelGroup</code>中即可（但不需要自己移除，这一点他自己实现了）<br>然后利用它的写方法就可以实现广播，或者forEach做下过滤做多播也可以。<br>这个实现和用什么协议无关，主要涉及到<code>ChannelGroup</code>使用。  </p>
+<h1 id="心跳"><a href="#心跳" class="headerlink" title="心跳"></a>心跳</h1><p>netty自带的<code>IdleStateHandler</code>，超时后会向下一个handler发出<code>IdleStateEvent</code>消息，接收并处理即可。 </p>
+<pre><code>@Override
+public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    super.userEventTriggered(ctx, evt);
+    if (evt instanceof IdleStateEvent) {
+        ctx.channel().writeAndFlush(&quot;超时&quot;).addListener((ChannelFuture ch) -&gt; ch.channel().close());
+    }
+}
+</code></pre><p>它细分为3中类型的超时，读、写、读写，通过<code>IdleStateEvent</code>的state属性可以获取，可以单独判断。  </p>
+<p>其他的一些模式会在之后复习和使用过程中不断补完~<br>2017年10月08日00点53分 init<br>2017年10月10日10点02分 更新websocket</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

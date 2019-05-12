@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>kafka学习笔记2:生产者 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">kafka学习笔记2:生产者</p>
+            <br>
+            
+            <p>星期四, 九月 28日 2017, 2:48 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>这次的笔记主要记录一下kafka的生产者的使用和一些重要的参数。<br>文中主要截图均来自<a href="https://www.safaribooksonline.com/library/view/kafka-the-definitive/9781491936153/" target="_blank" rel="noopener">kafka权威指南</a></p>
+<p>主要涉及到两个类<code>KafkaProducer</code>和<code>ProducerRecord</code>.   </p>
+<hr>
+<h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p>生产者的主要架构如下：<br><img src="/images/1244488-20170928020637934-1434965689.png" alt></p>
+<p>首先创建了一个<code>ProducerRecord</code><br>进行序列化 kv变为<code>ByteArray</code><br>进入Partitioner 如果之前指定了分区 那这一步什么都不会做<br>接着将Record放入要被发送到的同样的topic和分区的batch中<br>另一个单独的thread会进行发送操作<br>发送成功会返回<code>RecordMetadata</code>(包含topic 分区 偏移量)<br>失败的话会返回错误 producer会重试几次(retries配置)直到成功或者放弃返回错误  </p>
+<h1 id="构造Kafka-Producer"><a href="#构造Kafka-Producer" class="headerlink" title="构造Kafka Producer"></a>构造Kafka Producer</h1><p>示例代码如下:   </p>
+<pre><code>Properties properties = new Properties();
+properties.put(&quot;bootstrap.servers&quot;, &quot;192.168.56.101:9092&quot;);
+properties.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+properties.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+properties.put(&quot;metadata.fetch.timeout.ms&quot;, 5000);
+KafkaProducer&lt;String, String&gt; producer = new KafkaProducer&lt;String, String&gt;(properties);
+ProducerRecord&lt;String, String&gt; record = new ProducerRecord&lt;String, String&gt;(&quot;CustomerCountry&quot;,
+        &quot;Precision Products&quot;, &quot;France&quot;);
+Future&lt;RecordMetadata&gt; f = producer.send(record);
+</code></pre><p>返回的是一个Future,有以下处理方式:</p>
+<ul>
+<li>不在乎异常 可以不处理  </li>
+<li>直接get拿到结果 同步的获取方式<br>另外send方法也支持传入回调的方式进行异步处理  </li>
+</ul>
+<h2 id="bootstrap-servers"><a href="#bootstrap-servers" class="headerlink" title="bootstrap.servers"></a>bootstrap.servers</h2><p>指定了要连接到的broker,可以用<code>,</code>分隔写入多个，连接broker cluster时不需要写入全部的broker地址，broker本身会同步其他broker的信息，但最少放两个以免写一个对应的broker挂了。<br>在实际使用中，可能会出现<code>org.apache.kafka.common.errors.TimeoutException: Failed to update metadata after 60000 ms.</code>这个错误，请求本身是发送成功的，检查zk topic也建立了，但就是获取不到metadata。<br>这是因为填入的broker服务器和kafka在zk上注册的host不一致导致的(在zk上可以通过<code>get /brokers/ids/{id}</code>查看)，可以通过修改kafka的<code>server.properties</code>的<code>advertised.host.name</code>和<code>advertised.port</code>改正。<br>但是要注意hosts文件会影响，比如配置了自己ip到一个域名上导致失败，注意代码在运行时log打出的实际的值。<br>例如电脑上装了银联控件，结果把localhost映射到了一个奇怪的地址：<br><img src="/images/1244488-20170928022156544-25388878.png" alt></p>
+<p>例子中已经改为了ip。<br>另外实验环境也迁移至了虚拟机上，上一节用bash on windows搭建好的环境不知道为什么无论怎么改都获取不到metadata</p>
+<h2 id="key-serialization"><a href="#key-serialization" class="headerlink" title="key.serialization"></a>key.serialization</h2><p>用来指定key的序列化器(下面会提到)</p>
+<hr>
+<h1 id="配置Producers"><a href="#配置Producers" class="headerlink" title="配置Producers"></a>配置Producers</h1><p>文档：<a href="http://kafka.apache.org/documentation.html#producerconfigs" target="_blank" rel="noopener">http://kafka.apache.org/documentation.html#producerconfigs</a><br>因为用的是0.9.0.1，一些参数在最新版已经被弃用了，自己使用多注意下。<br>这些的默认配置在ProducerConfig的static块中定义：</p>
+<pre><code>static {
+    CONFIG = new ConfigDef().define(BOOTSTRAP_SERVERS_CONFIG, Type.LIST, Importance.HIGH, CommonClientConfigs.BOOSTRAP_SERVERS_DOC)
+                            .define(BUFFER_MEMORY_CONFIG, Type.LONG, 32 * 1024 * 1024L, atLeast(0L), Importance.HIGH, BUFFER_MEMORY_DOC)
+                            .define(RETRIES_CONFIG, Type.INT, 0, between(0, Integer.MAX_VALUE), Importance.HIGH, RETRIES_DOC)
+                            .define(ACKS_CONFIG,
+                                    Type.STRING,
+                                    &quot;1&quot;,
+                                    in(&quot;all&quot;, &quot;-1&quot;, &quot;0&quot;, &quot;1&quot;),
+                                    Importance.HIGH,
+                                    ACKS_DOC)
+    ... ...
+</code></pre><p>这里列举一下比较重要的参数：  </p>
+<h2 id="ACKS"><a href="#ACKS" class="headerlink" title="ACKS"></a>ACKS</h2><p>指定一次写成功需要多少个分区分片必须收到record  </p>
+<ul>
+<li><p>0<br>不会等待broker的返回 不会知道是否成功 高吞吐  </p>
+</li>
+<li><p>1<br>接受leader的 比0安全 但也会有还来不及复制leader就挂掉等导致失败的情况</p>
+</li>
+<li><p>all<br>所有的复本都接收到消息并回应 最安全的模式 但相对的延迟就比较惨了</p>
+</li>
+</ul>
+<p>默认值为1  </p>
+<h2 id="BUFFER-MEMORY"><a href="#BUFFER-MEMORY" class="headerlink" title="BUFFER.MEMORY"></a>BUFFER.MEMORY</h2><p>缓存等待发送的消息<br>如果超过了 会在抛错前等待<code>max.block.ms</code>秒<br>默认32M</p>
+<h2 id="COMPRESSION-TYPE"><a href="#COMPRESSION-TYPE" class="headerlink" title="COMPRESSION.TYPE"></a>COMPRESSION.TYPE</h2><p>默认是none 不压缩<br>可以是snappy gzip lz4<br>snappy用较少的cpu完成还行的压缩 性能和网络带宽的权衡<br>gzip是使用更多的cpu和时间但是压缩更好 网络带宽是主要限制时使用</p>
+<h2 id="RETRIES"><a href="#RETRIES" class="headerlink" title="RETRIES"></a>RETRIES</h2><p>重试次数 默认是0<br>默认间隔100ms (通过<code>retry.backoff.ms</code>控制)<br>不是所有的错误都会重试(<code>RetriableException</code>)<br>不要在业务里做重试  </p>
+<h2 id="BATCH-SIZE"><a href="#BATCH-SIZE" class="headerlink" title="BATCH.SIZE"></a>BATCH.SIZE</h2><p>多个record被发送到同一个分区的时候 producer会进行批处理<br>内存 默认16k<br>满了就发 但不意味着只有满了才会发(见下一个参数)<br>设太大不会导致他的延迟 只不过会用更多的内存<br>设太小就惨了 会导致过于频繁  </p>
+<h2 id="LINGER-MS"><a href="#LINGER-MS" class="headerlink" title="LINGER.MS"></a>LINGER.MS</h2><p>在发送当前batch时等多久额外的信息<br>默认是0<br>producer会在batch满了或者这个时间到了发送 默认是0就意味着即时发送<br>大于0会导致延迟 但是增加吞吐量</p>
+<h2 id="CLIENT-ID"><a href="#CLIENT-ID" class="headerlink" title="CLIENT.ID"></a>CLIENT.ID</h2><p>任何字符串 自己定义 用来打log和metrics</p>
+<h2 id="MAX-IN-FLIGHT-REQUESTS-PER-CONNECTION"><a href="#MAX-IN-FLIGHT-REQUESTS-PER-CONNECTION" class="headerlink" title="MAX.IN.FLIGHT.REQUESTS.PER.CONNECTION"></a>MAX.IN.FLIGHT.REQUESTS.PER.CONNECTION</h2><p>可以设置可以发送多少个请求不等回应 也就是允许同时有多少条消息在空中飞<br>默认是5<br>设大了会增加内存使用 但是提高吞吐<br>设过大了会导致降低吞吐 因为batch变得低效了<br>设置成1可以保证消息即使是在重试下也有序(下面顺序保证中提到)</p>
+<h2 id="TIMEOUT-MS-REQUEST-TIMEOUT-MS-METADATA-FETCH-TIMEOUT-MS"><a href="#TIMEOUT-MS-REQUEST-TIMEOUT-MS-METADATA-FETCH-TIMEOUT-MS" class="headerlink" title="TIMEOUT.MS, REQUEST.TIMEOUT.MS, METADATA.FETCH.TIMEOUT.MS"></a>TIMEOUT.MS, REQUEST.TIMEOUT.MS, METADATA.FETCH.TIMEOUT.MS</h2><p>第1和第3在0.11.0.1版本中被移除了。。可以参考旧文档<br>第2 从服务端等待多久回应(默认30s)</p>
+<h2 id="MAX-BLOCK-MS"><a href="#MAX-BLOCK-MS" class="headerlink" title="MAX.BLOCK.MS"></a>MAX.BLOCK.MS</h2><p>在send()和显式通过partitionsFor()请求元数据中间等待的时间<br>在send buffer满了 以及metadata没返回阻塞</p>
+<h2 id="MAX-REQUEST-SIZE"><a href="#MAX-REQUEST-SIZE" class="headerlink" title="MAX.REQUEST.SIZE"></a>MAX.REQUEST.SIZE</h2><p>一次请求的数据大小限制(限制最大的消息 以及批处理的大小)<br>默认1M 意味着可以同时发1000条1K的消息 或者发一条1M的消息<br>注意上一节broker里也有自己的配置 最好两个配置相匹配  </p>
+<h2 id="RECEIVE-BUFFER-BYTES-SEND-BUFFER-BYTES"><a href="#RECEIVE-BUFFER-BYTES-SEND-BUFFER-BYTES" class="headerlink" title="RECEIVE.BUFFER.BYTES SEND.BUFFER.BYTES"></a>RECEIVE.BUFFER.BYTES SEND.BUFFER.BYTES</h2><p>前者默认32K<br>后者默认128K<br>TCP发送和接受的buffer 用于socket写入和读取数据<br>设置为-1是用OS默认的设置<br>不同数据中心间可以适当提高点这个值因为网络环境会更差</p>
+<h2 id="顺序保证"><a href="#顺序保证" class="headerlink" title="顺序保证"></a>顺序保证</h2><p>kafka保证在一个分区里消息的顺序<br>上述可以发现 如果设置了<code>max.in.flights.request.pre.connection</code>大于1(默认5)<br>并且retries大于0(默认0)那就完蛋了<br>可能写给同一个分区第一条消息写入失败 进入retry<br>但第二条写入成功<br>建议设置per.connection为1 但这会严重限制吞吐 只用于顺序很重要的场合    </p>
+<hr>
+<h1 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h1><p>自定义可以自己实现<code>org.apache.kafka.common.serialization.Serializer</code>接口。  </p>
+<h2 id="使用Apache-Avro"><a href="#使用Apache-Avro" class="headerlink" title="使用Apache Avro"></a>使用Apache Avro</h2><p>优点:</p>
+<ul>
+<li>语言中立的序列化格式  </li>
+<li>兼容性  </li>
+</ul>
+<p>用于写和读的schema必须兼容<br>反序列化器必须能够访问用于写数据的schema  </p>
+<p>保存每个record的schema开销很大(通常是两倍于record)<br>可以将schema保存在一个注册器中管理 只需要在消息中写入对应的id<br>Schema Registry - 有很多开源的选项 可以使用confluent platform<br>文档: <a href="http://docs.confluent.io/current/schema-registry/docs/index.html" target="_blank" rel="noopener">http://docs.confluent.io/current/schema-registry/docs/index.html</a> </p>
+<p>这个可以单独记一个笔记，等实践后再做整理。   </p>
+<hr>
+<h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><p>如果key为null并且默认的分区器被使用 会用round-robin来平衡<br>有key 默认的分区器会hash key(自带的hash算法) 因为要保证同一个key总是写入同样的分区 他会使用所有的分区(不管是否可用) 写到不可用的会报错<br>如果分区数改变了 映射关系就会改变 同样的key在之后可能会到其他分区中<br>所以预先确定分区的数量在这种i情况下比较重要</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

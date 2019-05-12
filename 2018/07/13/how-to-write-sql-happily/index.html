@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>如何更简单方便地执行SQL操作? ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">如何更简单方便地执行SQL操作?</p>
+            <br>
+            
+            <p>星期五, 七月 13日 2018, 9:48 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>现在公司使用<code>mybatis</code>作为DAL层的框架.<br>使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.<br>但在写一些简单SQL的时候会显得非常繁琐:  </p>
+<ol>
+<li>xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);</li>
+<li>原生无法热加载,修改xml后需要重启(可以使用三方实现);  </li>
+<li>xml的动态SQL没有java灵活.    </li>
+</ol>
+<p>上述这些”缺点”仅仅针对写简单的sql,特别是第一条.<br>我对一张表的需求是简单的CRUD,那使用xml就会非常麻烦.  </p>
+<p>最基本的需求:  </p>
+<ul>
+<li>简单安全的SQL拼接方案;</li>
+<li>方便的类型映射.  </li>
+</ul>
+<p>探索了几个方案,接下来一一介绍.  </p>
+<h1 id="JOOQ"><a href="#JOOQ" class="headerlink" title="JOOQ"></a>JOOQ</h1><p>这是考虑的第一个方案,有个没好的愿景,类型安全的SQL,不用担心出现SQL的语法错误.<br>但实际使用遇到了比较麻烦的事情,他的codegen.  </p>
+<pre><code class="xml">        &lt;generate&gt;
+            &lt;pojos&gt;true&lt;/pojos&gt;
+            &lt;daos&gt;true&lt;/daos&gt;
+            &lt;keys&gt;false&lt;/keys&gt;
+            &lt;indexes&gt;false&lt;/indexes&gt;
+            &lt;globalObjectReferences&gt;false&lt;/globalObjectReferences&gt;
+        &lt;/generate&gt;
+</code></pre>
+<p>自己加了<code>pojo</code>和<code>dao</code>,一定会生成<code>Table</code>,<code>Record</code>,洋洋洒洒一堆文件摆在眼前.<br>因为是互联网企业,业务也在发现会相当不稳定,管理这坨生成的代码会很麻烦,而且不简洁.<br>当然也有不是用codegen的方式,但最后感觉还是过于庞大,也比之前直接用mybatis更麻烦了.  </p>
+<h1 id="ActiveJDBC"><a href="#ActiveJDBC" class="headerlink" title="ActiveJDBC"></a>ActiveJDBC</h1><p><code>active record</code>的实践.<br>总体感觉非常简洁清晰,想起了当初用JFinal的感觉.<br>当时看了文档就感觉是他了,不需要自己手写SQL,同时兼容多种方言,单测容易用<code>H2</code>替换运行.<br>但实际使用发现了一个严峻的问题,严峻到不得不放弃他的问题… …<br>他需要<code>Instrument</code>的支持.(子类使用父类的静态方法但是要在字节码中改为子类调用(复制了那些方法到子类… …))<br>且无论是动态方案还是静态方案都需要修改IDE配置.<br>这意味着我只要在现有项目里使用就会有一群开发过来揍我  </p>
+<h1 id="Mybatis-SqlBuilder-amp-SelectProvider"><a href="#Mybatis-SqlBuilder-amp-SelectProvider" class="headerlink" title="Mybatis SqlBuilder&amp;@SelectProvider"></a>Mybatis SqlBuilder&amp;@SelectProvider</h1><p>绕了一圈,回到了原点… …<br>但这个方案的确是满足了解决了上面3个问题.<br><code>org.apache.ibatis.jdbc.SQL</code>本身提供了几个方法方便拼写简单的SQL.<br>例子如下:  </p>
+<pre><code class="java">new SQL()
+    .SELECT(COLUMNS)
+    .FROM(&quot;user AS u&quot;)
+    .INNER_JOIN(&quot;user_info AS ui ON u.user_id = ui.user_id&quot;)
+    .WHERE(&quot;u.user_type = #{userType}&quot;)
+    .WHERE(&quot;u.deleted = 0&quot;)
+    .ORDER(&quot;u.user_id&quot;)
+    .toString()
+    + &quot; LIMIT #{start},#{num}&quot;;
+</code></pre>
+<p>LIMIT要自己拼,因为他不是标准SQL.<br>接下来接口一样定义,用上对应注解(<code>@UpdateProvider</code>,<code>@InsertProvider</code>,<code>@DeleteProvider</code>)  </p>
+<pre><code class="java">    @SelectProvider(type = UserProvider.class, method = &quot;getUserByType&quot;)
+    UserInfo getUserByType(@Param(&quot;userType&quot;) int userType);
+</code></pre>
+<h1 id="JdbcTemplate"><a href="#JdbcTemplate" class="headerlink" title="JdbcTemplate"></a>JdbcTemplate</h1><p>使用<code>NamedParameterJdbcTemplate</code>会感觉好一点,占位符可以用<code>:name</code>的形式.<br>我们spring也一起用,对应的依赖也有.<br>这个也可行,而且写起来还可以,不过他本身缺少SQL拼接方便的工具,适合写简单没有使用条件分支生成SQL的情况.<br>这个网上资料很多,这里稍微列一些常用的需求.  </p>
+<h2 id="根据class自动映射"><a href="#根据class自动映射" class="headerlink" title="根据class自动映射"></a>根据class自动映射</h2><p>可以使用<code>BeanPropertyRowMapper</code>,会按照属性进行SQL字段的关联,java的驼峰会变成小写和下划线的形式进行匹配.<br>例子:</p>
+<pre><code class="java">private static final BeanPropertyRowMapper&lt;User&gt; USER_MAPPER = BeanPropertyRowMapper.newInstance(User.class);  
+
+... ...
+
+MapSqlParameterSource params = new MapSqlParameterSource();
+params.addValue(&quot;userId&quot;, userId);
+List&lt;ServiceApply&gt; applies = mTemplate.query(
+        &quot;SELECT user_id,user_name,created FROM user WHERE user_id=:userId&quot;,
+        params, USER_MAPPER);
+
+</code></pre>
+<h2 id="获取插入ID"><a href="#获取插入ID" class="headerlink" title="获取插入ID"></a>获取插入ID</h2><pre><code class="java">KeyHolder key = new GeneratedKeyHolder();
+mTemplate.update(
+        &quot;INSERT INTO user(user_name,age) VALUES (:name,:age)&quot;,
+        params, key);
+Number keyValue = key.getKey();
+</code></pre>
+<h2 id="批量插入"><a href="#批量插入" class="headerlink" title="批量插入"></a>批量插入</h2><pre><code class="java">List&lt;MapSqlParameterSource&gt; batchParams = names
+        .stream()
+        .distinct()
+        .map(e -&gt; new MapSqlParameterSource(&quot;name&quot;, name))
+        .collect(Collectors.toList());
+mTemplate.batchUpdate(
+        &quot;INSERT IGNORE INTO user(user_name) VALUES (:name)&quot;,
+        batchParams.toArray(new SqlParameterSource[0]));
+</code></pre>
+<hr>
+<p>参考链接:<br><a href="https://github.com/shakarelic/mybatis-reload" target="_blank" rel="noopener">https://github.com/shakarelic/mybatis-reload</a>  </p>
+<p><a href="https://www.jooq.org/" target="_blank" rel="noopener">https://www.jooq.org/</a>  </p>
+<p><a href="http://javalite.io/activejdbc" target="_blank" rel="noopener">http://javalite.io/activejdbc</a>  </p>
+<p><a href="https://zh.wikipedia.org/wiki/Active_Record" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/Active_Record</a>  </p>
+<p><a href="http://www.mybatis.org/mybatis-3/statement-builders.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/statement-builders.html</a>  </p>
+<p><a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.html" target="_blank" rel="noopener">https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.html</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

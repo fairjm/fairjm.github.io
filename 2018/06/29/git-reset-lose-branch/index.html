@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>记一次尴尬的git reset丢失分支故障 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">记一次尴尬的git reset丢失分支故障</p>
+            <br>
+            
+            <p>星期五, 六月 29日 2018, 9:29 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近…似乎一直在踩坑…<br>也不是什么故障,只是把一个分支的功能弄没了,之后在reflog里找到又恢复了.  </p>
+<p>产生原因是有同事错误地把分支B merge到了分支A并push.<br>我直接在分支A上reset到了merge前的一个节点(但这个节点其实是B分支的).<br>这导致分支A的头跑到了B分支上,A本来那个分支没有引用就丢了.<br>先说下解决方法,git reflog找到那个reset,或者直接用<code>git fsck --no-reflogs --unreachable</code>找到那个commit之后直接再reset回去即可.  </p>
+<p>主要原因是git merge之后的log会显示另一个分支的commit记录(毕竟没有真正的分支…).<br>这里简单重现下:  </p>
+<pre><code>*   dacbc52 (HEAD -&gt; master) Merge branch &#39;a&#39;
+|\
+| * 7b83cf6 (a) a commit
+* | 9f4488b master commit
+|/
+* 47a0ab3 init
+</code></pre><p>这样的一个分支情况,master merge了a节点产生2126这个commit.<br>这个时候看一下master的log,信息如下:   </p>
+<pre><code>commit dacbc528153d48f3a210a9673ebc8148cfdb50d3
+Merge: 9f4488b 7b83cf6
+Date:   Fri Jun 29 21:21:10 2018 +0800
+
+    Merge branch &#39;a&#39;
+
+commit 7b83cf6664cd5b84c5f66ef99f0fb39fb5ab57bd
+Date:   Fri Jun 29 21:19:59 2018 +0800
+
+    a commit
+
+commit 9f4488ba008889b583205fc9405f4760150a2337
+Date:   Fri Jun 29 21:18:26 2018 +0800
+
+    master commit
+
+commit 47a0ab3a70e7b4a663f99bc23542a51a90af152c
+Date:   Fri Jun 29 21:18:03 2018 +0800
+
+    init
+</code></pre><p>可以看到a节点上的commit也被包含在了里面….(PS:之前我们使用的是hg,分支的概念有所不同,merge之后查看当前分支只是会显示本分支和merge节点,并且也没有git里的fast-forward概念)  </p>
+<p>误操作就是因为要撤销master的merge,执行了<code>git reset --hard 7b83c</code>(因为刚好是merge下面的第一个节点)<br>执行后的结果:  </p>
+<pre><code>* 7b83cf6 (HEAD -&gt; master, a) a commit
+* 47a0ab3 init
+</code></pre><p>可以看到default的结果已经不复存在了  </p>
+<p>找回的话</p>
+<pre><code>&gt; git reflog
+7b83cf6 HEAD@{0}: reset: moving to 7b83c
+dacbc52 HEAD@{1}: merge a: Merge made by the &#39;recursive&#39; strategy.
+</code></pre><p>可以直接reset回<code>dacbc52</code>再进行正常操作  </p>
+<p>主要原因还是对于git的理解不深再加上之前使用hg的惯性产生了误判.  </p>
+<hr>
+<p>参考资料:<br><a href="https://git-scm.com/book/zh/v1/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E7%BB%B4%E6%8A%A4%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D" target="_blank" rel="noopener">https://git-scm.com/book/zh/v1/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E7%BB%B4%E6%8A%A4%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D</a><br><a href="https://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6" target="_blank" rel="noopener">https://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>使用反射处理依赖不兼容问题 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">使用反射处理依赖不兼容问题</p>
+            <br>
+            
+            <p>星期四, 六月 21日 2018, 3:21 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>来自于最近的一个实际场景中.<br>某个应用的依赖A依赖了B,应用A也直接依赖了B.(简化处理,实际情况还有几层)<br>如下:<br><img src="/images/1244488-20180621152133510-1799988936.png" alt>  </p>
+<p>也是现实中比较常见的一个依赖关系.<br>但有一个问题,应用和A用的B版本不一致,且使用的版本不兼容.<br>不兼容体现在包名发生了变更,新的B的包名被改了,之前的spring配置需要更改才能对新的B有效.<br>这样的依赖关系倒逼着应用升级,不升级会导致依赖A在运行期出现各种符号找不到的错误.(直接依赖覆盖间接依赖)<br>但在升级过程中发现新的依赖去除了一些功能使得在当前应用里无法正常工作.<br>不过运气好的是老依赖的实现在A中可以正常工作.    </p>
+<p>总结一下<br>新的B在应用中无法工作,只能使用老版本里的B,A可以兼容新老的B.(那为什么不把A依赖的B降回去?那是因为其他一些应用已经接了并且升级…)  </p>
+<p>那如何处理呢?<br>通过一些讨论和思考,这样的依赖应该被切断,A不能依赖B.<br><img src="/images/1244488-20180621152153271-1414230010.png" alt>  </p>
+<p>那A如何工作,答案就是使用反射.<br>A这样依赖外部提供的B(其实和maven的provide scope类似,但这里的问题是高低版本兼容….).<br>并且A根据不同的B调用不同的方法.<br>A中代码改动如下:  </p>
+<pre><code class="java">    @PostConstruct
+    public void init() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+        Class clazz = null;
+        try {
+            clazz = Class.forName(&quot;com.b.package1&quot;);
+        } catch (ClassNotFoundException e) {
+            LOG.error(&quot;init - com.b.package1 failed&quot;, e);
+        }
+        if (clazz == null) {
+            try {
+                clazz = Class.forName(&quot;com.b.package2&quot;);
+            } catch (ClassNotFoundException e) {
+                LOG.error(&quot;init - com.b.package2 failed&quot;, e);
+            }
+        }
+        if (clazz == null) {
+            throw new ClassNotFoundException(&quot;dependency not found. please add b &quot;);
+        }
+        usedMethod= clazz.getMethod(&quot;methodName&quot;);
+        bean= applicationContext.getBean(&quot;beanName&quot;, clazz);
+        if (bean== null) {
+            throw new UnsatisfiedDependencyException(this.getClass().getName(), &quot;beanName&quot;,
+                    &quot;bean&quot;, &quot;failed to init&quot;);
+        }
+    }
+</code></pre>
+<p>ps:当前问题因为记录需要被简化了,实际中A作为一个偏底层的依赖去直接依赖应用方直接使用的B本身是不合理的,这个做法纯粹是为了解决眼下的兼容性问题.<br>其次在日常升级中,实现不兼容,方法签名变更等升级大版本号之类就足够了,但如果整个依赖的基础包名都改了的话,最好还是修改artifactId吧…. …</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

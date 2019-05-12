@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>异步/同步,阻塞/非阻塞,单线程/多线程概念梳理 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">异步/同步,阻塞/非阻塞,单线程/多线程概念梳理</p>
+            <br>
+            
+            <p>星期一, 二月 25日 2019, 12:35 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近看了一文说到异步一定是单线程的,顿时就傻眼了,对相关概念和同事进行了一些讨论和总结.<br>文中的描述是以我的理解来说的,可能不一定准确甚至正确,有错欢迎指正.  </p>
+<p>这三个概念我认为是描述不同的维度的,概念正交.    </p>
+<h1 id="异步-同步"><a href="#异步-同步" class="headerlink" title="异步 同步"></a>异步 同步</h1><p>异步和同步是不同的流程设计风格.<br>但存在依赖关系的操作之间是同步的,也就是如果操作B依赖操作A的返回,那么B必须要在A结束后才能执行.<br>比如你要读取文件然后对文件内容进行处理,那么读取内容和处理内容就是同步的.  </p>
+<p>而异步这是操作间没有依赖关系,或者先后顺序并不重要.<br>比如用户登陆要给登陆奖励,在确认用户可登陆后之后的登陆流程和发放奖励间并无依赖关系,那么他们就可以异步执行.  </p>
+<p>这个概念主要描述依赖关系和流程设计.  </p>
+<h1 id="阻塞-非阻塞"><a href="#阻塞-非阻塞" class="headerlink" title="阻塞 非阻塞"></a>阻塞 非阻塞</h1><p>这个概念是描述操作是否会立即返回的.<br>这个概念常常和异步/同步混在一起.<br>同步就一定是阻塞的吗,我觉得这不一定,主要还是取决于同步执行里的各个操作是否是阻塞的.  </p>
+<p>非阻塞操作可以被用在异步API的实现.<br>基于单线程的异步API实现里的操作一般都会要求为非阻塞.  </p>
+<h1 id="单线程-多线程"><a href="#单线程-多线程" class="headerlink" title="单线程 多线程"></a>单线程 多线程</h1><p>这两个概念常和异步 同步混在一起.<br>比如认为异步和多线程绑定的,但其实不然,有很多基于Eventloop的单线程实现.<br>单线程 多线程主要描述的是运行的环境.<br>如图:<br><img src="/images/1244488-20190225002929991-1118096007.png" alt><br>(来源参考3)<br>这张图表述了他们的一种组合.  </p>
+<h1 id="一些实现中相关的概念"><a href="#一些实现中相关的概念" class="headerlink" title="一些实现中相关的概念"></a>一些实现中相关的概念</h1><p>在实现中,为了高效的执行这些概念会被组合起来使用.<br>单线程的异步操作,需要依赖非阻塞操作(不然单个线程就直接阻塞了).而这里异步的目的是为了提高线程的利用率,这在IO密集的应用中比较有效.<br>但如果操作本身是计算密集的,那么单线程的异步操作就没有太大的意义了.  </p>
+<p>而如果无法满足操作都是非阻塞的,那常常会使用多线程来规避主线程(例如服务器中的请求处理线程和GUI中的UI线程)阻塞.<br>这种一般会返回<code>Future</code>等类似的占位符,并提供非阻塞查询结果是否返回,或者支持回调函数.<br>这在java中比较常见,毕竟java世界中的阻塞操作比较多.  </p>
+<p>上述概念和IO的关系.<br>一些对应的API.<br><img src="/images/1244488-20190225003047863-763080176.png" alt><br>要记住的是这些操作和单线程/多线程都没什么关系.<br>更多的内容之前有翻译一篇文章: <a href="https://www.cnblogs.com/fairjm/p/translate-the-various-kinds-of-io-blocking-non.html" target="_blank" rel="noopener">各个类型的IO - 阻塞, 非阻塞,多路复用和异步</a><br>对应语言的各种IO要看使用了系统提供的哪些类型的API.<br>例如Java,在Linux中的AIO是多线程模拟实现的,而在windows下使用了IOCP使用.  </p>
+<p>暂时想到的就是这些,后续有一些想法会陆续补充.  </p>
+<p>再次提醒一下..本文中的不少观点都是自己梳理理解的,不一定准确甚至正确,如有问题欢迎指正 ^_^</p>
+<p>参考资料:<br>1.<a href="https://blog.slaks.net/2014-12-23/parallelism-async-threading-explained/" target="_blank" rel="noopener">https://blog.slaks.net/2014-12-23/parallelism-async-threading-explained/</a>  </p>
+<p>2.<a href="https://stackoverflow.com/questions/41770985/i-o-blocking-in-green-threads" target="_blank" rel="noopener">https://stackoverflow.com/questions/41770985/i-o-blocking-in-green-threads</a>    </p>
+<p>3.<a href="https://stackoverflow.com/questions/748175/asynchronous-vs-synchronous-execution-what-does-it-really-mean" target="_blank" rel="noopener">https://stackoverflow.com/questions/748175/asynchronous-vs-synchronous-execution-what-does-it-really-mean</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

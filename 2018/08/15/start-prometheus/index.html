@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>Prometheus使用入门 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">Prometheus使用入门</p>
+            <br>
+            
+            <p>星期三, 八月 15日 2018, 1:49 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>Monitoring with Prometheus读书笔记<br>原书见:<br><a href="https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/" target="_blank" rel="noopener">https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/</a>  </p>
+<hr>
+<p>摘录了一些内容,稍微整理了下,更详细的内容可以阅读原书.   </p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Prometheus灵感来源于谷歌的borgmon.<br>他的设计专注于最近发生的事,而不是几个星期几个月前的,默认只保存15天的时间序列.  </p>
+<p>内置PromQL查询语言,可以方便进行metric查询和定义新的metric.  </p>
+<p>数据格式</p>
+<pre><code>&lt;time series name&gt;{&lt;label name&gt;=&lt;label value&gt;, ...}  
+</code></pre><p>例子:  </p>
+<pre><code>total_website_visits{site=&quot;MegaApp&quot;, location=&quot;NJ&quot;, instance=&quot;webserver&quot;,job=&quot;web&quot;}
+</code></pre><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>安装过程比较简单,官网下载之后解压即可.<br>windows下可以使用choco安装:  </p>
+<pre><code>choco install prometheus
+</code></pre><p>也可以使用docker运行:  </p>
+<pre><code>docker run -p 9090:9090 prom/prometheus  
+</code></pre><p>解压后自带一个配置文件,启动时带上文件路径即可:  </p>
+<pre><code>prometheus --config.file &quot;/etc/prometheus/prometheus.yml&quot;
+</code></pre><p>(放置在了<code>/etc/prometheus</code>下)  </p>
+<p>默认跑在9090端口.  </p>
+<h1 id="监控容器和节点"><a href="#监控容器和节点" class="headerlink" title="监控容器和节点"></a>监控容器和节点</h1><p>节点(机器)监控可以使用node exporter.<br>下载node exporter 解压 复制到可执行中</p>
+<pre><code>wget https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+$ tar -xzf node_exporter-*
+$ sudo cp node_exporter-*/node_exporter /usr/local/bin/
+</code></pre><p>默认是9100端口,可以通过<code>/metrics</code>访问.<br>收集的数据较多,不需要的指标可以通过<code>--no-模块名</code>禁用,同时一些没有开启的模块可以通过<code>--模块名</code>开启.  </p>
+<p>容器监控可以使用cadvisor  </p>
+<pre><code>docker run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:rw \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --volume=/dev/disk/:/dev/disk:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
+</code></pre><p>监听在8080端口.  </p>
+<p>对应的Prometheus配置修改:  </p>
+<pre><code class="yml">scrape_configs:
+  - job_name: &#39;prometheus&#39;
+    static_configs:
+      - targets: [&#39;localhost:9090&#39;]
+  - job_name: &#39;node&#39;
+    static_configs:
+      - targets: [&#39;138.197.26.39:9100&#39;, &#39;138.197.30.147:9100&#39;, &#39;138.197.30.163:9100&#39;]
+  - job_name: &#39;docker&#39;
+    static_configs:
+      - targets: [&#39;138.197.26.39:8080&#39;, &#39;138.197.30.147:8080&#39;, &#39;138.197.30.163:8080&#39;]
+</code></pre>
+<p>(ip等信息写在targets中)  </p>
+<h2 id="Label"><a href="#Label" class="headerlink" title="Label"></a>Label</h2><p>注意改变一个label或增加一个新的label会创建一个新的time series.  </p>
+<p>对收集的metrics的label进行操作.<br>可以去掉不必要的metrics和label,增加编辑label.  </p>
+<p>有两个阶段可以修改:  </p>
+<ul>
+<li>relabel_configs:用来修改服务发现过来的元数据label.  </li>
+<li>metric_relabel_configs:获得数据存储到磁盘之前操作  </li>
+</ul>
+<p>如图所示:<br><img src="/images/1244488-20180815003536046-1338003383.png" alt></p>
+<p>一些配置(和job_name平级):  </p>
+<pre><code>metric_relabel_configs:
+  - source_labels: [__name__]
+    separator: &#39;,&#39;
+    regex: &#39;(container_tasks_state|container_memory_failures_total)&#39;
+    action: drop
+
+</code></pre><p><code>__name__</code>是metrics的保留label,表示这个metric的名字,这里将这些名字用<code>,</code>拼起来,过滤掉符合正则的名字的metrics.  </p>
+<pre><code>metric_relabel_configs:
+- source_labels: [id]
+  regex: &#39;/docker/([a-z0-9]+);&#39;
+  replacement: &#39;$1&#39;
+  target_label: container_id  
+</code></pre><p>替换掉id符合正则的内容产生另一个名为container_id的label.<br>此外有一个<code>honor_labels</code>的参数可以控制替换后的label和现有重名的问题,默认为false,现有的冲突会加上exported_的前缀.设置为true,会忽略该替换的label.  </p>
+<pre><code>metric_relabel_configs:
+  - regex: &#39;kernelVersion&#39;
+    action: labeldrop
+</code></pre><p>移除掉现有符合正则的label.  </p>
+<h2 id="Metrics"><a href="#Metrics" class="headerlink" title="Metrics"></a>Metrics</h2><h3 id="CPU利用率"><a href="#CPU利用率" class="headerlink" title="CPU利用率"></a>CPU利用率</h3><p>使用node_cpu_seconds_total<br>如图:<br><img src="/images/1244488-20180815012218488-729181577.png" alt></p>
+<p>计算5min为取样每秒的瞬时利用率</p>
+<pre><code>100 - avg (irate(node_cpu_seconds_total{job=&quot;node&quot;,mode=&quot;idle&quot;}[5m])) by (instance) * 100
+</code></pre><p>5m是range vector,表示使用记录的上一个5分钟的数据.<br>irate是瞬时变化率,适合变化较频繁的metric.<br>avg是因为有多个metrics(分别是每核的)  </p>
+<h3 id="CPU饱和度"><a href="#CPU饱和度" class="headerlink" title="CPU饱和度"></a>CPU饱和度</h3><p>node_load<em><br>后面的</em>有1 5 15,表示多少分钟.<br>该metric和核数有关,查看核数可以使用:</p>
+<pre><code>count by (instance)(node_cpu_seconds_total{mode=&quot;idle&quot;})
+</code></pre><h3 id="内存使用"><a href="#内存使用" class="headerlink" title="内存使用"></a>内存使用</h3><p>node_memory_*<br>列出空闲内存  </p>
+<pre><code>(node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)) / node_memory_MemTotal_bytes * 100
+</code></pre><h3 id="内存饱和度"><a href="#内存饱和度" class="headerlink" title="内存饱和度"></a>内存饱和度</h3><p>监控paging in和paging out的内存<br>/proc/vmstat<br>node_vmstat_pswpin<br>node_vmstat_pswpout<br>单位是KB  </p>
+<pre><code>1024 * sum by (instance) (
+       (rate(node_vmstat_pgpgin[1m])
+       + rate(node_vmstat_pgpgout[1m]))
+)
+</code></pre><p>算出每分钟的变化量<br>rate是平均变化率,相比irate适合变化幅度不剧烈的数据.  </p>
+<h3 id="磁盘使用率"><a href="#磁盘使用率" class="headerlink" title="磁盘使用率"></a>磁盘使用率</h3><p>node_filesystem_*<br>使用率:</p>
+<pre><code>(node_filesystem_size_bytes{mountpoint=&quot;/&quot;} - node_filesystem_free_bytes{mountpoint=&quot;/&quot;}) / node_filesystem_size_bytes{mountpoint=&quot;/&quot;} * 100
+</code></pre><p>可以用=~匹配正则 相对的有!~</p>
+<pre><code>predict_linear(node_filesystem_free_bytes{job=&quot;node&quot;}[1h], 4*3600) &lt; 0
+</code></pre><p>通过1h的估计量 看看4h后是否会用完</p>
+<h3 id="exporter的可用性监控"><a href="#exporter的可用性监控" class="headerlink" title="exporter的可用性监控"></a>exporter的可用性监控</h3><p>可以使用up.  </p>
+<pre><code>up{job=&quot;node&quot;}
+</code></pre><p>返回1表示node_exporter存活.  </p>
+<h2 id="持久化Query"><a href="#持久化Query" class="headerlink" title="持久化Query"></a>持久化Query</h2><p>除了直接查询,query还可以在其他场合持久化使用:  </p>
+<ul>
+<li>Recording rule - 通过query创建新的metrics</li>
+<li>Alerting rules - 生成报警</li>
+<li>Visualization - 可视化  </li>
+</ul>
+<p>设置prometheus.yml的rules_files块,增加一个新的rule:  </p>
+<pre><code>rule_files:
+  - &quot;rules/node_rules.yml&quot;
+</code></pre><p>对应的该文件内容如下:  </p>
+<pre><code>groups:
+- name: node_rule
+  rules:
+  - record: instance:node_cpu:avg_rate5m
+    expr: 100 - avg (irate(node_cpu_seconds_total{job=&quot;node&quot;,mode=&quot;idle&quot;}[5m])) by (instance) * 100
+</code></pre><p>配置文件修改后可以使用<code>promtool</code>的对应命令,比如<code>promtool check rules node_rules.yml</code>进行检查.  </p>
+<p>可以在Prometheus上通过<code>/rules</code>查看:<br><img src="/images/1244488-20180815013756421-454186948.png" alt></p>
+<h2 id="可视化"><a href="#可视化" class="headerlink" title="可视化"></a>可视化</h2><p>使用grafana<br>centos下安装:</p>
+<pre><code>wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2-1.x86_64.rpm 
+sudo yum localinstall grafana-5.2.2-1.x86_64.rpm 
+</code></pre><p>配置在<code>/etc/grafana/grafana.ini</code>.<br>通过<code>sudo service grafana-server start</code>启动服务.<br>默认使用3000端口.<br>默认用户名和密码在配置文件,为admin:admin.<br>登陆后增加数据源选择Prometheus即可.<br>然后可以新增dashboard,配置对应的查询:<br><img src="/images/1244488-20180815014142829-114979814.png" alt></p>
+<hr>
+<p>文中可能会有不少错误,欢迎提出.<br>原书的内容更为详尽和丰富,有兴趣的可以阅读原书.  </p>
+<hr>
+<p>参考资料:<br><a href="https://prometheus.io/docs/prometheus/latest/getting_started/" target="_blank" rel="noopener">https://prometheus.io/docs/prometheus/latest/getting_started/</a>   </p>
+<p><a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener">https://github.com/prometheus/node_exporter</a></p>
+<p><a href="https://github.com/google/cadvisor" target="_blank" rel="noopener">https://github.com/google/cadvisor</a> </p>
+<p><a href="https://grafana.com/" target="_blank" rel="noopener">https://grafana.com/</a>  </p>
+<p><a href="https://legacy.gitbook.com/book/songjiayang/prometheus/details" target="_blank" rel="noopener">https://legacy.gitbook.com/book/songjiayang/prometheus/details</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

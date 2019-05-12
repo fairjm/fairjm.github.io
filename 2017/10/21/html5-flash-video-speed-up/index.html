@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>几种方式加速网页视频播放速度 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">几种方式加速网页视频播放速度</p>
+            <br>
+            
+            <p>星期六, 十月 21日 2017, 6:56 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>现在有不少视频网站,自带了播放加速功能,例如油管,bilibili,慕课等等.节省了很多看视频的时间,特别是看一些技术教程类的视频,不管是念ppt还是手把手演示.  </p>
+<p>在自己付费的一些网站中,一些是自带播放器不支持视频加速的.因为已经被加速惯坏,变得很不习惯,今天特意研究了一下,对于几种形式给出一些解决方法.  </p>
+<h1 id="html5播放器"><a href="#html5播放器" class="headerlink" title="html5播放器"></a>html5播放器</h1><p>主要标志是<code>&lt;video&gt;</code>,这种是最方便实现加速的,因为原生支持.<br>主要依靠这两个属性:  </p>
+<blockquote>
+<p>defaultPlaybackRate<em> (float): The playback speed at which the video should be played<br>playbackRate</em> (float): The current playback speed: 1.0 is normal, 2.0 is two times faster forward, -3.0 is three times faster backwards and so on   </p>
+</blockquote>
+<p>可以自己在console中修改实现(<a href="https://stackoverflow.com/questions/3027707/how-to-change-the-playing-speed-of-videos-in-html5" target="_blank" rel="noopener">来源</a>):  </p>
+<pre><code>/* play video twice as fast */
+document.querySelector(&#39;video&#39;).defaultPlaybackRate = 2.0;
+document.querySelector(&#39;video&#39;).play();
+
+/* now play three times as fast just for the heck of it */
+document.querySelector(&#39;video&#39;).playbackRate = 3.0;  
+</code></pre><p>对应的插件chrome市场也有,用的比较多的有<code>video speed controller</code>.<br><a href="https://chrome.google.com/webstore/detail/video-speed-controller/nffaoalbilbmmfgbnbgppjihopabppdk" target="_blank" rel="noopener">市场地址</a>  </p>
+<p><a href="https://github.com/igrigorik/videospeed" target="_blank" rel="noopener">github</a></p>
+<h1 id="flash播放器"><a href="#flash播放器" class="headerlink" title="flash播放器"></a>flash播放器</h1><p>比较头疼的一个,chrome市场中也没有找到对应的插件.<br>比较早之前傲游浏览器做过类似功能,实现的具体讨论见 <a href="https://www.zhihu.com/question/22797950?sort=created" target="_blank" rel="noopener">新版傲游主打的「马上看」是如何实现对视频广告的快进的？</a>.<br>不过这个功能已经凉了无法使用.<br>网上其他比较多的方案是<a href="http://www.enounce.com/myspeed" target="_blank" rel="noopener">myspeed</a>.不过是收费软件,并且一切反馈里表示看一会儿就挂了.<br>那只能用下载的方式拿到源文件,然后再用本地播放器比如potplayer等加速了.<br>但一些网站采用付费课程的形式,做了相应的举措防止用户下载,这样就感觉无计可施了.  </p>
+<p>不过有一些迂回的方式,这类网站还在使用flash没有升级到html5,但在mac上使用flash并不方便,所以他们可能为了mac或者iOS的用户采用了其他的播放方式.  </p>
+<p>今天遇到了一个这样的例子:  </p>
+<pre><code>if(isMobile() &amp;&amp; isSafari() )
+{
+
+ $(&quot;#player&quot;).html(&#39;&lt;video src=&quot;&#39;+vodadd_m3+&#39;&quot; class=&quot;videoimg&quot;  controls=&quot;controls&quot;&gt;&lt;/video&gt;&#39;);    
+}
+else
+{
+    var fls = flashChecker();
+
+    if (fls!=null &amp;&amp; !fls.f)
+    {
+        alert(&quot;请安装flash播放控件,并使用QQ浏览器观看！&quot;);
+
+    }
+
+ $(&quot;#player&quot;).html(&#39; &lt;embed src=&quot;&#39;+vodadd+&#39;&quot; quality=&quot;high&quot;  class=&quot;videoimg&quot;   allowScriptAccess=&quot;always&quot; allownetworking=&quot;all&quot; &#39;+
+&#39;allowfullscreen=&quot;true&quot; type=&quot;application/x-shockwave-flash&quot; wmode=&quot;window&quot; pluginspage=&quot;http://www.macromedia.com/go/getflashplayer&quot;&gt;&lt;/embed&gt;&#39;);    
+
+}
+</code></pre><p>js里有增加<code>video</code>标签的代码! 这样就转换到了上面的html5播放器的解决方法了.<br><code>isMobile</code>和<code>isSafari</code>的判断用UA就可以糊弄过去了.(chrome F12设备选择ipad即可, 或者用<code>Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10</code>)<br>然额并打不开,因为他又使用了<code>m3u8</code>这种格式,所以才在js里判断safari.<br>但有对应chrome插件支持,在应用市场安装<code>Native HLS Playback</code>在页面点击<code>play embedded</code>即可.<br>这样因为之前又装了<code>video speed controller</code>,就出现了调整速度的选项.<br>至此在这种特殊情况下的flash播放问题也解决了.  </p>
+<p>不过针对只有flash播放器的环境还是没找到合适的解决方法.<br>但可以通过查看判断的代码,改变UA等方式再找找有没有可以迂回的方式.</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

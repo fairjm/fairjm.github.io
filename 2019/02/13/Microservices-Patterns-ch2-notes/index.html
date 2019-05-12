@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>微服务模式笔记:服务分解策略 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">微服务模式笔记:服务分解策略</p>
+            <br>
+            
+            <p>星期三, 二月 13日 2019, 1:15 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>Microservice Patterns第二章的读书笔记<br>原章节链接: <a href="https://learning.oreilly.com/library/view/microservices-patterns/9781617294549/kindle_split_010.html" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/microservices-patterns/9781617294549/kindle_split_010.html</a>  </p>
+<p>Decomposition strategies </p>
+<p>微服务最关键的挑战 也就是微服务的本质是如何将应用的功能分解到服务中去<br>服务是业务相关而不是技术相关</p>
+<h1 id="2-1-What-is-the-microservice-architecture-exactly"><a href="#2-1-What-is-the-microservice-architecture-exactly" class="headerlink" title="2.1. What is the microservice architecture exactly?"></a>2.1. What is the microservice architecture exactly?</h1><h2 id="2-1-1-What-is-software-architecture-and-why-does-it-matter"><a href="#2-1-1-What-is-software-architecture-and-why-does-it-matter" class="headerlink" title="2.1.1. What is software architecture and why does it matter?"></a>2.1.1. What is software architecture and why does it matter?</h2><p>应用架构是将应用分解成各个部分(元素)和这些部分间的关系</p>
+<p>软件架构的4+1 view model<br>简单理解就是从几个角度来描述架构<br><img src="/images/1244488-20190213011614249-992071651.png" alt></p>
+<p><a href="www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf">www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf</a></p>
+<ul>
+<li>Logical view : 开发者创建的软件元素。就像类和包 类之间的继承 关联和依赖</li>
+<li>Implementataion view: 构建系统的产出。比如java是jar或者war</li>
+<li>Process view:运行时组件.每个元素都是一个进程，和各个进程间的进程间通信。</li>
+<li>Deployment：进程是如何映射到机器的。</li>
+</ul>
+<p>架构对于功能需求基本没有什么帮助<br>但架构又是重要的 因为他让应用满足第二种需求: 服务质量(quality of service,QoS)需求</p>
+<h2 id="2-1-2-Overview-of-architectural-styles"><a href="#2-1-2-Overview-of-architectural-styles" class="headerlink" title="2.1.2. Overview of architectural styles"></a>2.1.2. Overview of architectural styles</h2><p>一种特定的架构提供有限的元素(组件)调色盘和关系(connectors)<br>你从中定义出应用架构的视图</p>
+<h3 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h3><p>定义了三层:</p>
+<ul>
+<li>Presentation layer: 包含实现了用户界面和额外的API的代码</li>
+<li>Business logic layer： 包含业务逻辑</li>
+<li>Persistence layer：包含和数据库交互的逻辑</li>
+</ul>
+<p>但是也有明显的缺点：</p>
+<ul>
+<li>单一的展示层</li>
+<li>单一的持久层</li>
+<li>定义的业务逻辑依赖于持久层 离开数据库无法测试<br>会存在依赖倒置，业务层定义的数据访问接口最后需要持久层定义DAO类去实现(低层依赖高层所提供的接口)</li>
+</ul>
+<h3 id="六边形架构"><a href="#六边形架构" class="headerlink" title="六边形架构"></a>六边形架构</h3><p>将业务放在了最中心<br><code>inbound adapter</code><br><code>outbound adapter</code><br>业务逻辑不依赖于adapter 相反是adapter依赖于业务逻辑<br><img src="/images/1244488-20190213010815889-2062967823.png" alt>  </p>
+<p>一个业务逻辑有一个或多个<code>ports</code><br>一个<code>port</code>定义了一系列业务逻辑和外部交互的操作</p>
+<p>六边形架构最大的好处是将展示层和数据访问逻辑从业务逻辑中解耦</p>
+<h2 id="2-1-3-The-microservice-architecture-is-an-architectural-style"><a href="#2-1-3-The-microservice-architecture-is-an-architectural-style" class="headerlink" title="2.1.3. The microservice architecture is an architectural style"></a>2.1.3. The microservice architecture is an architectural style</h2><p>单体架构在implement view就是一个单独可执行的jar或war<br><a href="http://microservices.io/patterns/monolithic.html" target="_blank" rel="noopener">http://microservices.io/patterns/monolithic.html</a></p>
+<p><a href="http://microservices.io/patterns/microservices.html" target="_blank" rel="noopener">http://microservices.io/patterns/microservices.html</a><br><img src="/images/1244488-20190213010839549-1161206549.png" alt></p>
+<h3 id="什么是服务"><a href="#什么是服务" class="headerlink" title="什么是服务"></a>什么是服务</h3><p>服务是独立的 无依赖的可部署软件组件 实现了一些有用的功能<br><img src="/images/1244488-20190213010850162-1923323128.png" alt></p>
+<p>不同服务间只能通过API调用 不像单体还可以通过代码</p>
+<h3 id="松耦合"><a href="#松耦合" class="headerlink" title="松耦合"></a>松耦合</h3><p><a href="https://en.wikipedia.org/wiki/Loose_coupling" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Loose_coupling</a><br>服务间的交互只通过API 封装细节</p>
+<h3 id="共享库"><a href="#共享库" class="headerlink" title="共享库"></a>共享库</h3><p>只在不太可能会发生变化的地方使用共享库<br>和具体业务无关 通用的功能上</p>
+<h3 id="服务的大小不重要"><a href="#服务的大小不重要" class="headerlink" title="服务的大小不重要"></a>服务的大小不重要</h3><p>和组织结构相关</p>
+<h1 id="2-2-Defining-an-application’s-microservice-architecture"><a href="#2-2-Defining-an-application’s-microservice-architecture" class="headerlink" title="2.2. Defining an application’s microservice architecture"></a>2.2. Defining an application’s microservice architecture</h1><p>3步定义应用的微服务架构<br>这里只是展示一个例子 现实中会有更多的问题<br>需要迭代等<br><img src="/images/1244488-20190213010902827-949019283.png" alt>  </p>
+<p>第一步找到服务的具体操作 这里定义为了<code>system operation</code><br>其实也就是找到各个请求和回应(或者找到各个事件)<br>服务拆分的一些阻碍:  </p>
+<ul>
+<li>网络延迟</li>
+<li>服务间的同步调用降低了可用性</li>
+<li>在不同服务间维持数据一致性</li>
+</ul>
+<h2 id="2-2-1-Identifying-the-system-operations"><a href="#2-2-1-Identifying-the-system-operations" class="headerlink" title="2.2.1. Identifying the system operations"></a>2.2.1. Identifying the system operations</h2><p>从应用的需求出发 包括user story和对应的用户场景</p>
+<p>有两种类型的<code>system operation</code><br>commands:创建 更新和删除数据<br>queries: 查询数据</p>
+<p>分析user stories和场景中的动词<br>一个例子:<br><img src="/images/1244488-20190213011117033-940471440.png" alt></p>
+<h2 id="2-2-2-Defining-services-by-applying-the-Decompose-by-business-capability-pattern"><a href="#2-2-2-Defining-services-by-applying-the-Decompose-by-business-capability-pattern" class="headerlink" title="2.2.2. Defining services by applying the Decompose by business capability pattern"></a>2.2.2. Defining services by applying the Decompose by business capability pattern</h2><p>通过业务能力分解<br><a href="http://microservices.io/patterns/decomposition/decompose-by-business-capability.html" target="_blank" rel="noopener">http://microservices.io/patterns/decomposition/decompose-by-business-capability.html</a>  </p>
+<p><img src="/images/1244488-20190213011136593-1822789472.png" alt></p>
+<p>业务能力 子能力以及与服务的对应</p>
+<p>但业务变迁<br>频繁的RPC带来的性能损耗<br>会带来一定的阻碍  </p>
+<h2 id="2-2-3-Defining-services-by-applying-the-Decompose-by-sub-domain-pattern"><a href="#2-2-3-Defining-services-by-applying-the-Decompose-by-sub-domain-pattern" class="headerlink" title="2.2.3. Defining services by applying the Decompose by sub-domain pattern"></a>2.2.3. Defining services by applying the Decompose by sub-domain pattern</h2><p>DDD<br>subdmain<br>bounded context<br><a href="http://microservices.io/patterns/decomposition/decompose-by-subdomain.html" target="_blank" rel="noopener">http://microservices.io/patterns/decomposition/decompose-by-subdomain.html</a></p>
+<p><img src="/images/1244488-20190213011153564-1888824784.png" alt></p>
+<h2 id="2-2-4-Decomposition-guidelines"><a href="#2-2-4-Decomposition-guidelines" class="headerlink" title="2.2.4. Decomposition guidelines"></a>2.2.4. Decomposition guidelines</h2><p>一些分解的原则<br>可以沿用一些OO里的原则</p>
+<h3 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h3><h3 id="共同封闭原则-Common-Closure-Principle"><a href="#共同封闭原则-Common-Closure-Principle" class="headerlink" title="共同封闭原则(Common Closure Principle)"></a>共同封闭原则(Common Closure Principle)</h3><p>因为一个相同的原因导致两个类需要修改 这两个类应该在一个包下<br>对应于微服务 把要因为同一个原因修改的组件放到同一个服务里去</p>
+<p>通过业务能力和子域 结合SRP和CCP是一个很好的分解一个应用到服务的技术<br>为了应用他们成功地开发微服务架构 你必须解决一些事务管理和跨进程通信问题</p>
+<h2 id="2-2-5-Obstacles-to-decomposing-an-application-into-services"><a href="#2-2-5-Obstacles-to-decomposing-an-application-into-services" class="headerlink" title="2.2.5. Obstacles to decomposing an application into services"></a>2.2.5. Obstacles to decomposing an application into services</h2><p>一些阻碍:</p>
+<ul>
+<li>网络延迟</li>
+<li>同步通信导致的可用性降低</li>
+<li>跨服务的数据一致性维护</li>
+<li>获取数据的一致性视图</li>
+<li>上帝类阻止分解</li>
+</ul>
+<h3 id="网络延迟"><a href="#网络延迟" class="headerlink" title="网络延迟"></a>网络延迟</h3><p>网络延迟是分布式系统长期困扰的问题.<br>服务拆解之后可能会发现有大量的服务间的往返通信<br>可以提供批处理API在一次往返中<br>但一些其他场景 可能就需要整合服务了</p>
+<h3 id="同步通信导致的可用性降低"><a href="#同步通信导致的可用性降低" class="headerlink" title="同步通信导致的可用性降低"></a>同步通信导致的可用性降低</h3><p>改进方法是异步消息传输</p>
+<h3 id="跨服务的数据一致性维护"><a href="#跨服务的数据一致性维护" class="headerlink" title="跨服务的数据一致性维护"></a>跨服务的数据一致性维护</h3><p>涉及到分布式事务 saga 最终一致性</p>
+<h3 id="获取数据的一致性视图"><a href="#获取数据的一致性视图" class="headerlink" title="获取数据的一致性视图"></a>获取数据的一致性视图</h3><p>实践中一般不会是太大的问题</p>
+<h3 id="上帝类阻止分解"><a href="#上帝类阻止分解" class="headerlink" title="上帝类阻止分解"></a>上帝类阻止分解</h3><p>上帝类(god classes)是一个庞大的类 在整个项目中被贯穿使用<br>一般都是为了实现了一个应用不同方面的业务逻辑 有大量的field<br><img src="/images/1244488-20190213011219565-1974762110.png" alt></p>
+<p>方案1:<br>提供一个库 并创建一个中央的order数据库<br>问题是紧耦合…所有的服务都要连到这个库</p>
+<p>方案2:<br>封装order数据库到order服务<br>这样就把他变为了类似数据库API的服务 只是为了提供order数据库的访问而存在</p>
+<p>方案3:<br>使用DDD 将order的概念分解 各个子域有自己的order<br><img src="/images/1244488-20190213011237612-887560591.png" alt></p>
+<p>但这样会影响用户体验 在用户体验和多个实际模型间要有一种翻译</p>
+<h2 id="2-2-6-Defining-service-APIs"><a href="#2-2-6-Defining-service-APIs" class="headerlink" title="2.2.6. Defining service APIs"></a>2.2.6. Defining service APIs</h2><p>定义服务API<br>他的操作和事件</p>
+<p>基于两点:<br>1.<code>System operation</code>需要<br>这个API可能是被客户端直接调用 也可能是服务端直接调用 用来完成这个服务里的某个具体操作  </p>
+<p>2.支持服务间协作<br>为其他服务的实现提供一些帮助</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

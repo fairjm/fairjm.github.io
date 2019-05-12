@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>工作总结 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">工作总结</p>
+            <br>
+            
+            <p>星期二, 六月 26日 2018, 11:05 上午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>一直想写这篇,但是持续拖延… …<br>主要总结下这几年做的一些较大且完整的功能,过于零散的小功能以及和公司业务强相关的东西就不做记录了.<br>顺序是新的在前,旧的在后,不断补充,就当自己的总结.<br>都是后端相关的工作.<br>实习的时候参与网站社区相关开发,毕业之后短时间参与了一个项目的零碎开发,之后一直做App后端相关的开发工作,今年年初转到对商家服务的组.<br>基础技术是<code>spring</code>,<code>mybatis</code>之类的就不每个都写了.    </p>
+<p>2014年实习<br>网站功能后端开发<br>网站新版社区后端开发<br>后端团队为3-4人  </p>
+<p>2015.6-2018.1:<br>App后端开发<br>主要涉及面向ToC的三个App和面向ToB的一个App<br>后端团队为2人(后来增加为3人)</p>
+<p>2018.1 - 至今<br>Saas产品开发  </p>
+<h2 id="消息中心服务"><a href="#消息中心服务" class="headerlink" title="消息中心服务"></a>消息中心服务</h2><p>2018年10月 - 12月<br>使用技术: <code>ES</code>, <code>Akka</code><br>建设外部消息服务(短信,邮件,语音通知,企业微信等)的访问服务.<br>因为对发送记录有检索和统计的需求,且发送量比较大,短信记录几十w条每月增加,保留短信原文.使用ES作为后备存储.<br>提供多家运营商的,且对发送时间有限制,使用akka封装各个发送端.  </p>
+<hr>
+<h2 id="企业库项目"><a href="#企业库项目" class="headerlink" title="企业库项目"></a>企业库项目</h2><p>2018年8月<br>与网站ToC端合作,对方增加普通用户录入企业信息入口,提交的数据提供给Saas端.<br>主要功能为公司搜索(使用opensearch 数据库查询为后备),审核状态查询,后台审核功能.    </p>
+<hr>
+<h2 id="权限重构"><a href="#权限重构" class="headerlink" title="权限重构"></a>权限重构</h2><p>2018上半年<br>账号体系分为根账号和子账号,子账号权限继承自根账号硬编码排除部分.之后需求是根账号可以管理角色和分配角色给子账号.<br>对这一模块进行了重构,建立新的角色服务,引入了角色体系,表面是RBAC实现,但实际实现为了后期灵活(比如产品要直接给账号加权限)使用了角色,权限引用次数的设计.<br>并增加对应的中台服务.</p>
+<hr>
+<h2 id="任务体系"><a href="#任务体系" class="headerlink" title="任务体系"></a>任务体系</h2><p>2018上半年<br>使用技术:<code>kafka</code>,<code>redis</code>.<br>完成任务-积分-等级的体系.<br>任务定义包括新手任务(只能完成一次),周期任务(每段周期内完成n次),周期积分阶梯任务(每段时间内完成n次,不同的n积分阶梯不同).<br>运用原有的<code>CDC</code>模块,订阅kafka消息,部分任务完成的事件监听表变化实现,新手任务和周期任务立即结算积分,周期积分阶梯任务使用定时器+redis全局锁实现.<br>后续完成积分抽奖功能,对接现有的抽奖中台.    </p>
+<hr>
+<h2 id="数据统计-接手"><a href="#数据统计-接手" class="headerlink" title="数据统计(接手)"></a>数据统计(接手)</h2><p>2018上半年<br>使用技术:<code>ES</code>,<code>mongo</code>,<code>spark</code><br>原本负责人调走,接手维护改进的工作.<br>整个数据模块基于mongo+ES+spark完成,数据源包括数据库和kafka消息.<br>使用ETL导入带ES,spark进行计算后结果写入mongo.<br>主要优化了几个历史遗留的性能问题和bug,了解整个的设计思想.<br>写了一篇总结:<br><a href="https://www.cnblogs.com/fairjm/p/painful-to-maintain-data-statistic-system.html" target="_blank" rel="noopener">https://www.cnblogs.com/fairjm/p/painful-to-maintain-data-statistic-system.html</a>  </p>
+<hr>
+<h2 id="规则引擎"><a href="#规则引擎" class="headerlink" title="规则引擎"></a>规则引擎</h2><p>2017年下半年<br>使用技术:<code>groovy</code><br>使用groovy的scriptEngine实现了一个简单的动态脚本.<br>本来想用于一些动态业务规则的配置,不过还没有投入到业务中去.<br>最初版本为: <a href="https://github.com/fairjm/common-rules" target="_blank" rel="noopener">https://github.com/fairjm/common-rules</a> .   </p>
+<hr>
+<h2 id="feed流"><a href="#feed流" class="headerlink" title="feed流"></a>feed流</h2><p>2017年下半年<br>使用技术:<code>kafka</code><br>之前做过一版使用redis存储触发事件的实体id(发帖就存入帖子id),每个用户一个list,支持显示1000条动态.<br>这一版是一个新的业务场景,要求的数据量比之前大,考虑之后放在redis里不合适,和组内另一位同事合作完成.<br>最初实现采用了推的设计,每个用户有自己的timeline和feed队列(存储于数据库, feed根据用户id分表分库).<br>timeline队列对应自己发的内容,自己的时间线,feed是关注的人的内容,是关注的人的timeline的副本(两者格式类似).<br>用户完成动作之后使用kafka推送到消息(包含feed所需数据)到feed服务并写入.<br>上线之后原开发组被拆了,没有进一步改进.  </p>
+<h2 id="网站安全相关"><a href="#网站安全相关" class="headerlink" title="网站安全相关"></a>网站安全相关</h2><h2 id="App-扫码登录"><a href="#App-扫码登录" class="headerlink" title="App 扫码登录"></a>App 扫码登录</h2><h2 id="图片PK活动"><a href="#图片PK活动" class="headerlink" title="图片PK活动"></a>图片PK活动</h2><h2 id="App-AB-test模块"><a href="#App-AB-test模块" class="headerlink" title="App AB test模块"></a>App AB test模块</h2><h2 id="设计购买业务-接手"><a href="#设计购买业务-接手" class="headerlink" title="设计购买业务(接手)"></a>设计购买业务(接手)</h2><h2 id="短信服务重构"><a href="#短信服务重构" class="headerlink" title="短信服务重构"></a>短信服务重构</h2><h2 id="redis监控"><a href="#redis监控" class="headerlink" title="redis监控"></a>redis监控</h2><h2 id="社区编辑器后端"><a href="#社区编辑器后端" class="headerlink" title="社区编辑器后端"></a>社区编辑器后端</h2><hr>
+<h2 id="业务思考"><a href="#业务思考" class="headerlink" title="业务思考"></a>业务思考</h2><hr>
+<p>2018-06-26 init</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

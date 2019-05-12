@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+</head>
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("/images/index.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2"></p>
+            <br>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+    
+  <div class="container">
+    <div class="py-5 z-depth-3 main">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-10 offset-1">
+            
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/06/22/9211629/" class="h4" style="font-weight: 700;">记一次令人窒息的线上fullgc调优</a>
+    
+      <p class="mb-1">今天第二篇采坑了… …现场因为处理太急促没有保留,而且是一旁协助,没有收集到所有信息实在是有些遗憾…只能靠记忆回想一些细节  
+
+情况是一台服务器一启动就开始full gc,短短1分钟可以有几十次的full gc.主要几个配置参数为-Xmx2g -XX:NewRatio=3(CMS相关和其他的和这次无关不列了) 很简单的参数.下意识dump了heap,结果并没什么特别明显的问题.在想是不是内存不够,加到3g还是一样的问题.  
+那似乎只能看是不是业务代码有内存泄漏了.用jmap -histo:live看了下也是很常见的一些类(而且上面还做过heap分析).  
+开始陷入沉思,突然发现了一个诡异...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-22
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/06/21/9209258/" class="h4" style="font-weight: 700;">使用反射处理依赖不兼容问题</a>
+    
+      <p class="mb-1">来自于最近的一个实际场景中.某个应用的依赖A依赖了B,应用A也直接依赖了B.(简化处理,实际情况还有几层)如下:  
+也是现实中比较常见的一个依赖关系.但有一个问题,应用和A用的B版本不一致,且使用的版本不兼容.不兼容体现在包名发生了变更,新的B的包名被改了,之前的spring配置需要更改才能对新的B有效.这样的依赖关系倒逼着应用升级,不升级会导致依赖A在运行期出现各种符号找不到的错误.(直接依赖覆盖间接依赖)但在升级过程中发现新的依赖去除了一些功能使得在当前应用里无法正常工作.不过运气好的是老依赖的实现在A中可以正常工作.    
+总结一下新的B在应用中无法工作,只能使用老版本里的B,A可以...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-21
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/05/29/linux-performance-arguments/" class="h4" style="font-weight: 700;">linux性能优化参数小节</a>
+    
+      <p class="mb-1">总结一些和性能相关的常见参数  
+内核相关参数位于/etc/sysctl.conf文件,向文件中添加用sysctl -a可以查看默认配置修改后可以通过sysctl -p执行并看看有没有错误例如设置错了参数:
+net.core.somaxconn=65535一个端口最大的监听TCP连接的队列长度  
+net.core.netdev_max_backlog=65535数据包速率比内核处理块时 允许送到队列的数据包的最大数目  
+net.ipv4.tcp_max_syn_backlog=65535TCP syn队列的最大长度 第一次握手的连接 参数过大可能也会遭受syn flood攻击  
+net....</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-05-29
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/04/26/java-concurrent-note/" class="h4" style="font-weight: 700;">java并发编程知识点备忘</a>
+    
+      <p class="mb-1">最近有在回顾这方面的知识,稍微进行一些整理和归纳防止看了就忘记.会随着进度不断更新内容,比较零散但尽量做的覆盖广一点.如有错误烦请指正~
+
+java线程状态图
+
+线程活跃性问题
+死锁
+饥饿
+活锁  
+
+饥饿原因:  
+
+高优先级造成低优先级无法运行(概率吧)
+无法进入同步块(比如进入的线程陷入死循环)
+无法被唤醒(没有notify)
+
+
+线程安全性问题的条件:
+
+多线程环境下
+多线程共享同个资源
+存在非原子性操作破坏掉其中一条即可 
+
+
+synchronized内置锁涉及字节码:monitorenter monitorexit锁的信息存在对象头中
+偏向锁 轻量级锁 重量级锁相关:
+参考资料:S...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-04-26
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/04/19/8886406/" class="h4" style="font-weight: 700;">编码之痛:操作系统迁移后redis缓存无法命中</a>
+    
+      <p class="mb-1">前几天一台内网服务器从ubuntu迁移到了centos，检查一切正常后就没有太在意。  
+今天有同事反馈迁移后的机器上的服务一个缓存总是无法获取，对比了下环境、JVM参数，尝试了war包替换等方式照样复现。在有问题的机器上装了redis-cli让同事去看也是可以获取到的，一时没有了头绪。打算请教其他同事，让有问题的同事把查询等发我一下，然后就看到了… …. key设置为了中文，一下子头大了… …  
+检查机器的locale都没什么问题：
+$ env |grep LANG
+LANG=en_US.UTF-8
+
+$ locale
+LANG=en_US.UTF-8
+
+但用jinfo查看centos那台...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-04-19
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/03/28/jetty-8-default-character-encoding/" class="h4" style="font-weight: 700;">jetty8 text/plain默认字符编码的坑</a>
+    
+      <p class="mb-1">今天在测试一个content-type为text/plain的API时发现后端requestBody乱码了，而线上正常。自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。检查了下发送的请求中没有设置charset，但项目里是设置了spring的编码过滤器，CharacterEncodingFilter中的逻辑：
+String encoding = getEncoding();
+if (encoding != null) {
+    if (isForceRequestEncoding() ||...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-03-28
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/03/21/ddia-note-chapter1/" class="h4" style="font-weight: 700;">设计数据密集型应用笔记1:可靠 可扩展可维护的应用</a>
+    
+      <p class="mb-1">原书地址:Designing Data-Intensive Applications, 1st Edition之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline,此外作者在github放出了这本书所有章节的引用,看了些第一章的引用都是很不错的资料,或许可以不看这本书直接看提供的资料也可以(笑
+
+
+现今的很多应用都是数据密集型的应用,CPU很少是应用的限制因素...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-03-21
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/02/13/async-api-latency/" class="h4" style="font-weight: 700;">使用异步任务降低API延迟_实践总结</a>
+    
+      <p class="mb-1">之前在想如何降低API的延迟，这些API里有几个比较耗时的操作且是串行执行，那通过异步执行的方式理论上可以降低运行的时间，如下图所示：  
+具体的实现比较简单，例如这样：
+public class ParallelRetrievalExample {
+    final CacheRetriever cacheRetriever;
+    final DBRetriever dbRetriever;
+    ParallelRetrievalExample(CacheRetriever cacheRetriever,
+                             DBRetriev...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/02/01/failure-control-patterns/" class="h4" style="font-weight: 700;">常用失败控制模式</a>
+    
+      <p class="mb-1">本文内容主要翻译自Reactive Systems Architecture第一章1.9节。
+在分布式系统中，有组件发生故障造成对应服务失败是很平常的一件事。这里简单阐述一下在发生这些错误时的一些常用处理模式。
+失败控制(failure control)的一个目标是在系统或他的一部分失败的情况下如何实现期望的一致性和传递保证。在部分系统失败的情况下，不影响到系统其他部分的稳定性。
+但通常工程师不会意识到失败是很自然的一件事。
+
+只是记录异常log 如果log不被人处理就一直保持失败
+一个服务持续的失败可能导致来自于其他服务的过度重试，导致该服务被压垮，也可能造成依赖他的服务的级联失败。
+每个服...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-01
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2017/12/22/docker-maven-springboot/" class="h4" style="font-weight: 700;">使用maven插件构建docker镜像</a>
+    
+      <p class="mb-1">为什么要用插件主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar/war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。  
+插件选择使用比较多的是spotify的插件:https://github.com/spotify/docker-maven-plugin和 https://github.com/spotify/dockerfile-maven。但这里我选择另一款插件：https://github.com/fabric8io/docker-maven-plugin。因为他文档比较详细，在使用上也比较方便。文档地址：https://dmp...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-22
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+ 
+<br><br>
+
+
+<nav aria-label="index posts navigation">
+<ul class="pagination pg-blue justify-content-center mt-5">
+    
+        <li class="page-item">
+        <a class="page-link" href="/page/2/">Previous</a>
+        </li>
+    
+    
+        <li class="page-item">
+        <a class="page-link" href="/page/4/">Next</a>
+        </li>
+    
+</ul>
+</nav>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+</body>
+</html>

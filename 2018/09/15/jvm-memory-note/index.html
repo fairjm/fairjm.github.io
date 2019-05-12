@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>JVM内存知识备忘 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">JVM内存知识备忘</p>
+            <br>
+            
+            <p>星期六, 九月 15日 2018, 11:35 晚上</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>又是一篇备忘…<br>主要记录一些知识,进行一些资源的汇总.  </p>
+<p>先来群里<code>liufor</code>大大提供的两张图,清晰易懂:<br><img src="/images/1244488-20180915225940516-535609245.png" alt><br>Dockerized Java<br><a href="https://www.youtube.com/watch?v=NQ5hTEp-GTM" target="_blank" rel="noopener">https://www.youtube.com/watch?v=NQ5hTEp-GTM</a>    </p>
+<p><img src="/images/1244488-20180915230059584-477234180.png" alt><br>Java on Linux for devs and ops<br><a href="https://www.slideshare.net/aragozin/java-on-linux-for-devs-and-ops" target="_blank" rel="noopener">https://www.slideshare.net/aragozin/java-on-linux-for-devs-and-ops</a>  </p>
+<p>一些线上排查的注意事项:<br>1.greys不能用于增强系统类,即便他给了个开关,但不要用;<br>2.btrace增强后无法撤销,要撤销需要重启服务;<br>3.NMT不要开启detail,影响性能;<br>4.配置jemalloc和tamalloc的采样的时候注意采样率,千万别配0(全部采样);<br>5.jmap的-heap,jstack和jmap -F参数会导致JVM暂停.(SA.attch)</p>
+<h1 id="常用配置-amp-命令"><a href="#常用配置-amp-命令" class="headerlink" title="常用配置&amp;命令"></a>常用配置&amp;命令</h1><h2 id="常用命令-amp-工具"><a href="#常用命令-amp-工具" class="headerlink" title="常用命令&amp;工具"></a>常用命令&amp;工具</h2><h3 id="JVM启动用的命令行"><a href="#JVM启动用的命令行" class="headerlink" title="JVM启动用的命令行"></a>JVM启动用的命令行</h3><pre><code>jcmd process_id VM.command_line
+</code></pre><h3 id="手工触发gc"><a href="#手工触发gc" class="headerlink" title="手工触发gc"></a>手工触发gc</h3><pre><code>jcmd process_id GC.run
+</code></pre><h3 id="显示调优标志"><a href="#显示调优标志" class="headerlink" title="显示调优标志"></a>显示调优标志</h3><pre><code>jcmd process_id VM.flags [-all]
+</code></pre><p>all比较有用 可以看到全部的 包括默认值 在排查一些问题的时候能看的信息比较多  </p>
+<h3 id="内存dump-使用情况查看"><a href="#内存dump-使用情况查看" class="headerlink" title="内存dump 使用情况查看:"></a>内存dump 使用情况查看:</h3><pre><code>jmap -dump:format=b,file=test.bin process_id  
+jmap -heap process_id  
+</code></pre><h3 id="heap-dump分析"><a href="#heap-dump分析" class="headerlink" title="heap dump分析"></a>heap dump分析</h3><p>可以使用<code>MAT</code>,<code>Heap Analyzer</code>和<code>VisualVM</code>这些工具.  </p>
+<p>一些提取操作(比如要获得一个大字符串/char[]的值)可以通过OQL表达式.<br>例子:<br>获取到了address 拿取数据(是个char[])</p>
+<pre><code class="javascript">chars = heap.findObject(&quot;0x666666666&quot;)
+var writer = new java.io.FileWriter(&quot;D:/temp/oql/666.txt&quot;);
+for (var i = 0; i &lt; chars.length; i++) {
+    writer.write(chars[i]);
+}
+writer.close()
+</code></pre>
+<p>visualVM中拿到index(这个index是sharp后面的 不是address)  </p>
+<pre><code class="javascript">filter(heap.objects(&#39;char[]&#39;),
+ function(it, index) {
+  if (index == 66) {
+      var writer = new java.io.FileWriter(&quot;D:/temp/oql/666.txt&quot;);
+      for (var i = 0; i &lt; it.length; i++) {
+          writer.write(it[i]);
+      }
+      writer.close();
+      return true;
+  }
+  return false;
+})
+</code></pre>
+<h3 id="更多内存信息"><a href="#更多内存信息" class="headerlink" title="更多内存信息"></a>更多内存信息</h3><p>在linux上使用,使用/proc/pid/map内的信息,以及pmap.<br>使用gdp dump出内存查看信息<br>详见: <a href="http://lysu.github.io/blog/2015/02/02/how-to-deal-with-non-heap-or-native-memory-leak/" target="_blank" rel="noopener">http://lysu.github.io/blog/2015/02/02/how-to-deal-with-non-heap-or-native-memory-leak/</a>  </p>
+<h2 id="GC-log相关"><a href="#GC-log相关" class="headerlink" title="GC log相关"></a>GC log相关</h2><pre><code>//日志数量 每个log大小 存放位置
+-XX:NumberOfGCLogFiles=7
+-XX:GCLogFileSize=64M
+-Xloggc:/opt/jetty/logs/gc.log
+//绝对时间戳 相对的用-XX:+PrintGCTimeStamps
+-XX:+PrintGCDateStamps
+//详细的信息 平均时间等 精简的用-XX:+PrintGC
+-XX:+PrintGCDetails
+
+</code></pre><h2 id="NMT"><a href="#NMT" class="headerlink" title="NMT"></a>NMT</h2><pre><code>-XX:NativeMemoryTracking=[off | summary | detail]
+</code></pre><pre><code>jcmd &lt;pid&gt; VM.native_memory [summary | detail | baseline | summary.diff | detail.diff | shutdown] [scale= KB | MB | GB]  
+</code></pre><p>可以比较有效看到几个部分的内存使用情况 以及设置baseline后 在看具体的变化量<br>使用时要先设置JVM参数  生产环节慎用detail<br>参考文档:<br><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html</a><br>直接内存在internal中 但不包含Mapped ByteBuffer<br><a href="https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd" target="_blank" rel="noopener">https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd</a>  </p>
+<h1 id="博客-amp-文章"><a href="#博客-amp-文章" class="headerlink" title="博客 &amp; 文章"></a>博客 &amp; 文章</h1><p>一些文章和不错的博客.<br>随着时间的迁移和JVM的升级,这里(包括这文)的内容可能会过时,自己甄别一下~  </p>
+<p>你假笨博客<br><a href="http://lovestblog.cn/" target="_blank" rel="noopener">http://lovestblog.cn/</a></p>
+<p>Alexey Ragozin的博客(也是第二图ppt的作者)<br><a href="http://blog.ragozin.info/" target="_blank" rel="noopener">http://blog.ragozin.info/</a>  </p>
+<p>JVM内存调优相关的一些笔记（杂）<br><a href="https://zhanjindong.com/2016/03/02/jvm-memory-tunning-notes" target="_blank" rel="noopener">https://zhanjindong.com/2016/03/02/jvm-memory-tunning-notes</a>  </p>
+<p>REDUCE LONG GC PAUSES<br><a href="https://blog.gceasy.io/2016/11/22/reduce-long-gc-pauses/" target="_blank" rel="noopener">https://blog.gceasy.io/2016/11/22/reduce-long-gc-pauses/</a>  </p>
+<p>Oh the Places Your Java Memory Goes<br><a href="https://jkutner.github.io/2017/04/28/oh-the-places-your-java-memory-goes.html" target="_blank" rel="noopener">https://jkutner.github.io/2017/04/28/oh-the-places-your-java-memory-goes.html</a>  </p>
+<p>入门科普，围绕JVM的各种外挂技术<br><a href="http://calvin1978.blogcn.com/articles/vjtools-tools4.html" target="_blank" rel="noopener">http://calvin1978.blogcn.com/articles/vjtools-tools4.html</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

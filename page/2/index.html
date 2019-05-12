@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+</head>
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("/images/index.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2"></p>
+            <br>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+    
+  <div class="container">
+    <div class="py-5 z-depth-3 main">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-10 offset-1">
+            
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/10/14/optimizing-java-ch7-note/" class="h4" style="font-weight: 700;">Optimizing Java笔记:高级垃圾回收</a>
+    
+      <p class="mb-1">原书地址:https://www.safaribooksonline.com/library/view/optimizing-java/9781492039259/  
+感觉挺不错的一本书,断断续续在读.来自原书第七章的笔记,记录一些感觉比较重要的概念.原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.  
+
+Tradeoffs and Pluggable Collectors权衡的可插拔垃圾回收器  
+在Sun的环境中 GC子系统是可插拔的子系统GC的运行不能改变程序的语义 但性能上可能会有差异
+只有权衡 没有银弹  
+需要权衡的因素：  
+
+...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-10-14
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/09/21/java-application-offheap-memory-leak-analyze/" class="h4" style="font-weight: 700;">记一次尴尬的Java应用内存泄露排查</a>
+    
+      <p class="mb-1">这星期被线上JVM内存占用不断增大的问题所困扰,自己提出了一些假设,然后去实施验证都一一失败了,有一些经验和教训在这里分享下.之所以是尴尬,是最后因为修复了另一个看似不相关的问题导致内存不再上升,但这之间的关系还未明了,还需要继续追踪.这里讲述一下这次排查的过程.  
+
+直接内存的错误判断服务器的JVM配置为Xmx3g,使用G1,没有设置Xms考虑自然收缩和fgc之后的空间回拢.没有发生过fgc,且堆内存的增长正常,排除掉堆内存的问题.使用NMT查看各个区域的内存正常,committed内存不足4G,但实际情况内存占用不断增大,甚至出现了OOM killer杀掉java进程.   
+Total...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-09-21
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/09/15/jvm-memory-note/" class="h4" style="font-weight: 700;">JVM内存知识备忘</a>
+    
+      <p class="mb-1">又是一篇备忘…主要记录一些知识,进行一些资源的汇总.  
+先来群里liufor大大提供的两张图,清晰易懂:Dockerized Javahttps://www.youtube.com/watch?v=NQ5hTEp-GTM    
+Java on Linux for devs and opshttps://www.slideshare.net/aragozin/java-on-linux-for-devs-and-ops  
+一些线上排查的注意事项:1.greys不能用于增强系统类,即便他给了个开关,但不要用;2.btrace增强后无法撤销,要撤销需要重启服务;3.NMT不要开启detail,...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-09-15
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/09/08/school-days-memory/" class="h4" style="font-weight: 700;">还未(划掉)毕业的这几天</a>
+    
+      <p class="mb-1">在图灵社区写的文,顺便同步过来.  
+
+本文来自图灵社区 fairjm@ituring  
+
+在毕业前用的一个社区文集(私密)的名字.当时以周记,日记的形式记录了临毕业的一个月.再回首已经过了三年多了.正式变为了一只码农,社畜.  
+之前熟悉的9月开学感觉已经非常遥远了.偶尔不开心的时候就想着要回去读书.身边倒是有一些同事重新回了校园,但自己大抵是没有这样的勇气和魄力吧.上了那么久的学,做梦有时还会梦见诸如要考试自己没复习的场景,害怕挂科了怎么办,随即在梦中清醒自己,发现已经毕业了.最落寞的一次最近梦到自己在一间教室,本来很熟悉的同学突然都不认识了,也不知道自己为何会出现在这教室里.  
+说来...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-09-08
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/08/15/start-prometheus/" class="h4" style="font-weight: 700;">Prometheus使用入门</a>
+    
+      <p class="mb-1">Monitoring with Prometheus读书笔记原书见:https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/  
+
+摘录了一些内容,稍微整理了下,更详细的内容可以阅读原书.   
+简介Prometheus灵感来源于谷歌的borgmon.他的设计专注于最近发生的事,而不是几个星期几个月前的,默认只保存15天的时间序列.  
+内置PromQL查询语言,可以方便进行metric查询和定义新的metric.  
+数据格式
+&lt;time series name&gt...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-08-15
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/08/01/painful-to-maintain-data-statistic-system/" class="h4" style="font-weight: 700;">维护之痛-数据统计任务小结</a>
+    
+      <p class="mb-1">年初转组,接触了一些新业务.交接了一个数据统计系统,去年下半年开发完成,不再有新的需求.emmmm,妥妥的一个遗留系统… …有对应文档但比较老,一些存储和细节记录在了原开发自己的笔记中.最主要是bug累累,之前使用量和用户较少没有多少bug反馈,但随着今年用户增加基本每个月都会有一些bug.该系统的简单架构如下:  
+由一位同事单独完成,历时几个月,难以想象他经历了什么…但听闻他在开发过程中几乎崩溃了,自己完成了数据的获取,处理,聚合.ES和spark的资源还是借用了其他组已经搭好的存储.  
+我们有专门的数据团队产出一些业务指标,但这位同事做这套系统的时候那边提供的帮助有限,差不是是无法获得...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-08-01
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/07/26/monitoring-introduction/" class="h4" style="font-weight: 700;">监控基础</a>
+    
+      <p class="mb-1">Monitoring with Prometheus读书笔记原书见:https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/  
+
+监控需要监控技术环境和监控业务情况  
+
+监控基本原则监控需要在开发业务前就进行考虑,结合业务情况和环境,考虑要监控的metric.    
+  
+监控设计要从业务逻辑出发 再下沉到应用的监控和操作系统的监控但这不是说通用的系统监控不需要 只是他们不能用来汇报业务价值  
+监控服务的正确性 例如不是单单看health接口是否返回了200 而要确认...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-26
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/07/13/how-to-write-sql-happily/" class="h4" style="font-weight: 700;">如何更简单方便地执行SQL操作?</a>
+    
+      <p class="mb-1">现在公司使用mybatis作为DAL层的框架.使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.但在写一些简单SQL的时候会显得非常繁琐:  
+
+xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);
+原生无法热加载,修改xml后需要重启(可以使用三方实现);  
+xml的动态SQL没有java灵活.    
+
+上述这些”缺点”仅仅针对写简单的sql,特别是第一条.我对一张表的需求是简单的CRUD,那使用xml就会非常麻烦.  
+最基本的需求:  
+
+简单安全的SQL拼接方案;
+方便的类型映射.  
+
+探索了几个方案,接下来一一介...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/06/29/git-reset-lose-branch/" class="h4" style="font-weight: 700;">记一次尴尬的git reset丢失分支故障</a>
+    
+      <p class="mb-1">最近…似乎一直在踩坑…也不是什么故障,只是把一个分支的功能弄没了,之后在reflog里找到又恢复了.  
+产生原因是有同事错误地把分支B merge到了分支A并push.我直接在分支A上reset到了merge前的一个节点(但这个节点其实是B分支的).这导致分支A的头跑到了B分支上,A本来那个分支没有引用就丢了.先说下解决方法,git reflog找到那个reset,或者直接用git fsck --no-reflogs --unreachable找到那个commit之后直接再reset回去即可.  
+主要原因是git merge之后的log会显示另一个分支的commit记录(毕竟没有真正的分支...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-29
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/06/26/work-summary/" class="h4" style="font-weight: 700;">工作总结</a>
+    
+      <p class="mb-1">一直想写这篇,但是持续拖延… …主要总结下这几年做的一些较大且完整的功能,过于零散的小功能以及和公司业务强相关的东西就不做记录了.顺序是新的在前,旧的在后,不断补充,就当自己的总结.都是后端相关的工作.实习的时候参与网站社区相关开发,毕业之后短时间参与了一个项目的零碎开发,之后一直做App后端相关的开发工作,今年年初转到对商家服务的组.基础技术是spring,mybatis之类的就不每个都写了.    
+2014年实习网站功能后端开发网站新版社区后端开发后端团队为3-4人  
+2015.6-2018.1:App后端开发主要涉及面向ToC的三个App和面向ToB的一个App后端团队为2人(后来增...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-26
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+ 
+<br><br>
+
+
+<nav aria-label="index posts navigation">
+<ul class="pagination pg-blue justify-content-center mt-5">
+    
+        <li class="page-item">
+        <a class="page-link" href="/">Previous</a>
+        </li>
+    
+    
+        <li class="page-item">
+        <a class="page-link" href="/page/3/">Next</a>
+        </li>
+    
+</ul>
+</nav>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+</body>
+</html>

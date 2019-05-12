@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>使用异步任务降低API延迟_实践总结 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">使用异步任务降低API延迟_实践总结</p>
+            <br>
+            
+            <p>星期二, 二月 13日 2018, 3:18 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>之前在想如何降低API的延迟，这些API里有几个比较耗时的操作且是串行执行，那通过异步执行的方式理论上可以降低运行的时间，如下图所示：<br><img src="/images/1244488-20180213120710156-2118264085.png" alt>  </p>
+<p>具体的实现比较简单，例如这样：</p>
+<pre><code class="java">public class ParallelRetrievalExample {
+    final CacheRetriever cacheRetriever;
+    final DBRetriever dbRetriever;
+    ParallelRetrievalExample(CacheRetriever cacheRetriever,
+                             DBRetriever dbRetriever) {
+        this.cacheRetriever = cacheRetriever;
+        this.dbRetriever = dbRetriever;
+    }
+    public Object retrieveCustomer(final long id) {
+        final CompletableFuture&lt;Object&gt; cacheFuture =
+           CompletableFuture.supplyAsync(() -&gt; {
+                    return cacheRetriever.getCustomer(id);
+                });
+        final CompletableFuture&lt;Object&gt; dbFuture =
+           CompletableFuture.supplyAsync(() -&gt; {
+                    return dbRetriever.getCustomer(id);
+                });
+        return CompletableFuture.anyOf(
+            cacheFuture, dbFuture);
+    }
+</code></pre>
+<p>用java8引入的<code>CompletableFuture</code>即可。</p>
+<p>这里不再赘述。  </p>
+<p>主要讲一下这样实践遇到的坑和一些自己的理解。</p>
+<h1 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h1><p>优化后的代码需要和未修改(基准)的版本做比较，要考虑在不同负载下的性能情况。<br>针对API的修改可以使用AB工具，比较方便，能通过设定不同的并发用户模拟不同的负载。<br>测试是必要的，很多直觉上会提高性能的点可能会在实际表现上收到资源的限制等原因无法提高甚至不如优化前的性能。</p>
+<h1 id="适合处理的任务-amp-线程池的设定"><a href="#适合处理的任务-amp-线程池的设定" class="headerlink" title="适合处理的任务 &amp; 线程池的设定"></a>适合处理的任务 &amp; 线程池的设定</h1><h2 id="我们要优化怎样的任务呢？"><a href="#我们要优化怎样的任务呢？" class="headerlink" title="我们要优化怎样的任务呢？"></a>我们要优化怎样的任务呢？</h2><p>任务也就三大分类，计算密集，IO密集和混合，其中混合里面也可以通过细化变为前两类。<br>在一般的web开发中计算不太会成为瓶颈，主要是IO。<br>一些耗时的阻塞IO操作（数据库，RPC调用）往往是导致接口慢的原因，这里要优化的就是这类操作。<br>不过与其说是优化，更恰当的说法是让这些阻塞操作异步化，缩短整体的时间，这里也要注意这些任务所在的位置，如果在API的最后面的逻辑里那优化他们也没什么必要，或者在不影响业务逻辑的情况下可以把他们置前。</p>
+<h2 id="我们需要的怎样的线程池？"><a href="#我们需要的怎样的线程池？" class="headerlink" title="我们需要的怎样的线程池？"></a>我们需要的怎样的线程池？</h2><p>如上所说要优化的任务几乎都是阻塞IO，也就意味着这些任务占用CPU的时间很短，主要是处在waiting状态下，这种线程的增加最大的开销就是内存，对上下文切换影响较小。<br>其次，线程数必定要有限，java的线程过于重量，不考虑CPU因素也需要考虑内存因素。<br>最后还要考虑线程池耗尽的情况，最差的情况是回到没优化之前，也就是在调用者线程上执行。</p>
+<p><code>CompletableFuture</code>的<code>runAsync</code>和<code>supplyAsync</code>方法有不带<code>Executor</code>的版本，首先看一下默认的线程池是否合适。  </p>
+<pre><code class="java">private static final Executor asyncPool = useCommonPool ?
+    ForkJoinPool.commonPool() : new ThreadPerTaskExecutor();
+</code></pre>
+<p><code>useCommonPool</code>的判断是根据<code>ForkJoinPool</code>的并行度，可以简单地先认为多核下会返回true(也可以通过<code>java.util.concurrent.ForkJoinPool.common.parallelism</code>参数进行设定)。<br>而使用的<code>commonPool()</code>线程数量不是很多（默认和CPU核数相等），其次<code>ForkJoinPool</code>是设计用于短任务的运行，不适合做阻塞IO，我们要优化的主要慢操作几乎都是阻塞IO带来的。  </p>
+<p>接下去看需求比较接近的<code>Executors.newFixedThreadPool</code>，但通过实现不难发现他的队列是无界的，如果线程耗尽新的任务就会等待，也无法使用拒绝策略。</p>
+<p>只有定制了，根据上面说到的需求，定制如下：</p>
+<pre><code class="java">private static final ThreadPoolExecutor IO = new ThreadPoolExecutor(20, 20, 0, TimeUnit.MILLISECONDS,
+            new SynchronousQueue&lt;Runnable&gt;(),
+            new CallerRunsPolicy());
+</code></pre>
+<p>线程数量定长，数量的多少可以根据测试情况做下调整，使用<code>SynchronousQueue</code>不产生队列，拒绝策略使用在调用者线程上运行，满足了所需。  </p>
+<p>这个线程池专门为IO密集任务使用，不要让计算密集的代码使用。<br>在实践中遇到了使用这种方式结果测试时性能降低了5倍左右的情况，一看代码中除了从数据库获取数据还有几个for循环在做修改字段的工作，导致上下文切换带来了很大的开销。</p>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>上述实现中，限制线程数量的原因是因为线程的开销（这里主要是在内存上）过大，这就意味着在这里使用了线程过重了，更好的实现应该使用类似绿色线程的技术，和系统线程进行1对多的映射。<br>此外这种场景下用事件驱动的方式可能会更好。<br>追究其核心原因还是java世界中同步阻塞操作还是占多数，而主要的优化手段底层还是使用了昂贵的线程，一些在其他语言/平台上很容易实现的扩展在java上就会遇到问题。<br>此外，异步没有得到语言上的支持，造成异步编程在java上比较麻烦和显式，这点<code>C#</code>的<code>async</code>和<code>await</code>语法糖就要甜的多。<br>java之后的发展还是任重而道远啊。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://httpd.apache.org/docs/2.4/programs/ab.html" target="_blank" rel="noopener">apache ab</a>  </p>
+<p><a href="https://www.safaribooksonline.com/library/view/reactive-design-patterns/9781617291807/" target="_blank" rel="noopener">reactive design pattern</a> 上述的图和<code>ParallelRetrievalExample</code>代码取自这里  </p>
+<p><a href="http://www.cnblogs.com/ktgu/p/3529144.html" target="_blank" rel="noopener">多线程的代价及上下文切换</a></p>
+<p><a href="http://colobu.com/2016/02/29/Java-CompletableFuture/" target="_blank" rel="noopener">Java CompletableFuture 详解</a></p>
+<p><a href="http://jolestar.com/parallel-programming-model-thread-goroutine-actor/" target="_blank" rel="noopener">并发之痛 Thread，Goroutine，Actor</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

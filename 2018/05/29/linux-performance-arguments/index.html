@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>linux性能优化参数小节 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">linux性能优化参数小节</p>
+            <br>
+            
+            <p>星期二, 五月 29日 2018, 2:05 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>总结一些和性能相关的常见参数  </p>
+<h1 id="内核相关参数"><a href="#内核相关参数" class="headerlink" title="内核相关参数"></a>内核相关参数</h1><p>位于<code>/etc/sysctl.conf</code>文件,向文件中添加<br>用<code>sysctl -a</code>可以查看默认配置<br>修改后可以通过<code>sysctl -p</code>执行并看看有没有错误<br>例如设置错了参数:<br><img src="/images/1244488-20180529020156928-1352852257.png" alt></p>
+<p><code>net.core.somaxconn=65535</code><br>一个端口最大的监听TCP连接的队列长度  </p>
+<p><code>net.core.netdev_max_backlog=65535</code><br>数据包速率比内核处理块时 允许送到队列的数据包的最大数目  </p>
+<p><code>net.ipv4.tcp_max_syn_backlog=65535</code><br>TCP syn队列的最大长度 第一次握手的连接 参数过大可能也会遭受syn flood攻击  </p>
+<p><code>net.ipv4.tcp_fin_timeout=10</code><br>fin超时时间 表示如果套接字由本端要求关闭，这个参数决定了它保持在FIN-WAIT-2状态的时间<br><code>net.ipv4.tcp_tw_reuse=1</code><br>开启重用<br><code>net.ipv4.tcp_tw_recycle=1</code><br>快速回收  </p>
+<pre><code>net.core.wmem_default=87380  
+net.core.wmem_max=16777216  
+net.core.rmem_default=87380  
+net.core.rmem_max=16777216  
+</code></pre><p>缓冲区的默认值和最大值  </p>
+<p><code>net.ipv4.tcp_keepalive_time=120</code><br>keepalive的检测时间间隔 单位为秒<br><code>net.ipv4.tcp_keepalive_intvl=30</code><br>检测无效时 重发消息间隔<br><code>net.ipv4.tcp_keepalive_probes=3</code><br>检测无效时 最多重复确认次数</p>
+<p><code>kernel.shmmax=4294967295</code><br>linux内核参数中最重要的参数之一<br>用于定义单个共享内存段的最大值<br>64位linux 可取最大值为物理内存值-1byte 建议值为物理内存一半  </p>
+<p><code>vm.swappiness=0</code><br>free -m Swap中的内容<br><img src="/images/1244488-20180529015148150-543066928.png" alt></p>
+<p>风险:  </p>
+<ul>
+<li>降低操作系统性能  </li>
+<li>在系统资源不足下,容易被OOM kill掉   </li>
+</ul>
+<p>设置为0是告诉系统除非虚拟内存完全满了 否则不要使用交换区</p>
+<h1 id="增加资源限制"><a href="#增加资源限制" class="headerlink" title="增加资源限制"></a>增加资源限制</h1><p>位于 /etc/security/limit.conf</p>
+<pre><code>* soft nofile 65535
+* hard nofile 65535
+</code></pre><ul>
+<li>* 对所有用户有效</li>
+<li>soft 当前系统生效的设置</li>
+<li>hard 系统所能设定的最大值</li>
+<li>nofile 打开文件的最大数目</li>
+<li>65535 限制的数量</li>
+<li>需要重启系统生效</li>
+</ul>
+<p>设置前:<br><img src="/images/1244488-20180529015137572-1250617565.png" alt></p>
+<p>之后open files的值会提高为65535</p>
+<h1 id="磁盘调度策略"><a href="#磁盘调度策略" class="headerlink" title="磁盘调度策略"></a>磁盘调度策略</h1><p><code>/sys/block/devname/queue/scheduler</code><br>查看可通过<code>cat /sys/block/sda/queue/scheduler</code><br><img src="/images/1244488-20180529014941012-898523088.png" alt><br>现在使用的cfq 可选的是noop和deadline  </p>
+<p><img src="/images/1244488-20180529015114120-317499833.png" alt><br>用echo写入可以立即生效  </p>
+<p>简介:</p>
+<ul>
+<li><p>noop电梯式调度策略<br>实现了一个FIFO队列 倾向饿死读而利于写 对闪存设备 RAM和嵌入式系统是最好的选择</p>
+</li>
+<li><p>deadline 截止时间调度策略<br>确保了在一个截止时间内服务请求 这个截止时间是可调整的 而默认读期限短于写期限<br>对于数据库类应用是最好的选择</p>
+</li>
+<li><p>anticipatory 预料IO调度策略<br>本质上和deadline一样 但在最后一次读操作后 要等待6ms 才能继续进行对其他IO请求进行调度 将一些小写入流合并成一个大写入流 用写入延迟换取最大的写入吞吐量 适合写入较多的环境 比如文件服务器 对数据库环境表现很差</p>
+</li>
+<li><p>cfq 绝对公平算法</p>
+</li>
+</ul>
+<p>参考资料:<br><a href="https://www.cnblogs.com/jking10/p/5472386.html" target="_blank" rel="noopener">TCP/IP及内核参数优化调优</a></p>
+<p><a href="https://www.cnblogs.com/cobbliu/p/5389556.html" target="_blank" rel="noopener">Linux IO Scheduler（Linux IO 调度器）</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

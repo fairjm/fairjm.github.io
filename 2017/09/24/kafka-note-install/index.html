@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>kafka学习笔记1:测试环境搭建 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">kafka学习笔记1:测试环境搭建</p>
+            <br>
+            
+            <p>星期日, 九月 24日 2017, 3:00 下午</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近因为架构中引入了kafka,一些之前在代码中通过RPC调用强耦合但是适合异步处理的内容可以用kafka重构一下.<br>考虑从头学一下kafka了解其特性和使用场景。  </p>
+<h1 id="环境选择"><a href="#环境选择" class="headerlink" title="环境选择"></a>环境选择</h1><p>首先是测试环境的搭建,平时使用的是win,但kafka以及zk在win上会存在一些bug(例如 <a href="https://issues.apache.org/jira/browse/KAFKA-1194),最好还是在linux平台上搭建" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/KAFKA-1194),最好还是在linux平台上搭建</a>.<br>虚拟机是一个不错的选择但开销比较大,日常使用的笔记本8G内存开启虚拟机不是很方便,<code>bash on windows</code>是个不错的选择.<br>(另在<code>Store</code>中可以下载<code>ubuntu</code>等子系统,现在只限于insider)<br><img src="/images/1244488-20170924141841165-1167762603.png" alt><br>在组件中开启后重启电脑更新.</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>重启后,在命令行或者powershell中输入bash进入环境.<br><img src="/images/1244488-20170924142156571-346165170.png" alt><br>但这里的环境和外部的windows不互通,windwos装了java也无法在bash中使用.<br>需要先安装一些额外的组件.  </p>
+<h2 id="java安装"><a href="#java安装" class="headerlink" title="java安装"></a>java安装</h2><p><img src="/images/1244488-20170924142211259-23564339.png" alt><br>输入后选择一个即可(这里选择了openjdk-8-jre-headless)</p>
+<h2 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h2><p>kafka依赖zk<br>简单的关系如下(图片来源kafka权威指南):<br><img src="/images/1244488-20170924142622790-2144780732.png" alt><br>所以使用kafka之前需要配置好zk.  </p>
+<pre><code>cd ~
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
+tar -zxf zookeeper-3.4.6.tar.gz
+mv zookeeper-3.4.6 /usr/local/zookeeper
+mkdir -p /var/lib/zookeeper
+vim /usr/local/zookeeper/conf/zoo.cfg
+/usr/local/zookeeper/bin/zkServer.sh start  
+</code></pre><p>zoo.cfg的内容和zoo_sample.cfg大致相同,将dataDir换为<code>/var/lib/zookeeper</code>即可.<br>内容如下:    </p>
+<pre><code>tickTime=2000
+dataDir=/var/lib/zookeeper
+clientPort=2181
+</code></pre><p>启动后zk在2181端口运行  </p>
+<h2 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h2><p>kafka安装过程类似.<br>这里学习使用0.9.0.1版本,去年2月发布.<br>和所看的书保持一致避免出现不兼容问题导致书中例子无法运行阻碍进度(新版本的功能之后再额外学习).  </p>
+<pre><code>wget http://mirror.bit.edu.cn/apache/kafka/0.9.0.1/kafka_2.11-0.9.0.1.tgz
+tar —zxf kafka 2.11-0.9.0.1.tgz
+mv kafka 2.11-0.9.0.1 /usr/local/kafka
+mkdir /tmp/kafka—logs
+/usr/local/kafka/bin/kafka—server—start.sh -daemon /usr/local/kafka/config/server.properties
+</code></pre><p>创建topic并验证: </p>
+<pre><code># /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181
+--replication-factor 1 --partitions 1 --topic test
+Created topic &quot;test&quot;.
+# /usr/local/kafka/bin/kafka-topics.sh --zookeeper localhost:2181
+--describe --topic test
+Topic:test    PartitionCount:1    ReplicationFactor:1    Configs:
+    Topic: test    Partition: 0    Leader: 0    Replicas: 0    Isr: 0
+</code></pre><p>同时zk的/brokers/topics下会多出一个test.  </p>
+<p>至此整个安装过程就结束了.  </p>
+<p>上面的<code>/usr/local/kafka/config/server.properties</code>是broker的配置,其中一些配置的含义如下:  </p>
+<ul>
+<li><p>broker.id<br>都必须要有一个id 默认是0<br>在一个集群里必须唯一</p>
+</li>
+<li><p>port<br>监听的端口 默认是9092<br>指定1024以下的端口要用root跑 但不建议</p>
+</li>
+<li><p>zookeeper.connent<br>连接zk的地址 默认是localhost的2181<br>格式是hostname:port/path<br>默认path不写是根  </p>
+</li>
+<li><p>log.dirs<br>log块的存储位置<br>可以用，分隔存多个<br>一个分区的日志会存在一个路径下  </p>
+</li>
+<li><p>num.recovery.threads.per.data.dir<br>用来启动和结束时做日志恢复相关<br>和dirs的数量相关 如果是3 dirs数量是2 那会有6个线程</p>
+</li>
+<li><p>num.partitions<br>一个新的topic会有多少个分区<br>分区数只能比这个数字大 不能比这个小</p>
+</li>
+</ul>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>设计数据密集型应用笔记1:可靠 可扩展可维护的应用 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("https://i.imgur.com/oADD1Ip.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">设计数据密集型应用笔记1:可靠 可扩展可维护的应用</p>
+            <br>
+            
+            <p>星期三, 三月 21日 2018, 2:05 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>原书地址:<a href="https://www.safaribooksonline.com/library/view/designing-data-intensive-applications/9781491903063/" target="_blank" rel="noopener">Designing Data-Intensive Applications, 1st Edition</a><br>之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.<br>似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.<br>主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline,此外作者在<a href="https://github.com/ept/ddia-references" target="_blank" rel="noopener">github</a>放出了这本书所有章节的引用,看了些第一章的引用都是很不错的资料,或许可以不看这本书直接看提供的资料也可以(笑</p>
+<hr>
+<p><img src="/images/1244488-20180321014845699-543810406.png" alt></p>
+<p>现今的很多应用都是数据密集型的应用,CPU很少是应用的限制因素,而数据量,数据复杂度和数据产生的速度是更大的问题.</p>
+<p>身为开发不仅仅知识和开发应用程序，还需要设计数据系统。  </p>
+<p>应用的设计需要考虑以下几个方面:</p>
+<ul>
+<li>可靠性: 系统在面对问题(软硬件 人为问题)时依旧可以正常工作</li>
+<li>可扩展性: 可以应对系统的增长(数据量 传输量和复杂度)</li>
+<li>可维护性</li>
+</ul>
+<h1 id="可靠性"><a href="#可靠性" class="headerlink" title="可靠性"></a>可靠性</h1><p>错误(fault)和失败(failure)不等价</p>
+<p>错误常常定义为一个组件偏离了他的规范(例如非预期的不正常运行)</p>
+<p>失败是指系统作为一个整体停止了其服务</p>
+<h2 id="硬件错误"><a href="#硬件错误" class="headerlink" title="硬件错误"></a>硬件错误</h2><p>例如硬盘的平均失败时间(MTFF mean time to failure)</p>
+<p>应对方式:</p>
+<ul>
+<li>增加冗余存储 RAID</li>
+<li>电源保障 UPS</li>
+<li>热替换CPU</li>
+<li>服务备份  </li>
+</ul>
+<h2 id="软件错误"><a href="#软件错误" class="headerlink" title="软件错误"></a>软件错误</h2><p>一般认为硬件错误是随机的.<br>如果是因为硬件问题,一台机器的硬盘坏了不一定暗示了其他机器的会坏,错误之间常常弱相关.</p>
+<p>而软件bug则会因为特定条件被触发,带来的问题可能会更严重,也更难排查.  </p>
+<h2 id="人为错误"><a href="#人为错误" class="headerlink" title="人为错误"></a>人为错误</h2><p>最主要的错误来源.</p>
+<p>应对方式:</p>
+<ul>
+<li>做设计时尽量减少产生错误的机会，例如更友好的管理界面。</li>
+<li>将容易产生失误的地方和造成错误的地方解耦，沙箱环境。</li>
+<li>测试，从单测到系统集成测试到人力测试。</li>
+<li>快速且容易的恢复机制。</li>
+<li>设置详细且清晰的监控，例如性能指标和错误率。</li>
+<li>优秀的管理和训练。</li>
+</ul>
+<h1 id="可扩展性"><a href="#可扩展性" class="headerlink" title="可扩展性"></a>可扩展性</h1><p>如何应对不断上升的负载.  </p>
+<h2 id="描述负载"><a href="#描述负载" class="headerlink" title="描述负载"></a>描述负载</h2><p>首先要能简明地描述当前系统负载,不然无法讨论负载增长的问题.</p>
+<p>可以使用一些数字来描述：负载参数(load parameter)  </p>
+<p>选择的参数取决于系统架构:</p>
+<ul>
+<li>对于web服务来说可以是QPS</li>
+<li>对于数据库来说是读写比</li>
+<li>对于聊天室来说是并发活跃连接数</li>
+<li>对于缓存是命中率</li>
+</ul>
+<h2 id="描述性能"><a href="#描述性能" class="headerlink" title="描述性能"></a>描述性能</h2><p>描述好负载之后就可以研究在负载增加的时候系统的表现如何.<br>可以从两方面考虑:</p>
+<ul>
+<li>系统资源(CPU 内存 网络带宽）不变的情况下系统受到的影响。</li>
+<li>需要增加多少资源来保持性能不受到影响。</li>
+</ul>
+<p>性能指代:对于处理系统例如hadoop来说是吞吐量,对在线系统来说是响应时间.</p>
+<p>响应时间-百分比 几个9<br>要考虑可能最慢的请求是因为数据过多,而大量数据的用户则是核心用户.<br>百分比常常用于SLO(service level objectives)和SLA(service level agreements)</p>
+<h2 id="处理负载的方式"><a href="#处理负载的方式" class="headerlink" title="处理负载的方式:"></a>处理负载的方式:</h2><p>scaling up 和 scaling out<br>垂直扩展会变得昂贵<br>需要考虑一个合适的方式,一些情况下几台高性能机器会比一堆低性能虚拟机更加简单和便宜.</p>
+<p>一些系统是elastic,弹性收缩的,在负载增加时自动增加计算资源.</p>
+<p>无状态服务的水平扩展会很容易,但如果要处理状态的话就会带来额外的复杂度。<br>现在一些通用的做法是在达到极限或者要满足HA之前数据库是单个节点。<br>但分布式数据系统是未来的趋势。  </p>
+<p>要根据实际的问题来设计,没有银弹.<br>如何设计取决于负载参数,例如读写比,对于读多比不同的应用设计可能会是截然不同的.  </p>
+<h2 id="可维护性"><a href="#可维护性" class="headerlink" title="可维护性"></a>可维护性</h2><p>易操作</p>
+<p>设计简洁</p>
+<p>易迭代</p>
+
+                <hr>
+                <div>
+                    <p>
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<div class="comments" id="comments">
+ 
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>
