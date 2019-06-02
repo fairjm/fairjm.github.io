@@ -234,9 +234,24 @@ sudo yum localinstall grafana-5.2.2-1.x86_64.rpm
 <br><br><br>
 
 <!-- Comments -->
-<div class="comments" id="comments">
+<!-- <div class="comments" id="comments">
  
-</div>
+</div> -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://yiyeti.cc/usr/themes/veryse/css/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '77067862514570ed56eb',
+        clientSecret: '61c327e7bb84a4227cccb3aa935921b821d71490',
+        id: window.location.pathname,
+        repo: 'fairjm.github.io',
+        owner: 'fairjm',
+        admin: 'fairjm',
+        distractionFreeMode: ''
+    })
+    gitalk.render('gitalk-container')
+</script>
   
   </main>
 
