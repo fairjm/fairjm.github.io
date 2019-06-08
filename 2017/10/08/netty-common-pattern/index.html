@@ -211,7 +211,8 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exc
 <!-- <div class="comments" id="comments">
  
 </div> -->
-<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div class="comments" id="comments"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
 <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 <div id="gitalk-container">
     <div class="row">
@@ -233,6 +234,7 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exc
     })
     gitalk.render('gitalk-content')
 </script>
+
   
   </main>
 
