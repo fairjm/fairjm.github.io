@@ -197,10 +197,12 @@
     </div>
 </div>
 <script type="text/javascript">
+    var id = (window.location.pathname).split("/").filter(Boolean).pop().substring(0, 49);
+    Console.log(id);
     var gitalk = new Gitalk({
         clientID: '77067862514570ed56eb',
         clientSecret: '61c327e7bb84a4227cccb3aa935921b821d71490',
-        id: (window.location.pathname).split("/").pop().substring(0, 49),
+        id: (window.location.pathname).split("/").filter(Boolean).pop().substring(0, 49),
         repo: 'fairjm.github.io',
         owner: 'fairjm',
         admin: 'fairjm',
