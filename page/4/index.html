@@ -86,6 +86,30 @@
 <div class="row mb-3">
 
 <div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/02/01/failure-control-patterns/" class="h4" style="font-weight: 700;">常用失败控制模式</a>
+    
+      <p class="mb-1">本文内容主要翻译自Reactive Systems Architecture第一章1.9节。
+在分布式系统中，有组件发生故障造成对应服务失败是很平常的一件事。这里简单阐述一下在发生这些错误时的一些常用处理模式。
+失败控制(failure control)的一个目标是在系统或他的一部分失败的情况下如何实现期望的一致性和传递保证。在部分系统失败的情况下，不影响到系统其他部分的稳定性。
+但通常工程师不会意识到失败是很自然的一件事。
+
+只是记录异常log 如果log不被人处理就一直保持失败
+一个服务持续的失败可能导致来自于其他服务的过度重试，导致该服务被压垮，也可能造成依赖他的服务的级联失败。
+每个服...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-01
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
     <a href="/2017/12/22/docker-maven-springboot/" class="h4" style="font-weight: 700;">使用maven插件构建docker镜像</a>
     
       <p class="mb-1">为什么要用插件主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar/war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。  

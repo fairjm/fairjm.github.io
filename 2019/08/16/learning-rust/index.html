@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon.jpg">
+    <link rel="icon" type="image/png" href="/favicon.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="fairjm">
+    <meta name="keywords" content>
+    <title>rust学习感想 ~ Just Memory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/css/mdb.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_vr10bjtg3us.css">
+    
+        <link rel="stylesheet" href="/css/Prettify/tomorrow-night-eighties.min.css">
+    
+</head>
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Just Memory</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/fairjm">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style='background: url("/images/post.jpg")no-repeat center center;background-size: cover;'>
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <p class="h2">rust学习感想</p>
+            <br>
+            
+            <p>星期五, 八月 16日 2019, 3:43 凌晨</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 ">
+            <div class="post-content py-5 z-depth-3 main">
+                <p>最近刚把<a href="https://doc.rust-lang.org/book/title-page.html" target="_blank" rel="noopener">The book</a>看完了,手有些生,断断续续写点小东西,这边写一下这个歌阶段的一些学习感想,感受.<br>文章很水,没有语言上的指导只有自己的一些见解,部分内容还可能是完全错误的,欢迎指正~~.</p>
+<p>学习目的主要是想开阔一下视野.<br>之前就偶尔会听到别人说rust在设计上有一些特别的地方,并且又由于是一门可以进行系统编程的语言,学习的收获也会比学其他的来得多,就这样开始了.  </p>
+<h1 id="低估的ownership概念"><a href="#低估的ownership概念" class="headerlink" title="低估的ownership概念"></a>低估的ownership概念</h1><p>最开始看不管是<code>ownership</code>还是<code>borrowing rules</code>,感觉设计上很精妙,自己仿佛变成了肉体垃圾收集器,看了书中几个例子就飘了,天真地觉得并不是很困难.这种错觉就像我能手动管理好内存的申请和释放一样,稍微复杂一点点的场景就立马吃瘪.<br>之前做练习写了个脚本,用<code>HashMap</code>做缓存传入一个函数中,并会在传入的函数中放入值.<br>先放出最后的成品:  </p>
+<pre><code class="rust">fn handle(client:&amp;Client, map: &amp;mut HashMap&lt;String, String&gt;, email: &amp;str, node_name :&amp;str) {
+    let node_id = if let Some(id) = map.get(node_name) {
+        if id == &quot;&quot; {
+            None
+        } else {
+            Some(String::from(id))
+        }
+    } else {
+        let r = find_id_by_node_name(&amp;client, node_name);
+        if let Some(id) = r {
+            map.insert(node_name.to_string(), id.clone());
+            Some(id)
+        } else {
+            map.insert(node_name.to_string(), &quot;&quot;.to_string());
+            None
+        }
+    };
+    if node_id == None { return };
+    let user_id = find_id_by_email(&amp;client, email);
+    if user_id == None { return };
+    move_to_node(&amp;client, node_id.unwrap().as_str(), user_id.unwrap().as_str());
+}
+</code></pre>
+<p>最开始key和value都用了<code>&amp;str</code>,出现了各种报错比如borrow超过了生命周期,lifetime不一致等,中间为了避免报错一些地方用<code>String</code>,用<code>&amp;String</code>,随后<code>ownership moved</code>之类的错也跟着出现了.<br>恶化成了编译器报错,改掉这里,其他地方又爆了原因不一样的错,而且越修越多,报的错越来越看不懂.<br>感觉就像被人(编译器)打了一顿,打的人还不断告诉你你这样错了要那样做,那样做了之后又有了其他错.<br>这实质上还是自己对于所有权的概念理解太浅薄了,我需要将在函数内部产生的<code>String</code>增加到由参数传入的<code>HashMap</code>中,<code>HashMap</code>的生命周期在定义中就比函数中产生的变量长,而我最开始的泛型类型居然是<code>&amp;str</code>,于是就产生了一个borrow活得比他实际的数据更长的问题.<br>我要将他带出去,数据的ownership必须到<code>HashMap</code>中.(不过由于数据除了放到<code>HashMap</code>中还要参与之后的运算,于是通过<code>clone</code>等方法增加一些)  </p>
+<p>对于<code>ownership</code>和<code>borrow</code>这两个概念,还是要从引入他们的原因来分析,是为了取代运行时GC的.变量会在离开作用域后自动回收掉指向的数据(这里单单讨论堆,毕竟栈上的数据都是Copy),<code>ownership</code>可以想象成一根粗粗的箭头,只能有这一根并且支撑数据的存活(unsafe在此不讨论),而<code>borrow</code>则是细细的绳,如果箭头消失了,数据回收,绳就空荡荡(悬空)了.  </p>
+<h1 id="大小可知-大小不可知"><a href="#大小可知-大小不可知" class="headerlink" title="大小可知 大小不可知"></a>大小可知 大小不可知</h1><p>这个是最为困惑的一个点,主要体现在ch17上的内容.<br>看到了”为了编译过”而写的代码形式:</p>
+<pre><code class="rust">impl State for Draft {
+    fn request_review(self: Box&lt;Self&gt;) -&gt; Box&lt;dyn State&gt; {
+        Box::new(PendingReview {})
+    }
+}
+</code></pre>
+<p>使用<code>Box</code>的原因之一是为了解决编译期类型大小不可知的问题,而如果被<code>Box</code>持有的数据发生了move,那又把这个编译期大小不可知的问题给暴露出来.  </p>
+<blockquote>
+<p> In general, Rust doesn’t allow us to move a value out of a Box<t> because Rust doesn’t know how big the value inside the Box<t> will be: recall in Chapter 15 that we used Box<t> precisely because we had something of an unknown size that we wanted to store in a Box<t> to get a value of a known size.</t></t></t></t></p>
+</blockquote>
+<p>(ch20的内容)</p>
+<p>move Box本身.<br>在使用<code>trait object</code>中会常用到的一点.<br>可能需要多写一些代码才能更深入理解了.  </p>
+<h1 id="提供充足的声明式支持"><a href="#提供充足的声明式支持" class="headerlink" title="提供充足的声明式支持"></a>提供充足的声明式支持</h1><p>这个是比较惊喜的一点,rust的库中提供了很多声明式风格的api,语言本身也有模式匹配的支持,写起来和其他有运行时的语言一样便利(但要时刻记着<code>ownership</code>等概念).<br>这是语言设计和API设计上的选择,感觉相比某些语言还是相当友好的.<br>此外,使用了一些额外的类库也感觉到了API上的轻便,使用舒适,比如<code>serde_json</code>的<code>Value</code>设计.<br>相比java的类库<code>jackson</code>里的<code>JsonNode</code>,其子类的<code>get</code>实现会返回<code>null</code>,导致get之后必须检查一下(虽然可以用<code>Optional</code>一路串下去),<code>Value</code>有<code>Value::Null</code>(在使用[]的情况下),如果<code>jackson</code>设计不存在返回子类假设有个<code>MissingNode</code>的实例可能就会好很多.<br>不过这个具体类库具体分析了.  </p>
+<h1 id="语言本身的扩展性"><a href="#语言本身的扩展性" class="headerlink" title="语言本身的扩展性"></a>语言本身的扩展性</h1><p>这个其实支持macro的语言都有.<br>感觉这是一个很棒的方向,语言本身提供足够使用的语法即可,其他靠macro进行扩展,一个小内核+插件扩展的方式.<br>这个之后还要具体学习.  </p>
+<hr>
+<p>以上只是当前学习过程中的一点感想,随着不断学习可能会有不同的思考.<br>rust的学习过程还是比较有意思的,特别对于之前学的所有语言都是带运行时,不用太过在意gc,带来的思想上的冲击还是比较大的,特别是被编译器教做人… … …<br>此外补充一些收集的学习资料:  </p>
+<p>pingCAP的课程<br><a href="https://university.pingcap.com/talentplan.shtml" target="_blank" rel="noopener">https://university.pingcap.com/talentplan.shtml</a><br>对应的github:<br><a href="https://github.com/pingcap/talent-plan/tree/master/rust/building-blocks" target="_blank" rel="noopener">https://github.com/pingcap/talent-plan/tree/master/rust/building-blocks</a></p>
+<p>200行的绿色线程:<br><a href="https://cfsamson.gitbook.io/green-threads-explained-in-200-lines-of-rust/" target="_blank" rel="noopener">https://cfsamson.gitbook.io/green-threads-explained-in-200-lines-of-rust/</a></p>
+<p>GB模拟器:<br><a href="https://blog.ryanlevick.com/DMG-01/public/book/" target="_blank" rel="noopener">https://blog.ryanlevick.com/DMG-01/public/book/</a><br>nes模拟器:<br><a href="http://www.michaelburge.us/2019/03/18/nes-design.html" target="_blank" rel="noopener">http://www.michaelburge.us/2019/03/18/nes-design.html</a></p>
+<p>cheat sheet:<br><a href="https://cheats.rs/" target="_blank" rel="noopener">https://cheats.rs/</a></p>
+<p>exercism:<br><a href="https://exercism.io/tracks/rust" target="_blank" rel="noopener">https://exercism.io/tracks/rust</a>  </p>
+<p>async book:<br><a href="https://rust-lang.github.io/async-book/index.html" target="_blank" rel="noopener">https://rust-lang.github.io/async-book/index.html</a></p>
+<p><a href="http://arewegameyet.com/" target="_blank" rel="noopener">http://arewegameyet.com/</a></p>
+
+                <hr>
+                <div>
+                    <p>
+                         
+                        <span class="badge badge-light">#&nbsp;rust</span>
+                        &nbsp;
+                        
+                    </p>
+                </div>
+                <br>
+                
+                    <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>        
+</div>
+
+<br><br><br>
+
+<!-- Comments -->
+<!-- <div class="comments" id="comments">
+ 
+</div> -->
+<div class="comments" id="comments"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<div id="gitalk-container">
+    <div class="row">
+        <div id="gitalk-content" class="col-md-8 offset-md-2">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var id = (window.location.pathname).split("/").filter(Boolean).pop().substring(0, 49);
+    console.log(id);
+    var gitalk = new Gitalk({
+        clientID: '77067862514570ed56eb',
+        clientSecret: '61c327e7bb84a4227cccb3aa935921b821d71490',
+        id: id,
+        repo: 'fairjm.github.io',
+        owner: 'fairjm',
+        admin: 'fairjm',
+        distractionFreeMode: ''
+    })
+    gitalk.render('gitalk-content')
+</script>
+
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank"><b>HEXO</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank"> <b>Material-T</b></a>
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.7.4/js/mdb.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    
+    <script src="/js/post.js"></script>
+    
+      <script src="/js/plugins/prettify.js"></script>
+      <script>
+          $(document).ready(function(){
+              $('pre').addClass('prettyprint linenums');
+              prettyPrint();
+          })
+      </script>
+    
+  
+</body>
+</html>

@@ -86,6 +86,25 @@
 <div class="row mb-3">
 
 <div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/06/29/git-reset-lose-branch/" class="h4" style="font-weight: 700;">记一次尴尬的git reset丢失分支故障</a>
+    
+      <p class="mb-1">最近…似乎一直在踩坑…也不是什么故障,只是把一个分支的功能弄没了,之后在reflog里找到又恢复了.  
+产生原因是有同事错误地把分支B merge到了分支A并push.我直接在分支A上reset到了merge前的一个节点(但这个节点其实是B分支的).这导致分支A的头跑到了B分支上,A本来那个分支没有引用就丢了.先说下解决方法,git reflog找到那个reset,或者直接用git fsck --no-reflogs --unreachable找到那个commit之后直接再reset回去即可.  
+主要原因是git merge之后的log会显示另一个分支的commit记录(毕竟没有真正的分支...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-29
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
     <a href="/2018/06/26/work-summary/" class="h4" style="font-weight: 700;">工作总结</a>
     
       <p class="mb-1">一直想写这篇,但是持续拖延… …主要总结下这几年做的一些较大且完整的功能,过于零散的小功能以及和公司业务强相关的东西就不做记录了.顺序是新的在前,旧的在后,不断补充,就当自己的总结.都是后端相关的工作.实习的时候参与网站社区相关开发,毕业之后短时间参与了一个项目的零碎开发,之后一直做App后端相关的开发工作,今年年初转到对商家服务的组.基础技术是spring,mybatis之类的就不每个都写了.    
@@ -288,30 +307,6 @@ public class ParallelRetrievalExample {
     
       <p>
         <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-13
-        &nbsp;
-        
-      </p>
-    
-</div>
-</div>
-
-<div class="row mb-3">
-
-<div class="col-12 col-md-8 offset-md-2">
-    <a href="/2018/02/01/failure-control-patterns/" class="h4" style="font-weight: 700;">常用失败控制模式</a>
-    
-      <p class="mb-1">本文内容主要翻译自Reactive Systems Architecture第一章1.9节。
-在分布式系统中，有组件发生故障造成对应服务失败是很平常的一件事。这里简单阐述一下在发生这些错误时的一些常用处理模式。
-失败控制(failure control)的一个目标是在系统或他的一部分失败的情况下如何实现期望的一致性和传递保证。在部分系统失败的情况下，不影响到系统其他部分的稳定性。
-但通常工程师不会意识到失败是很自然的一件事。
-
-只是记录异常log 如果log不被人处理就一直保持失败
-一个服务持续的失败可能导致来自于其他服务的过度重试，导致该服务被压垮，也可能造成依赖他的服务的级联失败。
-每个服...</p>
-    
-    
-      <p>
-        <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-01
         &nbsp;
         
       </p>

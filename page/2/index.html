@@ -86,6 +86,30 @@
 <div class="row mb-3">
 
 <div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/11/13/elasticsearch-in-trouble/" class="h4" style="font-weight: 700;">ES踩坑笔记</a>
+    
+      <p class="mb-1">现在开始在业务上使用ES,记录一些踩坑经历,做点笔记.  
+
+2018-11-13  
+source不返回问题使用了角色校验,客户端插入成功之后获取数据没有source,和查询参数无关.检查mapping,发现获取mapping也是空…如下:  
+{&#39;test_index&#39;: {&#39;mappings&#39;: {&#39;test_doc&#39;: {&#39;properties&#39;: {}}}}}  
+排查了一会儿..找不出原因.后来要到了一个高权限的账号去kibana看了眼…发现  
+能获取的fields为空… …emmmmm….设置为*后解决  
+参考链...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-11-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
     <a href="/2018/10/19/why-lambda-inner-class-only-access-final-var/" class="h4" style="font-weight: 700;">lambda和匿名内部类使用外部变量为什么要语义final?</a>
     
       <p class="mb-1">今天群里讨论java的lambda实现.后来不断衍生谈到了为什么lambda和匿名内部类只能使用语义final的外部变量.  
@@ -283,25 +307,6 @@ xml的动态SQL没有java灵活.
     
       <p>
         <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-13
-        &nbsp;
-        
-      </p>
-    
-</div>
-</div>
-
-<div class="row mb-3">
-
-<div class="col-12 col-md-8 offset-md-2">
-    <a href="/2018/06/29/git-reset-lose-branch/" class="h4" style="font-weight: 700;">记一次尴尬的git reset丢失分支故障</a>
-    
-      <p class="mb-1">最近…似乎一直在踩坑…也不是什么故障,只是把一个分支的功能弄没了,之后在reflog里找到又恢复了.  
-产生原因是有同事错误地把分支B merge到了分支A并push.我直接在分支A上reset到了merge前的一个节点(但这个节点其实是B分支的).这导致分支A的头跑到了B分支上,A本来那个分支没有引用就丢了.先说下解决方法,git reflog找到那个reset,或者直接用git fsck --no-reflogs --unreachable找到那个commit之后直接再reset回去即可.  
-主要原因是git merge之后的log会显示另一个分支的commit记录(毕竟没有真正的分支...</p>
-    
-    
-      <p>
-        <i class="iconfont icon-riqi2"></i>&nbsp;2018-06-29
         &nbsp;
         
       </p>
