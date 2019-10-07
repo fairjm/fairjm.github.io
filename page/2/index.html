@@ -86,6 +86,28 @@
 <div class="row mb-3">
 
 <div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/11/28/10035181/" class="h4" style="font-weight: 700;">Akka实践一些总结</a>
+    
+      <p class="mb-1">最近在一些服务中使用了akka,主要用来做异步解耦和本地消息分发(路由),这里简单总结一下用法.  
+与spring集成网上有不少集成的例子,要使用到spring的扩展.我这边没有这样处理,而是简单把ActorSystem创建的actor的过程放在了spring configuration里,把ActorRef作为bean,毕竟actor本身不能为单例但是ref可以.  
+actor要使用一些bean的话就全部都由构造函数传入.如下:
+public class UserActor extends AbstractLoggingActor {
+
+    private UserService u...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-11-28
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
     <a href="/2018/11/13/elasticsearch-in-trouble/" class="h4" style="font-weight: 700;">ES踩坑笔记</a>
     
       <p class="mb-1">现在开始在业务上使用ES,记录一些踩坑经历,做点笔记.  
@@ -278,35 +300,6 @@ Java on Linux for devs and opshttps://www.slideshare.net/aragozin/java-on-linux-
     
       <p>
         <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-26
-        &nbsp;
-        
-      </p>
-    
-</div>
-</div>
-
-<div class="row mb-3">
-
-<div class="col-12 col-md-8 offset-md-2">
-    <a href="/2018/07/13/how-to-write-sql-happily/" class="h4" style="font-weight: 700;">如何更简单方便地执行SQL操作?</a>
-    
-      <p class="mb-1">现在公司使用mybatis作为DAL层的框架.使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.但在写一些简单SQL的时候会显得非常繁琐:  
-
-xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);
-原生无法热加载,修改xml后需要重启(可以使用三方实现);  
-xml的动态SQL没有java灵活.    
-
-上述这些”缺点”仅仅针对写简单的sql,特别是第一条.我对一张表的需求是简单的CRUD,那使用xml就会非常麻烦.  
-最基本的需求:  
-
-简单安全的SQL拼接方案;
-方便的类型映射.  
-
-探索了几个方案,接下来一一介...</p>
-    
-    
-      <p>
-        <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-13
         &nbsp;
         
       </p>

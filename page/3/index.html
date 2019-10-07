@@ -86,6 +86,35 @@
 <div class="row mb-3">
 
 <div class="col-12 col-md-8 offset-md-2">
+    <a href="/2018/07/13/how-to-write-sql-happily/" class="h4" style="font-weight: 700;">如何更简单方便地执行SQL操作?</a>
+    
+      <p class="mb-1">现在公司使用mybatis作为DAL层的框架.使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.但在写一些简单SQL的时候会显得非常繁琐:  
+
+xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);
+原生无法热加载,修改xml后需要重启(可以使用三方实现);  
+xml的动态SQL没有java灵活.    
+
+上述这些”缺点”仅仅针对写简单的sql,特别是第一条.我对一张表的需求是简单的CRUD,那使用xml就会非常麻烦.  
+最基本的需求:  
+
+简单安全的SQL拼接方案;
+方便的类型映射.  
+
+探索了几个方案,接下来一一介...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2018-07-13
+        &nbsp;
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-12 col-md-8 offset-md-2">
     <a href="/2018/06/29/git-reset-lose-branch/" class="h4" style="font-weight: 700;">记一次尴尬的git reset丢失分支故障</a>
     
       <p class="mb-1">最近…似乎一直在踩坑…也不是什么故障,只是把一个分支的功能弄没了,之后在reflog里找到又恢复了.  
@@ -284,29 +313,6 @@ if (encoding != null) {
     
       <p>
         <i class="iconfont icon-riqi2"></i>&nbsp;2018-03-21
-        &nbsp;
-        
-      </p>
-    
-</div>
-</div>
-
-<div class="row mb-3">
-
-<div class="col-12 col-md-8 offset-md-2">
-    <a href="/2018/02/13/async-api-latency/" class="h4" style="font-weight: 700;">使用异步任务降低API延迟_实践总结</a>
-    
-      <p class="mb-1">之前在想如何降低API的延迟，这些API里有几个比较耗时的操作且是串行执行，那通过异步执行的方式理论上可以降低运行的时间，如下图所示：  
-具体的实现比较简单，例如这样：
-public class ParallelRetrievalExample {
-    final CacheRetriever cacheRetriever;
-    final DBRetriever dbRetriever;
-    ParallelRetrievalExample(CacheRetriever cacheRetriever,
-                             DBRetriev...</p>
-    
-    
-      <p>
-        <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-13
         &nbsp;
         
       </p>

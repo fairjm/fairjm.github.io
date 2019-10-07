@@ -85,6 +85,33 @@
 
 <div class="row mb-3">
 
+<div class="col-12 col-md-8 offset-md-2">
+    <a href="/2019/10/03/et-lt-intro/" class="h4" style="font-weight: 700;">理一理Edge-triggered和Level-triggered</a>
+    
+      <p class="mb-1">最近群里又在讨论java的NIO,提到了NIO使用的lt而netty使用JNI在linux和MacOS/BSD中封装了et.之前对这两个概念笼统了解了下,并没有去查阅额外资料,仅限知道lt在缓冲区还有数据的情况下就会被poll出来,而et则需要有新的请求/事件发生.这次查阅了点资料,汇总一些数据来简单(毕竟也没有那么深入..)谈谈这两个概念.  
+简介这两个名词应该来源于电气,用于激活电路.摘取一段爆栈网的回答:
+
+Level Triggering: In level triggering the circuit will become active when the gating or cl...</p>
+    
+    
+      <p>
+        <i class="iconfont icon-riqi2"></i>&nbsp;2019-10-03
+        &nbsp;
+        
+            <i class="iconfont icon-cc-tag-more"></i>
+            
+                OS&nbsp;
+            
+                rust&nbsp;
+            
+        
+      </p>
+    
+</div>
+</div>
+
+<div class="row mb-3">
+
 <div class="col-12 col-md-4 mb-3">
     <a href="/2019/08/16/learning-rust/" style="background-image: url(/images/rust-logo.png);" class="img-fluid rounded z-depth-3 post-thumbnails" target="_self"></a>
 </div>
@@ -279,28 +306,6 @@ Decomposition strategies
     
       <p>
         <i class="iconfont icon-riqi2"></i>&nbsp;2018-12-05
-        &nbsp;
-        
-      </p>
-    
-</div>
-</div>
-
-<div class="row mb-3">
-
-<div class="col-12 col-md-8 offset-md-2">
-    <a href="/2018/11/28/10035181/" class="h4" style="font-weight: 700;">Akka实践一些总结</a>
-    
-      <p class="mb-1">最近在一些服务中使用了akka,主要用来做异步解耦和本地消息分发(路由),这里简单总结一下用法.  
-与spring集成网上有不少集成的例子,要使用到spring的扩展.我这边没有这样处理,而是简单把ActorSystem创建的actor的过程放在了spring configuration里,把ActorRef作为bean,毕竟actor本身不能为单例但是ref可以.  
-actor要使用一些bean的话就全部都由构造函数传入.如下:
-public class UserActor extends AbstractLoggingActor {
-
-    private UserService u...</p>
-    
-    
-      <p>
-        <i class="iconfont icon-riqi2"></i>&nbsp;2018-11-28
         &nbsp;
         
       </p>
