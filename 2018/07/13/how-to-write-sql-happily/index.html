@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="现在公司使用mybatis作为DAL层的框架.使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.但在写一些简单SQL的时候会显得非常繁琐:    xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);  原生无法热加载,修改xml后需要重启(可以使用三方实现);   xml的动态SQL没有java灵活.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何更简单方便地执行SQL操作?">
+<meta property="og:url" content="https://bingowith.me/2018/07/13/how-to-write-sql-happily/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="现在公司使用mybatis作为DAL层的框架.使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.但在写一些简单SQL的时候会显得非常繁琐:    xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);  原生无法热加载,修改xml后需要重启(可以使用三方实现);   xml的动态SQL没有java灵活.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-13T13:48:00.000Z">
+<meta property="article:modified_time" content="2018-07-13T13:48:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="mybatis">
+<meta property="article:tag" content="JOOQ">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://bingowith.me/2018/07/13/how-to-write-sql-happily/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2018&#x2F;07&#x2F;13&#x2F;how-to-write-sql-happily&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;07&#x2F;13&#x2F;how-to-write-sql-happily&#x2F;&quot;,&quot;title&quot;:&quot;如何更简单方便地执行SQL操作?&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>如何更简单方便地执行SQL操作? | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JOOQ"><span class="nav-number">1.</span> <span class="nav-text">JOOQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ActiveJDBC"><span class="nav-number">2.</span> <span class="nav-text">ActiveJDBC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mybatis-SqlBuilder-amp-SelectProvider"><span class="nav-number">3.</span> <span class="nav-text">Mybatis SqlBuilder&amp;@SelectProvider</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JdbcTemplate"><span class="nav-number">4.</span> <span class="nav-text">JdbcTemplate</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AEclass%E8%87%AA%E5%8A%A8%E6%98%A0%E5%B0%84"><span class="nav-number">4.1.</span> <span class="nav-text">根据class自动映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%8F%92%E5%85%A5ID"><span class="nav-number">4.2.</span> <span class="nav-text">获取插入ID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5"><span class="nav-number">4.3.</span> <span class="nav-text">批量插入</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2018/07/13/how-to-write-sql-happily/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何更简单方便地执行SQL操作?
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-07-13 21:48:00" itemprop="dateCreated datePublished" datetime="2018-07-13T21:48:00+08:00">2018-07-13</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2018/07/13/how-to-write-sql-happily/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/13/how-to-write-sql-happily/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>现在公司使用<code>mybatis</code>作为DAL层的框架.<br>使用起来比较简单,使用xml进行SQL的书写,java代码使用接口执行.<br>但在写一些简单SQL的时候会显得非常繁琐:  </p>
+<ol>
+<li>xml和java分离(设计上为了解耦),一些字段是否设置等需要反复查看(虽然可以通过插件直达);</li>
+<li> 原生无法热加载,修改xml后需要重启(可以使用三方实现);  </li>
+<li>xml的动态SQL没有java灵活.    <span id="more"></span>
+上述这些”缺点”仅仅针对写简单的sql,特别是第一条.<br>我对一张表的需求是简单的CRUD,那使用xml就会非常麻烦.  </li>
+</ol>
+<p>最基本的需求:  </p>
+<ul>
+<li>简单安全的SQL拼接方案;</li>
+<li>方便的类型映射.  </li>
+</ul>
+<p>探索了几个方案,接下来一一介绍.  </p>
+<h1 id="JOOQ"><a href="#JOOQ" class="headerlink" title="JOOQ"></a>JOOQ</h1><p>这是考虑的第一个方案,有个没好的愿景,类型安全的SQL,不用担心出现SQL的语法错误.<br>但实际使用遇到了比较麻烦的事情,他的codegen.  </p>
+<pre class="language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>generate</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pojos</span><span class="token punctuation">></span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pojos</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>daos</span><span class="token punctuation">></span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>daos</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>keys</span><span class="token punctuation">></span></span>false<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>keys</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>indexes</span><span class="token punctuation">></span></span>false<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>indexes</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>globalObjectReferences</span><span class="token punctuation">></span></span>false<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>globalObjectReferences</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>generate</span><span class="token punctuation">></span></span></code></pre>
+<p>自己加了<code>pojo</code>和<code>dao</code>,一定会生成<code>Table</code>,<code>Record</code>,洋洋洒洒一堆文件摆在眼前.<br>因为是互联网企业,业务也在发现会相当不稳定,管理这坨生成的代码会很麻烦,而且不简洁.<br>当然也有不是用codegen的方式,但最后感觉还是过于庞大,也比之前直接用mybatis更麻烦了.  </p>
+<h1 id="ActiveJDBC"><a href="#ActiveJDBC" class="headerlink" title="ActiveJDBC"></a>ActiveJDBC</h1><p><code>active record</code>的实践.<br>总体感觉非常简洁清晰,想起了当初用JFinal的感觉.<br>当时看了文档就感觉是他了,不需要自己手写SQL,同时兼容多种方言,单测容易用<code>H2</code>替换运行.<br>但实际使用发现了一个严峻的问题,严峻到不得不放弃他的问题… …<br>他需要<code>Instrument</code>的支持.(子类使用父类的静态方法但是要在字节码中改为子类调用(复制了那些方法到子类… …))<br>且无论是动态方案还是静态方案都需要修改IDE配置.<br>这意味着我只要在现有项目里使用就会有一群开发过来揍我  </p>
+<h1 id="Mybatis-SqlBuilder-amp-SelectProvider"><a href="#Mybatis-SqlBuilder-amp-SelectProvider" class="headerlink" title="Mybatis SqlBuilder&amp;@SelectProvider"></a>Mybatis SqlBuilder&amp;@SelectProvider</h1><p>绕了一圈,回到了原点… …<br>但这个方案的确是满足了解决了上面3个问题.<br><code>org.apache.ibatis.jdbc.SQL</code>本身提供了几个方法方便拼写简单的SQL.<br>例子如下:  </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">new</span> <span class="token function">SQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">SELECT</span><span class="token punctuation">(</span>COLUMNS<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">FROM</span><span class="token punctuation">(</span><span class="token string">"user AS u"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">INNER_JOIN</span><span class="token punctuation">(</span><span class="token string">"user_info AS ui ON u.user_id = ui.user_id"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WHERE</span><span class="token punctuation">(</span><span class="token string">"u.user_type = #&#123;userType&#125;"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WHERE</span><span class="token punctuation">(</span><span class="token string">"u.deleted = 0"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">ORDER</span><span class="token punctuation">(</span><span class="token string">"u.user_id"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">+</span> <span class="token string">" LIMIT #&#123;start&#125;,#&#123;num&#125;"</span><span class="token punctuation">;</span></code></pre>
+<p>LIMIT要自己拼,因为他不是标准SQL.<br>接下来接口一样定义,用上对应注解(<code>@UpdateProvider</code>,<code>@InsertProvider</code>,<code>@DeleteProvider</code>)  </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SelectProvider</span><span class="token punctuation">(</span>type <span class="token operator">=</span> <span class="token class-name">UserProvider</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> method <span class="token operator">=</span> <span class="token string">"getUserByType"</span><span class="token punctuation">)</span>
+<span class="token class-name">UserInfo</span> <span class="token function">getUserByType</span><span class="token punctuation">(</span><span class="token annotation punctuation">@Param</span><span class="token punctuation">(</span><span class="token string">"userType"</span><span class="token punctuation">)</span> <span class="token keyword">int</span> userType<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h1 id="JdbcTemplate"><a href="#JdbcTemplate" class="headerlink" title="JdbcTemplate"></a>JdbcTemplate</h1><p>使用<code>NamedParameterJdbcTemplate</code>会感觉好一点,占位符可以用<code>:name</code>的形式.<br>我们spring也一起用,对应的依赖也有.<br>这个也可行,而且写起来还可以,不过他本身缺少SQL拼接方便的工具,适合写简单没有使用条件分支生成SQL的情况.<br>这个网上资料很多,这里稍微列一些常用的需求.  </p>
+<h2 id="根据class自动映射"><a href="#根据class自动映射" class="headerlink" title="根据class自动映射"></a>根据class自动映射</h2><p>可以使用<code>BeanPropertyRowMapper</code>,会按照属性进行SQL字段的关联,java的驼峰会变成小写和下划线的形式进行匹配.<br>例子:</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">BeanPropertyRowMapper</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> USER_MAPPER <span class="token operator">=</span> <span class="token class-name">BeanPropertyRowMapper</span><span class="token punctuation">.</span><span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token class-name">User</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+<span class="token class-name">MapSqlParameterSource</span> params <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MapSqlParameterSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+params<span class="token punctuation">.</span><span class="token function">addValue</span><span class="token punctuation">(</span><span class="token string">"userId"</span><span class="token punctuation">,</span> userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ServiceApply</span><span class="token punctuation">></span></span> applies <span class="token operator">=</span> mTemplate<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span>
+        <span class="token string">"SELECT user_id,user_name,created FROM user WHERE user_id=:userId"</span><span class="token punctuation">,</span>
+        params<span class="token punctuation">,</span> USER_MAPPER<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    </code></pre>
+
+<h2 id="获取插入ID"><a href="#获取插入ID" class="headerlink" title="获取插入ID"></a>获取插入ID</h2><pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">KeyHolder</span> key <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">GeneratedKeyHolder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+mTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>
+        <span class="token string">"INSERT INTO user(user_name,age) VALUES (:name,:age)"</span><span class="token punctuation">,</span>
+        params<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Number</span> keyValue <span class="token operator">=</span> key<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h2 id="批量插入"><a href="#批量插入" class="headerlink" title="批量插入"></a>批量插入</h2><pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">MapSqlParameterSource</span><span class="token punctuation">></span></span> batchParams <span class="token operator">=</span> names
+        <span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">distinct</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>e <span class="token operator">-></span> <span class="token keyword">new</span> <span class="token class-name">MapSqlParameterSource</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token class-name">Collectors</span><span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+mTemplate<span class="token punctuation">.</span><span class="token function">batchUpdate</span><span class="token punctuation">(</span>
+        <span class="token string">"INSERT IGNORE INTO user(user_name) VALUES (:name)"</span><span class="token punctuation">,</span>
+        batchParams<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SqlParameterSource</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<hr>
+<p>参考链接:<br><a target="_blank" rel="noopener" href="https://github.com/shakarelic/mybatis-reload">https://github.com/shakarelic/mybatis-reload</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://www.jooq.org/">https://www.jooq.org/</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://javalite.io/activejdbc">http://javalite.io/activejdbc</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Active_Record">https://zh.wikipedia.org/wiki/Active_Record</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://www.mybatis.org/mybatis-3/statement-builders.html">http://www.mybatis.org/mybatis-3/statement-builders.html</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.html">https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.html</a></p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/15/chatgpt-plugin-setup-java-python/" rel="bookmark">ChatGPT Plugin开发setup - Java(Spring Boot) Python(fastapi)</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2024/01/31/playwright-cloudflare-bypass/" rel="bookmark">playwright 一些方法解决被cloudflare block的问题</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/11/05/shardingsphere-jdbc-learn-note/" rel="bookmark">shardingsphere-jdbc 水平分表学习记录</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/11/08/high-performance-mysql-4th-ch01-note/" rel="bookmark">高性能MySQL(第4版) 第一章 MySQL架构 读书笔记</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/03/20/spring-boot-mysql-to-h2/" rel="bookmark">spring boot应用 从mysql迁移h2</a></div>
+    </li>
+  </ul>
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2018/07/13/how-to-write-sql-happily/" title="如何更简单方便地执行SQL操作?">https://bingowith.me/2018/07/13/how-to-write-sql-happily/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/mybatis/" rel="tag"># mybatis</a>
+              <a href="/tags/JOOQ/" rel="tag"># JOOQ</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/29/git-reset-lose-branch/" rel="prev" title="记一次尴尬的git reset丢失分支故障">
+                  <i class="fa fa-chevron-left"></i> 记一次尴尬的git reset丢失分支故障
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/07/26/monitoring-introduction/" rel="next" title="监控基础">
+                  监控基础 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>

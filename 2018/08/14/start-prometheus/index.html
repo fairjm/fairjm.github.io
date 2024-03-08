@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="Monitoring with Prometheus读书笔记原书见:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;monitoring-with-prometheus&#x2F;9780988820289&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus使用入门">
+<meta property="og:url" content="https://bingowith.me/2018/08/14/start-prometheus/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="Monitoring with Prometheus读书笔记原书见:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;monitoring-with-prometheus&#x2F;9780988820289&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180815003536046-1338003383.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180815012218488-729181577.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180815013756421-454186948.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180815014142829-114979814.png">
+<meta property="article:published_time" content="2018-08-14T17:49:00.000Z">
+<meta property="article:modified_time" content="2018-08-14T17:49:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20180815003536046-1338003383.png">
+
+
+<link rel="canonical" href="https://bingowith.me/2018/08/14/start-prometheus/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2018&#x2F;08&#x2F;14&#x2F;start-prometheus&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;08&#x2F;14&#x2F;start-prometheus&#x2F;&quot;,&quot;title&quot;:&quot;Prometheus使用入门&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Prometheus使用入门 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E5%AE%B9%E5%99%A8%E5%92%8C%E8%8A%82%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">监控容器和节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Label"><span class="nav-number">3.1.</span> <span class="nav-text">Label</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metrics"><span class="nav-number">3.2.</span> <span class="nav-text">Metrics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU%E5%88%A9%E7%94%A8%E7%8E%87"><span class="nav-number">3.2.1.</span> <span class="nav-text">CPU利用率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU%E9%A5%B1%E5%92%8C%E5%BA%A6"><span class="nav-number">3.2.2.</span> <span class="nav-text">CPU饱和度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8"><span class="nav-number">3.2.3.</span> <span class="nav-text">内存使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%A5%B1%E5%92%8C%E5%BA%A6"><span class="nav-number">3.2.4.</span> <span class="nav-text">内存饱和度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E4%BD%BF%E7%94%A8%E7%8E%87"><span class="nav-number">3.2.5.</span> <span class="nav-text">磁盘使用率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#exporter%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9B%91%E6%8E%A7"><span class="nav-number">3.2.6.</span> <span class="nav-text">exporter的可用性监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96Query"><span class="nav-number">3.3.</span> <span class="nav-text">持久化Query</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">3.4.</span> <span class="nav-text">可视化</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2018/08/14/start-prometheus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Prometheus使用入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-08-15 01:49:00" itemprop="dateCreated datePublished" datetime="2018-08-15T01:49:00+08:00">2018-08-15</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2018/08/14/start-prometheus/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/14/start-prometheus/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Monitoring with Prometheus读书笔记<br>原书见:<br><a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/">https://www.safaribooksonline.com/library/view/monitoring-with-prometheus/9780988820289/</a>  </p>
+<hr>
+<span id="more"></span>
+<p>摘录了一些内容,稍微整理了下,更详细的内容可以阅读原书.   </p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Prometheus灵感来源于谷歌的borgmon.<br>他的设计专注于最近发生的事,而不是几个星期几个月前的,默认只保存15天的时间序列.  </p>
+<p>内置PromQL查询语言,可以方便进行metric查询和定义新的metric.  </p>
+<p>数据格式</p>
+<pre class="language-none"><code class="language-none">&lt;time series name&gt;&#123;&lt;label name&gt;&#x3D;&lt;label value&gt;, ...&#125;  </code></pre>
+<p>例子:  </p>
+<pre class="language-none"><code class="language-none">total_website_visits&#123;site&#x3D;&quot;MegaApp&quot;, location&#x3D;&quot;NJ&quot;, instance&#x3D;&quot;webserver&quot;,job&#x3D;&quot;web&quot;&#125;</code></pre>
+
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>安装过程比较简单,官网下载之后解压即可.<br>windows下可以使用choco安装:  </p>
+<pre class="language-none"><code class="language-none">choco install prometheus</code></pre>
+
+<p>也可以使用docker运行:  </p>
+<pre class="language-none"><code class="language-none">docker run -p 9090:9090 prom&#x2F;prometheus  </code></pre>
+
+<p>解压后自带一个配置文件,启动时带上文件路径即可:  </p>
+<pre class="language-none"><code class="language-none">prometheus --config.file &quot;&#x2F;etc&#x2F;prometheus&#x2F;prometheus.yml&quot;</code></pre>
+<p>(放置在了<code>/etc/prometheus</code>下)  </p>
+<p>默认跑在9090端口.  </p>
+<h1 id="监控容器和节点"><a href="#监控容器和节点" class="headerlink" title="监控容器和节点"></a>监控容器和节点</h1><p>节点(机器)监控可以使用node exporter.<br>下载node exporter 解压 复制到可执行中</p>
+<pre class="language-none"><code class="language-none">wget https:&#x2F;&#x2F;github.com&#x2F;prometheus&#x2F;node_exporter&#x2F;releases&#x2F;download&#x2F;v0.16.0&#x2F;node_exporter-0.16.0.linux-amd64.tar.gz
+$ tar -xzf node_exporter-*
+$ sudo cp node_exporter-*&#x2F;node_exporter &#x2F;usr&#x2F;local&#x2F;bin&#x2F;</code></pre>
+<p>默认是9100端口,可以通过<code>/metrics</code>访问.<br>收集的数据较多,不需要的指标可以通过<code>--no-模块名</code>禁用,同时一些没有开启的模块可以通过<code>--模块名</code>开启.  </p>
+<p>容器监控可以使用cadvisor  </p>
+<pre class="language-none"><code class="language-none">docker run \
+  --volume&#x3D;&#x2F;:&#x2F;rootfs:ro \
+  --volume&#x3D;&#x2F;var&#x2F;run:&#x2F;var&#x2F;run:rw \
+  --volume&#x3D;&#x2F;sys:&#x2F;sys:ro \
+  --volume&#x3D;&#x2F;var&#x2F;lib&#x2F;docker&#x2F;:&#x2F;var&#x2F;lib&#x2F;docker:ro \
+  --volume&#x3D;&#x2F;dev&#x2F;disk&#x2F;:&#x2F;dev&#x2F;disk:ro \
+  --publish&#x3D;8080:8080 \
+  --detach&#x3D;true \
+  --name&#x3D;cadvisor \
+  google&#x2F;cadvisor:latest</code></pre>
+<p>监听在8080端口.  </p>
+<p>对应的Prometheus配置修改:  </p>
+<pre class="language-yml" data-language="yml"><code class="language-yml">scrape_configs:
+  - job_name: &#39;prometheus&#39;
+    static_configs:
+      - targets: [&#39;localhost:9090&#39;]
+  - job_name: &#39;node&#39;
+    static_configs:
+      - targets: [&#39;138.197.26.39:9100&#39;, &#39;138.197.30.147:9100&#39;, &#39;138.197.30.163:9100&#39;]
+  - job_name: &#39;docker&#39;
+    static_configs:
+      - targets: [&#39;138.197.26.39:8080&#39;, &#39;138.197.30.147:8080&#39;, &#39;138.197.30.163:8080&#39;]</code></pre>
+<p>(ip等信息写在targets中)  </p>
+<h2 id="Label"><a href="#Label" class="headerlink" title="Label"></a>Label</h2><p>注意改变一个label或增加一个新的label会创建一个新的time series.  </p>
+<p>对收集的metrics的label进行操作.<br>可以去掉不必要的metrics和label,增加编辑label.  </p>
+<p>有两个阶段可以修改:  </p>
+<ul>
+<li>relabel_configs:用来修改服务发现过来的元数据label.  </li>
+<li>metric_relabel_configs:获得数据存储到磁盘之前操作  </li>
+</ul>
+<p>如图所示:<br><img src="/images/1244488-20180815003536046-1338003383.png"></p>
+<p>一些配置(和job_name平级):  </p>
+<pre class="language-none"><code class="language-none">metric_relabel_configs:
+  - source_labels: [__name__]
+    separator: &#39;,&#39;
+    regex: &#39;(container_tasks_state|container_memory_failures_total)&#39;
+    action: drop
+</code></pre>
+<p><code>__name__</code>是metrics的保留label,表示这个metric的名字,这里将这些名字用<code>,</code>拼起来,过滤掉符合正则的名字的metrics.  </p>
+<pre class="language-none"><code class="language-none">metric_relabel_configs:
+- source_labels: [id]
+  regex: &#39;&#x2F;docker&#x2F;([a-z0-9]+);&#39;
+  replacement: &#39;$1&#39;
+  target_label: container_id  </code></pre>
+<p>替换掉id符合正则的内容产生另一个名为container_id的label.<br>此外有一个<code>honor_labels</code>的参数可以控制替换后的label和现有重名的问题,默认为false,现有的冲突会加上exported_的前缀.设置为true,会忽略该替换的label.  </p>
+<pre class="language-none"><code class="language-none">metric_relabel_configs:
+  - regex: &#39;kernelVersion&#39;
+    action: labeldrop</code></pre>
+<p>移除掉现有符合正则的label.  </p>
+<h2 id="Metrics"><a href="#Metrics" class="headerlink" title="Metrics"></a>Metrics</h2><h3 id="CPU利用率"><a href="#CPU利用率" class="headerlink" title="CPU利用率"></a>CPU利用率</h3><p>使用node_cpu_seconds_total<br>如图:<br><img src="/images/1244488-20180815012218488-729181577.png"></p>
+<p>计算5min为取样每秒的瞬时利用率</p>
+<pre class="language-none"><code class="language-none">100 - avg (irate(node_cpu_seconds_total&#123;job&#x3D;&quot;node&quot;,mode&#x3D;&quot;idle&quot;&#125;[5m])) by (instance) * 100</code></pre>
+<p>5m是range vector,表示使用记录的上一个5分钟的数据.<br>irate是瞬时变化率,适合变化较频繁的metric.<br>avg是因为有多个metrics(分别是每核的)  </p>
+<h3 id="CPU饱和度"><a href="#CPU饱和度" class="headerlink" title="CPU饱和度"></a>CPU饱和度</h3><p>node_load*<br>后面的*有1 5 15,表示多少分钟.<br>该metric和核数有关,查看核数可以使用:</p>
+<pre class="language-none"><code class="language-none">count by (instance)(node_cpu_seconds_total&#123;mode&#x3D;&quot;idle&quot;&#125;)</code></pre>
+
+<h3 id="内存使用"><a href="#内存使用" class="headerlink" title="内存使用"></a>内存使用</h3><p>node_memory_*<br>列出空闲内存  </p>
+<pre class="language-none"><code class="language-none">(node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)) &#x2F; node_memory_MemTotal_bytes * 100</code></pre>
+
+<h3 id="内存饱和度"><a href="#内存饱和度" class="headerlink" title="内存饱和度"></a>内存饱和度</h3><p>监控paging in和paging out的内存<br>/proc/vmstat<br>node_vmstat_pswpin<br>node_vmstat_pswpout<br>单位是KB  </p>
+<pre class="language-none"><code class="language-none">1024 * sum by (instance) (
+       (rate(node_vmstat_pgpgin[1m])
+       + rate(node_vmstat_pgpgout[1m]))
+)</code></pre>
+<p>算出每分钟的变化量<br>rate是平均变化率,相比irate适合变化幅度不剧烈的数据.  </p>
+<h3 id="磁盘使用率"><a href="#磁盘使用率" class="headerlink" title="磁盘使用率"></a>磁盘使用率</h3><p>node_filesystem_*<br>使用率:</p>
+<pre class="language-none"><code class="language-none">(node_filesystem_size_bytes&#123;mountpoint&#x3D;&quot;&#x2F;&quot;&#125; - node_filesystem_free_bytes&#123;mountpoint&#x3D;&quot;&#x2F;&quot;&#125;) &#x2F; node_filesystem_size_bytes&#123;mountpoint&#x3D;&quot;&#x2F;&quot;&#125; * 100</code></pre>
+<p>可以用=<del>匹配正则 相对的有!</del></p>
+<pre class="language-none"><code class="language-none">predict_linear(node_filesystem_free_bytes&#123;job&#x3D;&quot;node&quot;&#125;[1h], 4*3600) &lt; 0</code></pre>
+<p>通过1h的估计量 看看4h后是否会用完</p>
+<h3 id="exporter的可用性监控"><a href="#exporter的可用性监控" class="headerlink" title="exporter的可用性监控"></a>exporter的可用性监控</h3><p>可以使用up.  </p>
+<pre class="language-none"><code class="language-none">up&#123;job&#x3D;&quot;node&quot;&#125;</code></pre>
+<p>返回1表示node_exporter存活.  </p>
+<h2 id="持久化Query"><a href="#持久化Query" class="headerlink" title="持久化Query"></a>持久化Query</h2><p>除了直接查询,query还可以在其他场合持久化使用:  </p>
+<ul>
+<li>Recording rule - 通过query创建新的metrics</li>
+<li>Alerting rules - 生成报警</li>
+<li>Visualization - 可视化  </li>
+</ul>
+<p>设置prometheus.yml的rules_files块,增加一个新的rule:  </p>
+<pre class="language-none"><code class="language-none">rule_files:
+  - &quot;rules&#x2F;node_rules.yml&quot;</code></pre>
+<p>对应的该文件内容如下:  </p>
+<pre class="language-none"><code class="language-none">groups:
+- name: node_rule
+  rules:
+  - record: instance:node_cpu:avg_rate5m
+    expr: 100 - avg (irate(node_cpu_seconds_total&#123;job&#x3D;&quot;node&quot;,mode&#x3D;&quot;idle&quot;&#125;[5m])) by (instance) * 100</code></pre>
+<p>配置文件修改后可以使用<code>promtool</code>的对应命令,比如<code>promtool check rules node_rules.yml</code>进行检查.  </p>
+<p>可以在Prometheus上通过<code>/rules</code>查看:<br><img src="/images/1244488-20180815013756421-454186948.png"></p>
+<h2 id="可视化"><a href="#可视化" class="headerlink" title="可视化"></a>可视化</h2><p>使用grafana<br>centos下安装:</p>
+<pre class="language-none"><code class="language-none">wget https:&#x2F;&#x2F;s3-us-west-2.amazonaws.com&#x2F;grafana-releases&#x2F;release&#x2F;grafana-5.2.2-1.x86_64.rpm 
+sudo yum localinstall grafana-5.2.2-1.x86_64.rpm </code></pre>
+
+<p>配置在<code>/etc/grafana/grafana.ini</code>.<br>通过<code>sudo service grafana-server start</code>启动服务.<br>默认使用3000端口.<br>默认用户名和密码在配置文件,为admin:admin.<br>登陆后增加数据源选择Prometheus即可.<br>然后可以新增dashboard,配置对应的查询:<br><img src="/images/1244488-20180815014142829-114979814.png"></p>
+<hr>
+<p>文中可能会有不少错误,欢迎提出.<br>原书的内容更为详尽和丰富,有兴趣的可以阅读原书.  </p>
+<hr>
+<p>参考资料:<br><a target="_blank" rel="noopener" href="https://prometheus.io/docs/prometheus/latest/getting_started/">https://prometheus.io/docs/prometheus/latest/getting_started/</a>   </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/prometheus/node_exporter">https://github.com/prometheus/node_exporter</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/google/cadvisor">https://github.com/google/cadvisor</a> </p>
+<p><a target="_blank" rel="noopener" href="https://grafana.com/">https://grafana.com/</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://legacy.gitbook.com/book/songjiayang/prometheus/details">https://legacy.gitbook.com/book/songjiayang/prometheus/details</a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2018/08/14/start-prometheus/" title="Prometheus使用入门">https://bingowith.me/2018/08/14/start-prometheus/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/08/01/painful-to-maintain-data-statistic-system/" rel="prev" title="维护之痛-数据统计任务小结">
+                  <i class="fa fa-chevron-left"></i> 维护之痛-数据统计任务小结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/09/07/school-days-memory/" rel="next" title="还未(划掉)毕业的这几天">
+                  还未(划掉)毕业的这几天 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>

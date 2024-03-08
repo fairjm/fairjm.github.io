@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="为什么要用插件主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar&#x2F;war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。   插件选择使用比较多的是spotify的插件:https:&#x2F;&#x2F;github.com&#x2F;spotify&#x2F;docker-maven-plugin和 https:&#x2F;&#x2F;github.com&#x2F;spotify&#x2F;dockerfile-mav">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用maven插件构建docker镜像">
+<meta property="og:url" content="https://bingowith.me/2017/12/22/docker-maven-springboot/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="为什么要用插件主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar&#x2F;war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。   插件选择使用比较多的是spotify的插件:https:&#x2F;&#x2F;github.com&#x2F;spotify&#x2F;docker-maven-plugin和 https:&#x2F;&#x2F;github.com&#x2F;spotify&#x2F;dockerfile-mav">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-22T13:22:00.000Z">
+<meta property="article:modified_time" content="2017-12-22T13:22:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://bingowith.me/2017/12/22/docker-maven-springboot/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2017&#x2F;12&#x2F;22&#x2F;docker-maven-springboot&#x2F;&quot;,&quot;path&quot;:&quot;2017&#x2F;12&#x2F;22&#x2F;docker-maven-springboot&#x2F;&quot;,&quot;title&quot;:&quot;使用maven插件构建docker镜像&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>使用maven插件构建docker镜像 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%8F%92%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">为什么要用插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">插件选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B2"><span class="nav-number">4.</span> <span class="nav-text">示例2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A"><span class="nav-number">5.</span> <span class="nav-text">更多</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD-%E7%A4%BA%E4%BE%8B1"><span class="nav-number">6.</span> <span class="nav-text">源码下载(示例1)</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2017/12/22/docker-maven-springboot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用maven插件构建docker镜像
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-12-22 21:22:00" itemprop="dateCreated datePublished" datetime="2017-12-22T21:22:00+08:00">2017-12-22</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2017/12/22/docker-maven-springboot/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/12/22/docker-maven-springboot/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="为什么要用插件"><a href="#为什么要用插件" class="headerlink" title="为什么要用插件"></a>为什么要用插件</h1><p>主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar/war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。  </p>
+<h1 id="插件选择"><a href="#插件选择" class="headerlink" title="插件选择"></a>插件选择</h1><p>使用比较多的是spotify的插件:<a target="_blank" rel="noopener" href="https://github.com/spotify/docker-maven-plugin">https://github.com/spotify/docker-maven-plugin</a><br>和 <a target="_blank" rel="noopener" href="https://github.com/spotify/dockerfile-maven%E3%80%82">https://github.com/spotify/dockerfile-maven。</a><br>但这里我选择另一款插件：<a target="_blank" rel="noopener" href="https://github.com/fabric8io/docker-maven-plugin%E3%80%82">https://github.com/fabric8io/docker-maven-plugin。</a><br>因为他文档比较详细，在使用上也比较方便。<br>文档地址：<a target="_blank" rel="noopener" href="https://dmp.fabric8.io/">https://dmp.fabric8.io/</a>  </p>
+<span id="more"></span>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>这里使用一个spring boot项目，只有一个最简单的<code>HelloController</code>，如下：</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloController</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token string">"hello"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p><code>pom.xml</code>改动如下:</p>
+<pre class="language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>plugin</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>io.fabric8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>docker-maven-plugin<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>0.23.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dockerHost</span><span class="token punctuation">></span></span>tcp://192.168.99.100:2376<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dockerHost</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>certPath</span><span class="token punctuation">></span></span>C:\Users\fairjm\.docker\machine\machines\default<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>certPath</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>images</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>image</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>$&#123;project.name&#125;:$&#123;project.version&#125;<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>build</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>from</span><span class="token punctuation">></span></span>openjdk:8-jre<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>from</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>args</span><span class="token punctuation">></span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>JAR_FILE</span><span class="token punctuation">></span></span>$&#123;project.name&#125;-$&#123;project.version&#125;.jar<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>JAR_FILE</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>args</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>assembly</span><span class="token punctuation">></span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>descriptorRef</span><span class="token punctuation">></span></span>artifact<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>descriptorRef</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>assembly</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entryPoint</span><span class="token punctuation">></span></span>["java"]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entryPoint</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>cmd</span><span class="token punctuation">></span></span>["-jar","maven/$&#123;project.name&#125;-$&#123;project.version&#125;.jar"]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>cmd</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>build</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>run</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ports</span><span class="token punctuation">></span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>port</span><span class="token punctuation">></span></span>8888:8080<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>port</span><span class="token punctuation">></span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ports</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>run</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>image</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>images</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>plugin</span><span class="token punctuation">></span></span>
+```  
+这里使用了在xml里写操作而不是使用Dockerfile的方式，个人感觉这种方式更加简单一点，不需要额外再维护一份文件，和Dockerfile相比使用的语法(注意entrypoint和cmd)也类似。  
+
+接下来介绍一下configuration配置。  
+`dockerHost`和`certPath`是连接docker使用，毕竟插件本身不包含docker和对应功能只是调用docker提供的API。  
+这两个值在docker toolbox上可以通过`docker-machine env`获得。  
+```bash
+$ docker-machine env
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+export DOCKER_CERT_PATH="C:\Users\fairjm\.docker\machine\machines\default"
+export DOCKER_MACHINE_NAME="default"
+export COMPOSE_CONVERT_WINDOWS_PATHS="true"
+# Run this command to configure your shell:
+# eval $("D:\Docker Toolbox\docker-machine.exe" env)</code></pre>
+
+<p>image的build指定了构建相关的设置：  </p>
+<ul>
+<li>name指定image名，这里使用了项目名，tag使用项目版本；   </li>
+<li>from指定基于的image，和Dockerfile的FROM一致；  </li>
+<li>args和ARG一致（在这个例子中没有实际意义）；  </li>
+<li>assembly用来定义哪些文件进入镜像中，使用了插件已经定义好的行为，spring-boot生成的是fat jar不需要拷贝依赖所以选择了artifact。这个的配置比较丰富，可以查看文档获取更多的信息。  </li>
+<li>entryPoint和cmd也对应同样的Dockerfile命令。 </li>
+</ul>
+<p>接着通过<code>mvn clean package docker:build</code>执行打包和build</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> --- maven-jar-plugin:2.6:jar <span class="token punctuation">(</span>default-jar<span class="token punctuation">)</span> @ docker-test ---
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> Building jar: D:<span class="token punctuation">\</span>sts_workspace<span class="token punctuation">\</span>docker-test<span class="token punctuation">\</span>target<span class="token punctuation">\</span>docker-test-0.0.1-SNAPSHOT.jar
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> --- spring-boot-maven-plugin:1.5.9.RELEASE:repackage <span class="token punctuation">(</span>default<span class="token punctuation">)</span> @ docker-test ---
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> --- docker-maven-plugin:0.23.0:build <span class="token punctuation">(</span>default-cli<span class="token punctuation">)</span> @ docker-test ---
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> Copying files to D:<span class="token punctuation">\</span>sts_workspace<span class="token punctuation">\</span>docker-test<span class="token punctuation">\</span>target<span class="token punctuation">\</span>docker<span class="token punctuation">\</span>docker-test<span class="token punctuation">\</span><span class="token number">0.0</span>.1-SNAPSHOT<span class="token punctuation">\</span>build<span class="token punctuation">\</span>maven
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> Building tar: D:<span class="token punctuation">\</span>sts_workspace<span class="token punctuation">\</span>docker-test<span class="token punctuation">\</span>target<span class="token punctuation">\</span>docker<span class="token punctuation">\</span>docker-test<span class="token punctuation">\</span><span class="token number">0.0</span>.1-SNAPSHOT<span class="token punctuation">\</span>tmp<span class="token punctuation">\</span>docker-build.tar
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> DOCKER<span class="token operator">></span> <span class="token punctuation">[</span>docker-test:0.0.1-SNAPSHOT<span class="token punctuation">]</span>: Created docker-build.tar <span class="token keyword">in</span> <span class="token number">1</span> second
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> DOCKER<span class="token operator">></span> <span class="token punctuation">[</span>docker-test:0.0.1-SNAPSHOT<span class="token punctuation">]</span>: Built image sha256:303c3
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> DOCKER<span class="token operator">></span> <span class="token punctuation">[</span>docker-test:0.0.1-SNAPSHOT<span class="token punctuation">]</span>: Removed old image sha256:ea8a7
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> ------------------------------------------------------------------------
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> BUILD SUCCESS
+<span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> ------------------------------------------------------------------------</code></pre>
+<p>完成打包，在对应连接的docker上也会出现这个镜像：  </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ docker image <span class="token function">ls</span>
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+docker-test                       <span class="token number">0.0</span>.1-SNAPSHOT      303c39c7d253        <span class="token number">13</span> seconds ago      552MB</code></pre>
+
+<p>run指定了运行参数 这里将host的8888和容器的8080绑定，可以使用<code>mvn docker:start</code>启动，访问8888端口即可连接到服务器。<br>与其配对的是<code>mvn docker:stop</code>，可以停止并移除启动的容器。  </p>
+<h1 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h1><p>上述使用xml的配置方式，这里再简单描述一下使用<code>Dockerfile</code>的配置方式。<br>在进行一些操作的时候，可以发现使用xml会有些问题，比如指令的执行顺序。<br>该插件xml的执行顺序和命令的定义顺序不一定一致，可能会带来一些问题，比如将<code>&lt;user&gt;</code>放于<code>&lt;runCmds&gt;</code>前但还是<code>&lt;runCmds&gt;</code>先触发，一些需要root权限的命令就会失败。<br>比如这个issus(但不确定是feature还是bug，感觉是feature)：<a target="_blank" rel="noopener" href="https://github.com/fabric8io/docker-maven-plugin/issues/913">https://github.com/fabric8io/docker-maven-plugin/issues/913</a>  </p>
+<p>这时候就需要直接使用<code>Dockerfile</code>来进行配置。<br>这里取一个实际的打成war的工程。<br>插件配置如下：</p>
+<pre class="language-none"><code class="language-none">&lt;images&gt;
+    &lt;image&gt;
+        &lt;name&gt;$&#123;project.name&#125;:$&#123;project.version&#125;&lt;&#x2F;name&gt;
+        &lt;build&gt;
+            &lt;assembly&gt;
+                &lt;descriptorRef&gt;rootWar&lt;&#x2F;descriptorRef&gt;
+            &lt;&#x2F;assembly&gt;
+            &lt;dockerFile&gt;Dockerfile&lt;&#x2F;dockerFile&gt;
+        &lt;&#x2F;build&gt;
+        &lt;run&gt;
+            &lt;ports&gt;
+                &lt;port&gt;8888:8080&lt;&#x2F;port&gt;
+            &lt;&#x2F;ports&gt;
+        &lt;&#x2F;run&gt;
+    &lt;&#x2F;image&gt;
+&lt;&#x2F;images&gt;</code></pre>
+<p>这里更改了<code>descriptorRef</code>，换成<code>rootWar</code>，这会将target下的项目war拷贝到<code>maven\</code>下并且取名为<code>ROOT.war</code>。<br><code>Dockerfile</code>默认放置的位置是<code>src/main/docker</code>，我们在这里建对应的文件：  </p>
+<pre class="language-none"><code class="language-none">FROM jetty
+USER root
+ENV JAVA_OPTIONS&#x3D;-Xmx1g
+RUN mkdir -p &#x2F;root&#x2F;xxx &amp;&amp; touch &#x2F;root&#x2F;xxx&#x2F;yyy &amp;&amp; echo zz &gt; &#x2F;root&#x2F;xxx&#x2F;yyy
+COPY maven&#x2F; &#x2F;var&#x2F;lib&#x2F;jetty&#x2F;webapps</code></pre>
+<p>基本和上面的配置类似，base image改为了jetty，查看jetty的<code>Dockerfile</code>可以发现他使用了一个新用户<code>jetty</code>，使用这个用户无法在root下建立目录，并且由于项目本身之前使用sudo执行的，所以为了能正常运行选择使用root用户。<br>最后一步将<code>ROOT.war</code>拷贝到jetty的webapps目录下。    </p>
+<p>关于<code>maven/</code>这个目录，在打包后，会在target下生成<code>target\docker\项目名\0.0.1-SNAPSHOT\build</code>，对应的<code>Dockerfile</code>和<code>maven\</code>就在这个目录下，实际执行的不是<code>src/main/docker/Dockerfile</code>，而是拷贝到上述目录下的<code>Dockerfile</code>，此外使用xml的方式也是在这个位置生成了一份<code>Dockerfile</code>（USER 总是被放置于最后…）。</p>
+<h1 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h1><p>本文简要说明了使用<code>fabric8</code>的docker maven插件进行构建运行相关的操作，该插件还有其他的功能可以通过上面的文档获取帮助。  </p>
+<h1 id="源码下载-示例1"><a href="#源码下载-示例1" class="headerlink" title="源码下载(示例1)"></a>源码下载(示例1)</h1><p><a target="_blank" rel="noopener" href="https://github.com/fairjm/spring-boot-docker">https://github.com/fairjm/spring-boot-docker</a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2017/12/22/docker-maven-springboot/" title="使用maven插件构建docker镜像">https://bingowith.me/2017/12/22/docker-maven-springboot/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/11/29/locksuport/" rel="prev" title="LockSupport浅析">
+                  <i class="fa fa-chevron-left"></i> LockSupport浅析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/01/failure-control-patterns/" rel="next" title="常用失败控制模式">
+                  常用失败控制模式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>
