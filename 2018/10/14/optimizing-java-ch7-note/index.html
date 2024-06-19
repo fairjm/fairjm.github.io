@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="原书地址:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;optimizing-java&#x2F;9781492039259&#x2F;   感觉挺不错的一本书,断断续续在读.来自原书第七章的笔记,记录一些感觉比较重要的概念.原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Optimizing Java笔记:高级垃圾回收">
+<meta property="og:url" content="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原书地址:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;optimizing-java&#x2F;9781492039259&#x2F;   感觉挺不错的一本书,断断续续在读.来自原书第七章的笔记,记录一些感觉比较重要的概念.原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014212327110-502030643.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213009574-2070952287.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213745798-1022468652.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213907441-607899238.png">
+<meta property="article:published_time" content="2018-10-14T13:42:00.000Z">
+<meta property="article:modified_time" content="2018-10-14T13:42:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20181014212327110-502030643.png">
+
+
+<link rel="canonical" href="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2018&#x2F;10&#x2F;14&#x2F;optimizing-java-ch7-note&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;10&#x2F;14&#x2F;optimizing-java-ch7-note&#x2F;&quot;,&quot;title&quot;:&quot;Optimizing Java笔记:高级垃圾回收&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Optimizing Java笔记:高级垃圾回收 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tradeoffs-and-Pluggable-Collectors"><span class="nav-number">1.</span> <span class="nav-text">Tradeoffs and Pluggable Collectors</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91GC%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">并发GC原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM-safepoints"><span class="nav-number">3.</span> <span class="nav-text">JVM safepoints</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0"><span class="nav-number">4.</span> <span class="nav-text">三色标记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMS"><span class="nav-number">5.</span> <span class="nav-text">CMS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8F%82%E6%95%B0"><span class="nav-number">5.1.</span> <span class="nav-text">基本参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#G1"><span class="nav-number">6.</span> <span class="nav-text">G1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#G1%E5%A0%86%E7%A9%BA%E9%97%B4%E5%92%8CRegions"><span class="nav-number">6.1.</span> <span class="nav-text">G1堆空间和Regions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1"><span class="nav-number">6.2.</span> <span class="nav-text">G1算法设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1%E9%98%B6%E6%AE%B5"><span class="nav-number">6.3.</span> <span class="nav-text">G1阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8F%82%E6%95%B0-1"><span class="nav-number">6.4.</span> <span class="nav-text">基本参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shenandoah"><span class="nav-number">7.</span> <span class="nav-text">Shenandoah</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C4-Azul-Zing"><span class="nav-number">8.</span> <span class="nav-text">C4(Azul Zing)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Balanced-IBM-J9"><span class="nav-number">9.</span> <span class="nav-text">Balanced(IBM J9)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lengacy-Hotspot-Collectors"><span class="nav-number">10.</span> <span class="nav-text">Lengacy Hotspot Collectors</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial%E5%92%8CSerialOld"><span class="nav-number">10.1.</span> <span class="nav-text">Serial和SerialOld</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Incremental-CMS-iCMS"><span class="nav-number">10.2.</span> <span class="nav-text">Incremental CMS(iCMS)</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Optimizing Java笔记:高级垃圾回收
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-14 21:42:00" itemprop="dateCreated datePublished" datetime="2018-10-14T21:42:00+08:00">2018-10-14</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2018/10/14/optimizing-java-ch7-note/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/10/14/optimizing-java-ch7-note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>原书地址:<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/optimizing-java/9781492039259/">https://www.safaribooksonline.com/library/view/optimizing-java/9781492039259/</a>  </p>
+<p>感觉挺不错的一本书,断断续续在读.<br>来自原书第七章的笔记,记录一些感觉比较重要的概念.<br>原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.  </p>
+<hr>
+<span id="more"></span>
+<h1 id="Tradeoffs-and-Pluggable-Collectors"><a href="#Tradeoffs-and-Pluggable-Collectors" class="headerlink" title="Tradeoffs and Pluggable Collectors"></a>Tradeoffs and Pluggable Collectors</h1><p>权衡的可插拔垃圾回收器  </p>
+<p>在Sun的环境中 GC子系统是可插拔的子系统<br>GC的运行不能改变程序的语义 但性能上可能会有差异</p>
+<p>只有权衡 没有银弹  </p>
+<p>需要权衡的因素：  </p>
+<ul>
+<li>停顿时间</li>
+<li>吞吐量（GC所占运行时时间)</li>
+<li>停顿频率</li>
+<li>回收效率</li>
+<li>停顿一致性(是否所有停顿时间大致一样)  </li>
+</ul>
+<h1 id="并发GC原理"><a href="#并发GC原理" class="headerlink" title="并发GC原理"></a>并发GC原理</h1><p>在一些特定的系统 比如动画播放,常常有固定的帧率,用来提供有规律的 固定的机会执行GC.<br>但通用的GC就不会有这样的知识来提高停顿的确定性了  </p>
+<h1 id="JVM-safepoints"><a href="#JVM-safepoints" class="headerlink" title="JVM safepoints"></a>JVM safepoints</h1><p>安全点<br>基于协商<br>有两个主要规则控制:  </p>
+<ul>
+<li>JVM不能强制一个线程进入安全点状态   </li>
+<li>JVM可以阻止一个线程离开安全点状态  </li>
+</ul>
+<p>一个简化的过程:<br>1.JVM设置一个全局的”<code>time to safepoint</code>“ flag.<br>2.每个应用线程独自拉取这个flag 发现被设置了<br>3.他们停下并且等待再次醒来 </p>
+<p>这个标志被设置意味着素有线程都必须停下来.  </p>
+<p>停的快的线程也要等待还没停的线程停止(这个时间可能不会完全被pause time statistics统计到)  </p>
+<p>通常的app线程使用<code>poll</code>的机制<br>解释器会在任意两个字节码之间去检查 <code>JIT</code>编译器通常会在退出编译方法的位置插入一个<code>poll</code>  </p>
+<p>这个有点像<code>CountDownLatch</code> 所有线程到这个位置了才去做GC</p>
+<p>自动在safepoint的状态:  </p>
+<ol>
+<li>正被monitor block了</li>
+<li>正在执行JNI代码</li>
+</ol>
+<p>不可能在safepoint的状态:</p>
+<ol>
+<li>正执行了部分<code>bytecode</code>(解释器模式)</li>
+<li>已经被<code>OS</code>中断了</li>
+</ol>
+<h1 id="三色标记"><a href="#三色标记" class="headerlink" title="三色标记"></a>三色标记</h1><p>tri-color marking算法<br>工作原理:</p>
+<ul>
+<li>GC roots染为灰色</li>
+<li>所有的其他对象染成白色</li>
+<li>一个标记线程移动到随机的灰色节点上</li>
+<li>如果这个节点有白色子节点们 标记线程会先将子节点染成灰色 再将该节点染成黑色</li>
+<li>过程一直进行直到没有灰色节点剩余</li>
+<li>所有黑色节点已经被证明可达并且必须保持存活</li>
+<li>白色节点可被回收</li>
+</ul>
+<p>并发收集也频繁利用<code>SATB</code>(snapshot at the beginning)<br>如果对象在收集开始是可达或者在收集之后被分配的 就认为是存活的<br>这带来了一些额外的工作 需要应用线程在收集过程中创建的对象染黑 非收集过程中的染白  </p>
+<p>在这个过程中 应用线程会不断改变对像图<br>还有一个情况是标记黑色的对象在这个过程中又去指向了白色的对象<br><img src="/images/1244488-20181014212327110-502030643.png">  </p>
+<p>解决方式:</p>
+<ol>
+<li>黑色更新指向外部白色对象的时候变为灰色</li>
+<li>不允许黑色指向外部白色对象</li>
+<li>维护一个修改的队列 然后进行第二轮fixup<br>以及其他的</li>
+</ol>
+<h1 id="CMS"><a href="#CMS" class="headerlink" title="CMS"></a>CMS</h1><p>为老年代设计的极其低停顿的收集器<br>一般和一个轻量修改的年轻代并行收集器一起用(<code>ParNew</code> 而不是<code>Parallel GC</code>)</p>
+<p>步骤:  </p>
+<ol>
+<li>初始标记(Initial Mark) STW</li>
+<li>并发标记(Concurrent Mark)</li>
+<li>并发预清理(Concurrent Preclean)</li>
+<li>重标记(Remark) STW</li>
+<li>并发清理(Concurrent Sweep)</li>
+<li>并发重置(Concurrent Reset)  </li>
+</ol>
+<p>将一个长的STW停顿变为两个较短的STW停顿</p>
+<p>明显的影响:</p>
+<ul>
+<li>应用线程不会像之前一样停的久</li>
+<li>单个完整的GC循环会花得更久</li>
+<li>CMS GC循环的时候应用吞吐量会下降</li>
+<li>GC会花更多的内存跟踪对象</li>
+<li>使用更多的CPU时间用来进行GC</li>
+<li>CMS不会压缩heap 所以老年代会碎片化</li>
+</ul>
+<p>默认情况 <code>CMS</code>会用一半可用线程来处理并发阶段 剩下一半运行Java代码<br>这时候如果<code>Eden</code>满了…就会触发<code>YGC</code> 但这时候已经没那么多线程了..<code>YGC</code>会更久<br><code>YGC</code>之后一些对象可能被提升到老年代了 这两个收集器之间需要一些协调 这也是为什么<code>CMS</code>需要一个稍微不同的Young收集器(<code>ParNew</code>)<br>另一种情况 如果<code>YGC</code>提升到老年代的对象过多…老年代没有空间…emmmm<br>就触发了并发模式失败(concurrent mode failure,<code>CMF</code>),JVM只能降级转为使用<code>ParallelOld</code><br>为了避免频繁的<code>CMF</code> <code>CMS</code>需要在老年代完全满之前就开始一轮收集循环 默认是75%<br>另外一个场景会引发<code>CMF</code>的是内存碎片 提升的对象没有连续的内存空间可放<br>降级的<code>ParallelOld</code>有压缩  </p>
+<p><strong>使用CMS的主要问题是避免CMF</strong>  </p>
+<p>内部<code>CMS</code>使用一个<code>free list</code>记录内存块来管理可用空间<br>在Concurrent sweep阶段 连续的可用块会被sweeper线程合并在一起 这样可以提供更大的可用空间块来避免因为内存问题造成的<code>CMF</code><br>但这个过程也是并发的 sweeper会锁上free lists.  </p>
+<h2 id="基本参数"><a href="#基本参数" class="headerlink" title="基本参数"></a>基本参数</h2><pre class="language-none"><code class="language-none">-XX:+UseConcMarkSweepGC</code></pre>
+<p>启用CMS(同时激活ParNew)</p>
+<p>此外还有60多个参数…</p>
+<h1 id="G1"><a href="#G1" class="headerlink" title="G1"></a>G1</h1><p>Java6引入 Java7里重写 Java8u40就是可靠和生产可用的<br>不建议在8u40之前使用他</p>
+<p>比CMS更容易优化<br>对老年代提升更不敏感<br>在大heap下更好的scale(特别是停顿时间)<br>能够避免(或大幅降低 回退到)full STW收集  </p>
+<p>G1和并行GC CMS不同 每代没有专用的 连续空间的内容<br>此外他也没有沿用半球空间(s0 s1)的布局  </p>
+<h2 id="G1堆空间和Regions"><a href="#G1堆空间和Regions" class="headerlink" title="G1堆空间和Regions"></a>G1堆空间和Regions</h2><p>G1堆基于<code>regions</code>的概念.<br>默认<strong>1M</strong>(在更大堆下会更大)<br>注意G1的堆空间是连续的 只是每代本身不连续<br><img src="/images/1244488-20181014213009574-2070952287.png"></p>
+<p>G1的算法允许1 2 4 - <del>64M</del> 应该为32MB<br>参考:<a target="_blank" rel="noopener" href="http://hg.openjdk.java.net/jdk/jdk/file/f08c1d7a5c53/src/hotspot/share/gc/g1/heapRegionBounds.inline.hpp">heapRegionBounds</a><br>默认 他期望有2048-4095个regions  </p>
+<h2 id="G1算法设计"><a href="#G1算法设计" class="headerlink" title="G1算法设计"></a>G1算法设计</h2><p>使用并发标记阶段<br>是一个evacuating(搬空)收集器<br>提供”基于统计的压缩”(statistical compaction)    </p>
+<p>如果一个对象占用超过一半一个region的大小 就会被认为是一个巨大(humongous)对象.<br>直接分配在特殊的<code>humongous regions</code>中.空间连续.  </p>
+<p>年轻代的概念保留 Eden survivor regions.<br>但不连续<br>空间随着整体停顿目标变化.  </p>
+<p>RSets(remembered sets)<br>pre-region entries<br>记录自身对象被外部region对象引用的情况<br>这个是用来处理ygc时 一部分年轻代对象被老年代引用着<br>不需要扫描整个heap只要检查这个RSets看看外部有没有老年代的region引用着就好了<br><img src="/images/1244488-20181014213745798-1022468652.png">  </p>
+<p><code>RSets</code>和<code>card table</code>都是帮助GC解决浮动垃圾(floating garbage)的问题.  dead对象间的引用.  </p>
+<h2 id="G1阶段"><a href="#G1阶段" class="headerlink" title="G1阶段"></a>G1阶段</h2><ol>
+<li>初始标记(Initial Mark) STW</li>
+<li>并发根扫描(Concurrent Root Scan)</li>
+<li>并发标记(Concurrent Mark)</li>
+<li>重标记(Remark) STW</li>
+<li>清理(Cleanup) STW</li>
+</ol>
+<h2 id="基本参数-1"><a href="#基本参数-1" class="headerlink" title="基本参数"></a>基本参数</h2><p>启用参数</p>
+<pre class="language-none"><code class="language-none">-XX:UseG1GC</code></pre>
+<p>G1是基于停顿目标的 允许开发者指定一个期望的停顿最大时间<br>这只是一个目标 没有保证一定能达成<br>毕竟回收的的前提是分配 分配过程很多是不可预测的  </p>
+<pre class="language-none"><code class="language-none">-XX:MaxFCPauseMillis&#x3D;200</code></pre>
+<p>200ms<br>实践中 100ms以下的目标是很难达到的   </p>
+<pre class="language-none"><code class="language-none">-XX:G1HeapRegionSize&#x3D;n</code></pre>
+<p>必须是2的倍数 1- <del>64</del> 32 单位是MB  </p>
+<h1 id="Shenandoah"><a href="#Shenandoah" class="headerlink" title="Shenandoah"></a>Shenandoah</h1><p>红帽 openjdk项目<br>项目wiki:<a target="_blank" rel="noopener" href="https://wiki.openjdk.java.net/display/shenandoah/Main">https://wiki.openjdk.java.net/display/shenandoah/Main</a><br>还不能用于生产  </p>
+<p>和G1目的一样 是为了降低大堆下的停顿时间  </p>
+<ol>
+<li>初始标记 (Initial Mark) STW</li>
+<li>并发标记(Concurrent Marking)</li>
+<li>最终标记(Final Marking) STW</li>
+<li>并发压缩(Concurrent Compaction)</li>
+</ol>
+<p>阶段看上去类似<br>一些实现机制比如SATB也相似<br>但有一些根本上的不同<br>最显著的特点就是在压缩阶段 应用线程依旧可以访问对象<br>使用了<code>brooks pointer</code>.    </p>
+<p>每个对象使用了一个额外的字(<code>word</code>)来标记是否在上一个gc阶段发生了重定位(relocated) 并且放置了新的位置</p>
+<p>如果对象没被重放置 <code>brooks pointer</code>指向内存里的下一个字  </p>
+<p>压缩阶段涉及到复制 在这个过程中复制对象 然后将原对象的字指向新的复制的对象 相当于做了一个路由<br><img src="/images/1244488-20181014213907441-607899238.png"></p>
+<p>并发压缩<br>现在的抽空(evacuation)步骤如下:</p>
+<ol>
+<li>复制对象到<code>TLAB</code>(冒险的)</li>
+<li>使用<code>CAS</code>操作更新<code>brooks pointer</code>到那个冒险的副本</li>
+<li>如果成功 那么压缩线程赢了这次race,之后所有的访问该对象会经过<code>Brooks pointer</code></li>
+<li>如果失败 压缩对象失败.那个冒险的副本会被取消,赢得的线程设置<code>Brooks pointer</code>.  </li>
+</ol>
+<p>在提供了该回收器上使用</p>
+<pre class="language-none"><code class="language-none">-XX:+UseShenandoahGC</code></pre>
+
+<h1 id="C4-Azul-Zing"><a href="#C4-Azul-Zing" class="headerlink" title="C4(Azul Zing)"></a>C4(Azul Zing)</h1><h1 id="Balanced-IBM-J9"><a href="#Balanced-IBM-J9" class="headerlink" title="Balanced(IBM J9)"></a>Balanced(IBM J9)</h1><p>Open J9</p>
+<h1 id="Lengacy-Hotspot-Collectors"><a href="#Lengacy-Hotspot-Collectors" class="headerlink" title="Lengacy Hotspot Collectors"></a>Lengacy Hotspot Collectors</h1><p>一些组合在Java8被废弃 在Java9会被移除  </p>
+<h2 id="Serial和SerialOld"><a href="#Serial和SerialOld" class="headerlink" title="Serial和SerialOld"></a>Serial和SerialOld</h2><p>和Parallel ParallelOld类似 但使用单个线程</p>
+<h2 id="Incremental-CMS-iCMS"><a href="#Incremental-CMS-iCMS" class="headerlink" title="Incremental CMS(iCMS)"></a>Incremental CMS(iCMS)</h2><pre class="language-none"><code class="language-none">-XX:+CMSIncrementalMode</code></pre>
+<p>一些改进尝试 Java9中被移除</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/" title="Optimizing Java笔记:高级垃圾回收">https://bingowith.me/2018/10/14/optimizing-java-ch7-note/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/21/java-application-offheap-memory-leak-analyze/" rel="prev" title="记一次尴尬的Java应用内存泄露排查">
+                  <i class="fa fa-chevron-left"></i> 记一次尴尬的Java应用内存泄露排查
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/19/why-lambda-inner-class-only-access-final-var/" rel="next" title="lambda和匿名内部类使用外部变量为什么要语义final?">
+                  lambda和匿名内部类使用外部变量为什么要语义final? <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>

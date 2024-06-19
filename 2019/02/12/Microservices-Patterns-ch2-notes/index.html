@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="Microservice Patterns第二章的读书笔记原章节链接: https:&#x2F;&#x2F;learning.oreilly.com&#x2F;library&#x2F;view&#x2F;microservices-patterns&#x2F;9781617294549&#x2F;kindle_split_010.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务模式笔记:服务分解策略">
+<meta property="og:url" content="https://bingowith.me/2019/02/12/Microservices-Patterns-ch2-notes/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="Microservice Patterns第二章的读书笔记原章节链接: https:&#x2F;&#x2F;learning.oreilly.com&#x2F;library&#x2F;view&#x2F;microservices-patterns&#x2F;9781617294549&#x2F;kindle_split_010.html">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011614249-992071651.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213010815889-2062967823.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213010839549-1161206549.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213010850162-1923323128.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213010902827-949019283.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011117033-940471440.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011136593-1822789472.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011153564-1888824784.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011219565-1974762110.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20190213011237612-887560591.png">
+<meta property="article:published_time" content="2019-02-12T17:15:00.000Z">
+<meta property="article:modified_time" content="2019-02-12T17:15:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20190213011614249-992071651.png">
+
+
+<link rel="canonical" href="https://bingowith.me/2019/02/12/Microservices-Patterns-ch2-notes/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2019&#x2F;02&#x2F;12&#x2F;Microservices-Patterns-ch2-notes&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;02&#x2F;12&#x2F;Microservices-Patterns-ch2-notes&#x2F;&quot;,&quot;title&quot;:&quot;微服务模式笔记:服务分解策略&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>微服务模式笔记:服务分解策略 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-1-What-is-the-microservice-architecture-exactly"><span class="nav-number">1.</span> <span class="nav-text">2.1. What is the microservice architecture exactly?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-1-What-is-software-architecture-and-why-does-it-matter"><span class="nav-number">1.1.</span> <span class="nav-text">2.1.1. What is software architecture and why does it matter?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-2-Overview-of-architectural-styles"><span class="nav-number">1.2.</span> <span class="nav-text">2.1.2. Overview of architectural styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.1.</span> <span class="nav-text">分层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E8%BE%B9%E5%BD%A2%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.2.</span> <span class="nav-text">六边形架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-3-The-microservice-architecture-is-an-architectural-style"><span class="nav-number">1.3.</span> <span class="nav-text">2.1.3. The microservice architecture is an architectural style</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.3.1.</span> <span class="nav-text">什么是服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%BE%E8%80%A6%E5%90%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">松耦合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%BA%93"><span class="nav-number">1.3.3.</span> <span class="nav-text">共享库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%B8%8D%E9%87%8D%E8%A6%81"><span class="nav-number">1.3.4.</span> <span class="nav-text">服务的大小不重要</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-2-Defining-an-application%E2%80%99s-microservice-architecture"><span class="nav-number">2.</span> <span class="nav-text">2.2. Defining an application’s microservice architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-1-Identifying-the-system-operations"><span class="nav-number">2.1.</span> <span class="nav-text">2.2.1. Identifying the system operations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-2-Defining-services-by-applying-the-Decompose-by-business-capability-pattern"><span class="nav-number">2.2.</span> <span class="nav-text">2.2.2. Defining services by applying the Decompose by business capability pattern</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-3-Defining-services-by-applying-the-Decompose-by-sub-domain-pattern"><span class="nav-number">2.3.</span> <span class="nav-text">2.2.3. Defining services by applying the Decompose by sub-domain pattern</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-4-Decomposition-guidelines"><span class="nav-number">2.4.</span> <span class="nav-text">2.2.4. Decomposition guidelines</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%81%8C%E8%B4%A3%E5%8E%9F%E5%88%99"><span class="nav-number">2.4.1.</span> <span class="nav-text">单一职责原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E5%90%8C%E5%B0%81%E9%97%AD%E5%8E%9F%E5%88%99-Common-Closure-Principle"><span class="nav-number">2.4.2.</span> <span class="nav-text">共同封闭原则(Common Closure Principle)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-5-Obstacles-to-decomposing-an-application-into-services"><span class="nav-number">2.5.</span> <span class="nav-text">2.2.5. Obstacles to decomposing an application into services</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BB%B6%E8%BF%9F"><span class="nav-number">2.5.1.</span> <span class="nav-text">网络延迟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1%E5%AF%BC%E8%87%B4%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7%E9%99%8D%E4%BD%8E"><span class="nav-number">2.5.2.</span> <span class="nav-text">同步通信导致的可用性降低</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E7%BB%B4%E6%8A%A4"><span class="nav-number">2.5.3.</span> <span class="nav-text">跨服务的数据一致性维护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E8%A7%86%E5%9B%BE"><span class="nav-number">2.5.4.</span> <span class="nav-text">获取数据的一致性视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E5%B8%9D%E7%B1%BB%E9%98%BB%E6%AD%A2%E5%88%86%E8%A7%A3"><span class="nav-number">2.5.5.</span> <span class="nav-text">上帝类阻止分解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-6-Defining-service-APIs"><span class="nav-number">2.6.</span> <span class="nav-text">2.2.6. Defining service APIs</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2019/02/12/Microservices-Patterns-ch2-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微服务模式笔记:服务分解策略
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-13 01:15:00" itemprop="dateCreated datePublished" datetime="2019-02-13T01:15:00+08:00">2019-02-13</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2019/02/12/Microservices-Patterns-ch2-notes/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/12/Microservices-Patterns-ch2-notes/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Microservice Patterns第二章的读书笔记<br>原章节链接: <a target="_blank" rel="noopener" href="https://learning.oreilly.com/library/view/microservices-patterns/9781617294549/kindle_split_010.html">https://learning.oreilly.com/library/view/microservices-patterns/9781617294549/kindle_split_010.html</a>  </p>
+<span id="more"></span>
+<p>Decomposition strategies </p>
+<p>微服务最关键的挑战 也就是微服务的本质是如何将应用的功能分解到服务中去<br>服务是业务相关而不是技术相关</p>
+<h1 id="2-1-What-is-the-microservice-architecture-exactly"><a href="#2-1-What-is-the-microservice-architecture-exactly" class="headerlink" title="2.1. What is the microservice architecture exactly?"></a>2.1. What is the microservice architecture exactly?</h1><h2 id="2-1-1-What-is-software-architecture-and-why-does-it-matter"><a href="#2-1-1-What-is-software-architecture-and-why-does-it-matter" class="headerlink" title="2.1.1. What is software architecture and why does it matter?"></a>2.1.1. What is software architecture and why does it matter?</h2><p>应用架构是将应用分解成各个部分(元素)和这些部分间的关系</p>
+<p>软件架构的4+1 view model<br>简单理解就是从几个角度来描述架构<br><img src="/images/1244488-20190213011614249-992071651.png"></p>
+<p><a href="www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf">www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf</a></p>
+<ul>
+<li>Logical view : 开发者创建的软件元素。就像类和包 类之间的继承 关联和依赖</li>
+<li>Implementataion view: 构建系统的产出。比如java是jar或者war</li>
+<li>Process view:运行时组件.每个元素都是一个进程，和各个进程间的进程间通信。</li>
+<li>Deployment：进程是如何映射到机器的。</li>
+</ul>
+<p>架构对于功能需求基本没有什么帮助<br>但架构又是重要的 因为他让应用满足第二种需求: 服务质量(quality of service,QoS)需求</p>
+<h2 id="2-1-2-Overview-of-architectural-styles"><a href="#2-1-2-Overview-of-architectural-styles" class="headerlink" title="2.1.2. Overview of architectural styles"></a>2.1.2. Overview of architectural styles</h2><p>一种特定的架构提供有限的元素(组件)调色盘和关系(connectors)<br>你从中定义出应用架构的视图</p>
+<h3 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h3><p>定义了三层:</p>
+<ul>
+<li>Presentation layer: 包含实现了用户界面和额外的API的代码</li>
+<li>Business logic layer： 包含业务逻辑</li>
+<li>Persistence layer：包含和数据库交互的逻辑</li>
+</ul>
+<p>但是也有明显的缺点：</p>
+<ul>
+<li>单一的展示层</li>
+<li>单一的持久层</li>
+<li>定义的业务逻辑依赖于持久层 离开数据库无法测试<br>会存在依赖倒置，业务层定义的数据访问接口最后需要持久层定义DAO类去实现(低层依赖高层所提供的接口)</li>
+</ul>
+<h3 id="六边形架构"><a href="#六边形架构" class="headerlink" title="六边形架构"></a>六边形架构</h3><p>将业务放在了最中心<br><code>inbound adapter</code><br><code>outbound adapter</code><br>业务逻辑不依赖于adapter 相反是adapter依赖于业务逻辑<br><img src="/images/1244488-20190213010815889-2062967823.png">  </p>
+<p>一个业务逻辑有一个或多个<code>ports</code><br>一个<code>port</code>定义了一系列业务逻辑和外部交互的操作</p>
+<p>六边形架构最大的好处是将展示层和数据访问逻辑从业务逻辑中解耦</p>
+<h2 id="2-1-3-The-microservice-architecture-is-an-architectural-style"><a href="#2-1-3-The-microservice-architecture-is-an-architectural-style" class="headerlink" title="2.1.3. The microservice architecture is an architectural style"></a>2.1.3. The microservice architecture is an architectural style</h2><p>单体架构在implement view就是一个单独可执行的jar或war<br><a target="_blank" rel="noopener" href="http://microservices.io/patterns/monolithic.html">http://microservices.io/patterns/monolithic.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://microservices.io/patterns/microservices.html">http://microservices.io/patterns/microservices.html</a><br><img src="/images/1244488-20190213010839549-1161206549.png"></p>
+<h3 id="什么是服务"><a href="#什么是服务" class="headerlink" title="什么是服务"></a>什么是服务</h3><p>服务是独立的 无依赖的可部署软件组件 实现了一些有用的功能<br><img src="/images/1244488-20190213010850162-1923323128.png"></p>
+<p>不同服务间只能通过API调用 不像单体还可以通过代码</p>
+<h3 id="松耦合"><a href="#松耦合" class="headerlink" title="松耦合"></a>松耦合</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Loose_coupling">https://en.wikipedia.org/wiki/Loose_coupling</a><br>服务间的交互只通过API 封装细节</p>
+<h3 id="共享库"><a href="#共享库" class="headerlink" title="共享库"></a>共享库</h3><p>只在不太可能会发生变化的地方使用共享库<br>和具体业务无关 通用的功能上</p>
+<h3 id="服务的大小不重要"><a href="#服务的大小不重要" class="headerlink" title="服务的大小不重要"></a>服务的大小不重要</h3><p>和组织结构相关</p>
+<h1 id="2-2-Defining-an-application’s-microservice-architecture"><a href="#2-2-Defining-an-application’s-microservice-architecture" class="headerlink" title="2.2. Defining an application’s microservice architecture"></a>2.2. Defining an application’s microservice architecture</h1><p>3步定义应用的微服务架构<br>这里只是展示一个例子 现实中会有更多的问题<br>需要迭代等<br><img src="/images/1244488-20190213010902827-949019283.png">  </p>
+<p>第一步找到服务的具体操作 这里定义为了<code>system operation</code><br>其实也就是找到各个请求和回应(或者找到各个事件)<br>服务拆分的一些阻碍:  </p>
+<ul>
+<li>网络延迟</li>
+<li>服务间的同步调用降低了可用性</li>
+<li>在不同服务间维持数据一致性</li>
+</ul>
+<h2 id="2-2-1-Identifying-the-system-operations"><a href="#2-2-1-Identifying-the-system-operations" class="headerlink" title="2.2.1. Identifying the system operations"></a>2.2.1. Identifying the system operations</h2><p>从应用的需求出发 包括user story和对应的用户场景</p>
+<p>有两种类型的<code>system operation</code><br>commands:创建 更新和删除数据<br>queries: 查询数据</p>
+<p>分析user stories和场景中的动词<br>一个例子:<br><img src="/images/1244488-20190213011117033-940471440.png"></p>
+<h2 id="2-2-2-Defining-services-by-applying-the-Decompose-by-business-capability-pattern"><a href="#2-2-2-Defining-services-by-applying-the-Decompose-by-business-capability-pattern" class="headerlink" title="2.2.2. Defining services by applying the Decompose by business capability pattern"></a>2.2.2. Defining services by applying the Decompose by business capability pattern</h2><p>通过业务能力分解<br><a target="_blank" rel="noopener" href="http://microservices.io/patterns/decomposition/decompose-by-business-capability.html">http://microservices.io/patterns/decomposition/decompose-by-business-capability.html</a>  </p>
+<p><img src="/images/1244488-20190213011136593-1822789472.png"></p>
+<p>业务能力 子能力以及与服务的对应</p>
+<p>但业务变迁<br>频繁的RPC带来的性能损耗<br>会带来一定的阻碍  </p>
+<h2 id="2-2-3-Defining-services-by-applying-the-Decompose-by-sub-domain-pattern"><a href="#2-2-3-Defining-services-by-applying-the-Decompose-by-sub-domain-pattern" class="headerlink" title="2.2.3. Defining services by applying the Decompose by sub-domain pattern"></a>2.2.3. Defining services by applying the Decompose by sub-domain pattern</h2><p>DDD<br>subdmain<br>bounded context<br><a target="_blank" rel="noopener" href="http://microservices.io/patterns/decomposition/decompose-by-subdomain.html">http://microservices.io/patterns/decomposition/decompose-by-subdomain.html</a></p>
+<p><img src="/images/1244488-20190213011153564-1888824784.png"></p>
+<h2 id="2-2-4-Decomposition-guidelines"><a href="#2-2-4-Decomposition-guidelines" class="headerlink" title="2.2.4. Decomposition guidelines"></a>2.2.4. Decomposition guidelines</h2><p>一些分解的原则<br>可以沿用一些OO里的原则</p>
+<h3 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h3><h3 id="共同封闭原则-Common-Closure-Principle"><a href="#共同封闭原则-Common-Closure-Principle" class="headerlink" title="共同封闭原则(Common Closure Principle)"></a>共同封闭原则(Common Closure Principle)</h3><p>因为一个相同的原因导致两个类需要修改 这两个类应该在一个包下<br>对应于微服务 把要因为同一个原因修改的组件放到同一个服务里去</p>
+<p>通过业务能力和子域 结合SRP和CCP是一个很好的分解一个应用到服务的技术<br>为了应用他们成功地开发微服务架构 你必须解决一些事务管理和跨进程通信问题</p>
+<h2 id="2-2-5-Obstacles-to-decomposing-an-application-into-services"><a href="#2-2-5-Obstacles-to-decomposing-an-application-into-services" class="headerlink" title="2.2.5. Obstacles to decomposing an application into services"></a>2.2.5. Obstacles to decomposing an application into services</h2><p>一些阻碍:</p>
+<ul>
+<li>网络延迟</li>
+<li>同步通信导致的可用性降低</li>
+<li>跨服务的数据一致性维护</li>
+<li>获取数据的一致性视图</li>
+<li>上帝类阻止分解</li>
+</ul>
+<h3 id="网络延迟"><a href="#网络延迟" class="headerlink" title="网络延迟"></a>网络延迟</h3><p>网络延迟是分布式系统长期困扰的问题.<br>服务拆解之后可能会发现有大量的服务间的往返通信<br>可以提供批处理API在一次往返中<br>但一些其他场景 可能就需要整合服务了</p>
+<h3 id="同步通信导致的可用性降低"><a href="#同步通信导致的可用性降低" class="headerlink" title="同步通信导致的可用性降低"></a>同步通信导致的可用性降低</h3><p>改进方法是异步消息传输</p>
+<h3 id="跨服务的数据一致性维护"><a href="#跨服务的数据一致性维护" class="headerlink" title="跨服务的数据一致性维护"></a>跨服务的数据一致性维护</h3><p>涉及到分布式事务 saga 最终一致性</p>
+<h3 id="获取数据的一致性视图"><a href="#获取数据的一致性视图" class="headerlink" title="获取数据的一致性视图"></a>获取数据的一致性视图</h3><p>实践中一般不会是太大的问题</p>
+<h3 id="上帝类阻止分解"><a href="#上帝类阻止分解" class="headerlink" title="上帝类阻止分解"></a>上帝类阻止分解</h3><p>上帝类(god classes)是一个庞大的类 在整个项目中被贯穿使用<br>一般都是为了实现了一个应用不同方面的业务逻辑 有大量的field<br><img src="/images/1244488-20190213011219565-1974762110.png"></p>
+<p>方案1:<br>提供一个库 并创建一个中央的order数据库<br>问题是紧耦合…所有的服务都要连到这个库</p>
+<p>方案2:<br>封装order数据库到order服务<br>这样就把他变为了类似数据库API的服务 只是为了提供order数据库的访问而存在</p>
+<p>方案3:<br>使用DDD 将order的概念分解 各个子域有自己的order<br><img src="/images/1244488-20190213011237612-887560591.png"></p>
+<p>但这样会影响用户体验 在用户体验和多个实际模型间要有一种翻译</p>
+<h2 id="2-2-6-Defining-service-APIs"><a href="#2-2-6-Defining-service-APIs" class="headerlink" title="2.2.6. Defining service APIs"></a>2.2.6. Defining service APIs</h2><p>定义服务API<br>他的操作和事件</p>
+<p>基于两点:<br>1.<code>System operation</code>需要<br>这个API可能是被客户端直接调用 也可能是服务端直接调用 用来完成这个服务里的某个具体操作  </p>
+<p>2.支持服务间协作<br>为其他服务的实现提供一些帮助</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2019/02/12/Microservices-Patterns-ch2-notes/" title="微服务模式笔记:服务分解策略">https://bingowith.me/2019/02/12/Microservices-Patterns-ch2-notes/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/01/30/translate-the-various-kinds-of-io-blocking-non/" rel="prev" title="[翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步">
+                  <i class="fa fa-chevron-left"></i> [翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/02/24/sync-async-blocking-multithre/" rel="next" title="异步/同步,阻塞/非阻塞,单线程/多线程概念梳理">
+                  异步/同步,阻塞/非阻塞,单线程/多线程概念梳理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>

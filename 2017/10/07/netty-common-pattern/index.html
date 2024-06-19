@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看SimpleChannelInboundHandler是否有一个messageReceived方法 有的话就是5)，netty3是以org.jboss开头为包名。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netty常用使用方式">
+<meta property="og:url" content="https://bingowith.me/2017/10/07/netty-common-pattern/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看SimpleChannelInboundHandler是否有一个messageReceived方法 有的话就是5)，netty3是以org.jboss开头为包名。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-10-07T16:55:00.000Z">
+<meta property="article:modified_time" content="2017-10-10T02:02:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://bingowith.me/2017/10/07/netty-common-pattern/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2017&#x2F;10&#x2F;07&#x2F;netty-common-pattern&#x2F;&quot;,&quot;path&quot;:&quot;2017&#x2F;10&#x2F;07&#x2F;netty-common-pattern&#x2F;&quot;,&quot;title&quot;:&quot;netty常用使用方式&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>netty常用使用方式 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E6%A8%A1%E6%9D%BF"><span class="nav-number">1.</span> <span class="nav-text">统一模板</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%84%E7%90%86Http%E8%AF%B7%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">处理Http请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86WebSocket%E8%AF%B7%E6%B1%82"><span class="nav-number">2.1.</span> <span class="nav-text">处理WebSocket请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%9C%AC%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">自定义文本协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E9%95%BF%E5%BA%A6"><span class="nav-number">3.1.</span> <span class="nav-text">基于长度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%88%86%E9%9A%94%E7%AC%A6"><span class="nav-number">3.2.</span> <span class="nav-text">基于分隔符</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%BF%E6%92%AD%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">广播实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%83%E8%B7%B3"><span class="nav-number">5.</span> <span class="nav-text">心跳</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2017/10/07/netty-common-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          netty常用使用方式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-10-08 00:55:00" itemprop="dateCreated datePublished" datetime="2017-10-08T00:55:00+08:00">2017-10-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2017-10-10 10:02:00" itemprop="dateModified" datetime="2017-10-10T10:02:00+08:00">2017-10-10</time>
+      </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2017/10/07/netty-common-pattern/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/10/07/netty-common-pattern/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。<br>以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看<code>SimpleChannelInboundHandler</code>是否有一个<code>messageReceived</code>方法 有的话就是5)，netty3是以<code>org.jboss</code>开头为包名。</p>
+<span id="more"></span>
+<h1 id="统一模板"><a href="#统一模板" class="headerlink" title="统一模板"></a>统一模板</h1><p>大多数情况下使用netty的步骤是定义好<code>EventLoopGroup</code>,定义好<code>Bootstrap</code>(<code>ServerBootstrap</code>)以及使用的channel类型（一般就是<code>NioSocketChannel</code>，服务端是<code>NioServerSocketChannel</code>）。<br>剩下是业务相关，使用的<code>ChannelInitializer</code>和具体的handler。<br>主要就是2+N（N为自定义的handler数量）个类。<br>服务端启动模板（也可以不区分boss和worker 用一个）:  </p>
+<pre><code>public static void main(String[] args) throws InterruptedException &#123;
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try &#123;
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .childHandler(new MyChannelInitializer());
+            ChannelFuture future = serverBootstrap.bind(8999).sync();
+            future.channel().closeFuture().sync();
+        &#125; finally &#123;
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        &#125;
+&#125;
+</code></pre>
+<p>客户端启动模板：</p>
+<pre><code>EventLoopGroup group = new NioEventLoopGroup();
+try &#123;
+    Bootstrap bootstrap = new Bootstrap()
+            .group(group)
+            .channel(NioSocketChannel.class)
+            .handler(new MyChannelInitializer());
+    ChannelFuture future = bootstrap.connect(&quot;localhost&quot;, 8888).sync();
+    future.channel().closeFuture().sync();
+&#125; finally &#123;
+    group.shutdownGracefully();
+&#125;
+</code></pre>
+<p>ChannelInitializer模板（继承ChannelInitializer即可）：  </p>
+<pre><code>public class MyChannelInitializer extends ChannelInitializer&lt;SocketChannel&gt; &#123;
+
+    @Override
+    protected void initChannel(SocketChannel ch) throws Exception &#123;
+        ChannelPipeline pipeline = ch.pipeline();
+        pipeline.addLast(...);
+    &#125;
+
+&#125;
+</code></pre>
+<p>接下来的例子就以这个模板为骨架，主要涉及到初始化器的代码，启动代码一致。  </p>
+<h1 id="处理Http请求"><a href="#处理Http请求" class="headerlink" title="处理Http请求"></a>处理Http请求</h1><p>netty自带了对用的codec类比较方便。<br><code>pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());</code><br>自己实现的handler最简单的方式用<code>SimpleChannelInboundHandler</code>接收<code>HttpRequest</code>方法即可<br><code>class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt;</code><br>这里简单说下<code>SimpleChannelInboundHandler</code>这个类，他是简化处理接受信息并处理的一个类，主要做两件事。 </p>
+<p>第一件事是根据泛型决定是否处理这个消息，能够处理就自己处理，不行就交给下一个（可以参考<code>acceptInboundMessage</code>和<code>channelRead</code>方法）。<br>第二件事是消息的自动回收（有构造函数支持 默认是true），消息的引用计数会减一（所以在其他地方还要使用记得再retain一下）。<br>使用它可以节省很多冗余代码的编写。<br>一个简单例子：  </p>
+<pre><code>public class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt; &#123;
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception &#123;
+        System.out.println(msg.getClass());
+        System.out.println(msg.uri());
+        System.out.println(msg.method().name());
+        System.out.println(ctx.channel().remoteAddress());
+        System.out.println(&quot;headers:&quot;);
+        msg.headers().forEach(System.out::println);
+        ByteBuf buf = Unpooled.copiedBuffer(&quot;Hello World&quot;, CharsetUtil.UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, &quot;text/plain&quot;);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
+        ctx.writeAndFlush(response);
+//         ctx.channel().close();
+    &#125;
+&#125;
+</code></pre>
+<p>不过只用这个handler并不能拿到content,还需要配合<code>ChunkedWriteHandler</code>和<code>HttpObjectAggregator</code>得到<code>FullHttpRequest</code>对象。</p>
+<h2 id="处理WebSocket请求"><a href="#处理WebSocket请求" class="headerlink" title="处理WebSocket请求"></a>处理WebSocket请求</h2><p>只需要在上面的基础上增加一个<code>WebSocketServerProtocolHandler</code>即可，完整如下：</p>
+<pre><code>    pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());
+    pipeline.addLast(new ChunkedWriteHandler());
+    pipeline.addLast(new HttpObjectAggregator(8096));
+    pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;));
+</code></pre>
+<p>自己的处理器可以接收并处理<code>WebSocketFrame</code>的子类。  </p>
+<h1 id="自定义文本协议"><a href="#自定义文本协议" class="headerlink" title="自定义文本协议"></a>自定义文本协议</h1><p>netty提供了几个比较方便的用于自定义文本协议的编解码器。  </p>
+<h2 id="基于长度"><a href="#基于长度" class="headerlink" title="基于长度"></a>基于长度</h2><pre><code>pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
+pipeline.addLast(new LengthFieldPrepender(4));
+pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
+pipeline.addLast(new MyHandler());  
+</code></pre>
+<p>上述参数的意义直接搬了文档：  </p>
+<pre><code> lengthFieldOffset   = 0
+ lengthFieldLength   = 2
+ lengthAdjustment    = 0
+ initialBytesToStrip = 2 (= the length of the Length field)
+
+ BEFORE DECODE (14 bytes)         AFTER DECODE (12 bytes)
+ +--------+----------------+      +----------------+
+ | Length | Actual Content |-----&gt;| Actual Content |
+ | 0x000C | &quot;HELLO, WORLD&quot; |      | &quot;HELLO, WORLD&quot; |
+ +--------+----------------+      +----------------+
+</code></pre>
+<h2 id="基于分隔符"><a href="#基于分隔符" class="headerlink" title="基于分隔符"></a>基于分隔符</h2><pre><code>    ChannelPipeline pipeline = ch.pipeline();
+    pipeline.addLast(new DelimiterBasedFrameDecoder(4096, Delimiters.lineDelimiter()));
+    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));  
+</code></pre>
+<p>第二个参数需要一个<code>ByteBuf[]</code>，自己指定下分隔符即可。<br>注意使用这种发消息的时候要带上那个分隔符，不然会处理失败（被当做未结束）。  </p>
+<h1 id="广播实现"><a href="#广播实现" class="headerlink" title="广播实现"></a>广播实现</h1><p>利用了netty提供的一个很便利的类，<code>ChannelGroup</code>.<br>首先要了解一下Channel生命周期函数的调用：<br><code>channel added -&gt; channel registered -&gt; channel active -&gt; channel inactive -&gt; channel unregistered -&gt; channel removed</code><br>我们可以定义一个静态（保证共享和唯一）的<code>ChannelGroup</code>在channel added的时候把对应channel增加到<code>ChannelGroup</code>中即可（但不需要自己移除，这一点他自己实现了）<br>然后利用它的写方法就可以实现广播，或者forEach做下过滤做多播也可以。<br>这个实现和用什么协议无关，主要涉及到<code>ChannelGroup</code>使用。  </p>
+<h1 id="心跳"><a href="#心跳" class="headerlink" title="心跳"></a>心跳</h1><p>netty自带的<code>IdleStateHandler</code>，超时后会向下一个handler发出<code>IdleStateEvent</code>消息，接收并处理即可。 </p>
+<pre><code>@Override
+public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception &#123;
+    super.userEventTriggered(ctx, evt);
+    if (evt instanceof IdleStateEvent) &#123;
+        ctx.channel().writeAndFlush(&quot;超时&quot;).addListener((ChannelFuture ch) -&gt; ch.channel().close());
+    &#125;
+&#125;
+</code></pre>
+<p>它细分为3中类型的超时，读、写、读写，通过<code>IdleStateEvent</code>的state属性可以获取，可以单独判断。  </p>
+<p>其他的一些模式会在之后复习和使用过程中不断补完~<br>2017年10月08日00点53分 init<br>2017年10月10日10点02分 更新websocket</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2017/10/07/netty-common-pattern/" title="netty常用使用方式">https://bingowith.me/2017/10/07/netty-common-pattern/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/09/27/kafka-note-producer/" rel="prev" title="kafka学习笔记2:生产者">
+                  <i class="fa fa-chevron-left"></i> kafka学习笔记2:生产者
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/10/21/html5-flash-video-speed-up/" rel="next" title="几种方式加速网页视频播放速度">
+                  几种方式加速网页视频播放速度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>

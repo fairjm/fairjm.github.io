@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;bingowith.me&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6837390325975817"
+     crossorigin="anonymous"></script><meta name="description" content="原书地址:Designing Data-Intensive Applications, 1st Edition之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计数据密集型应用笔记1:可靠 可扩展可维护的应用">
+<meta property="og:url" content="https://bingowith.me/2018/03/20/ddia-note-chapter1/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原书地址:Designing Data-Intensive Applications, 1st Edition之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180321014845699-543810406.png">
+<meta property="article:published_time" content="2018-03-20T18:05:00.000Z">
+<meta property="article:modified_time" content="2018-03-20T18:05:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,MAUI,blazor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20180321014845699-543810406.png">
+
+
+<link rel="canonical" href="https://bingowith.me/2018/03/20/ddia-note-chapter1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;bingowith.me&#x2F;2018&#x2F;03&#x2F;20&#x2F;ddia-note-chapter1&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;03&#x2F;20&#x2F;ddia-note-chapter1&#x2F;&quot;,&quot;title&quot;:&quot;设计数据密集型应用笔记1:可靠 可扩展可维护的应用&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>设计数据密集型应用笔记1:可靠 可扩展可维护的应用 | 小麦的杂货铺</title><script src="/js/config.js"></script>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-7QSVE1SQW7&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小麦的杂货铺</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">搬运工厂</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">可靠性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E9%94%99%E8%AF%AF"><span class="nav-number">1.1.</span> <span class="nav-text">硬件错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E9%94%99%E8%AF%AF"><span class="nav-number">1.2.</span> <span class="nav-text">软件错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%BA%E4%B8%BA%E9%94%99%E8%AF%AF"><span class="nav-number">1.3.</span> <span class="nav-text">人为错误</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E6%89%A9%E5%B1%95%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">可扩展性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E8%B4%9F%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">描述负载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E6%80%A7%E8%83%BD"><span class="nav-number">2.2.</span> <span class="nav-text">描述性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E8%B4%9F%E8%BD%BD%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">处理负载的方式:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E7%BB%B4%E6%8A%A4%E6%80%A7"><span class="nav-number">2.4.</span> <span class="nav-text">可维护性</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="abaabaqua"
+      src="/upload/avatar.gif">
+  <p class="site-author-name" itemprop="name">abaabaqua</p>
+  <div class="site-description" itemprop="description">记录日常~ coding & life</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fairjm" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fairjmflyer@gmail.com" title="E-Mail → mailto:fairjmflyer@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/2078863/fairjm" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;2078863&#x2F;fairjm" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>StackOverflow</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/fairjm" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bingowith.me/2018/03/20/ddia-note-chapter1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/upload/avatar.gif">
+      <meta itemprop="name" content="abaabaqua">
+      <meta itemprop="description" content="记录日常~ coding & life">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小麦的杂货铺">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计数据密集型应用笔记1:可靠 可扩展可维护的应用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-03-21 02:05:00" itemprop="dateCreated datePublished" datetime="2018-03-21T02:05:00+08:00">2018-03-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2018/03/20/ddia-note-chapter1/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/20/ddia-note-chapter1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>原书地址:<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/designing-data-intensive-applications/9781491903063/">Designing Data-Intensive Applications, 1st Edition</a><br>之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.<br>似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.<br>主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline,此外作者在<a target="_blank" rel="noopener" href="https://github.com/ept/ddia-references">github</a>放出了这本书所有章节的引用,看了些第一章的引用都是很不错的资料,或许可以不看这本书直接看提供的资料也可以(笑</p>
+<hr>
+<span id="more"></span>
+<p><img src="/images/1244488-20180321014845699-543810406.png"></p>
+<p>现今的很多应用都是数据密集型的应用,CPU很少是应用的限制因素,而数据量,数据复杂度和数据产生的速度是更大的问题.</p>
+<p>身为开发不仅仅知识和开发应用程序，还需要设计数据系统。  </p>
+<p>应用的设计需要考虑以下几个方面:</p>
+<ul>
+<li>可靠性: 系统在面对问题(软硬件 人为问题)时依旧可以正常工作</li>
+<li>可扩展性: 可以应对系统的增长(数据量 传输量和复杂度)</li>
+<li>可维护性</li>
+</ul>
+<h1 id="可靠性"><a href="#可靠性" class="headerlink" title="可靠性"></a>可靠性</h1><p>错误(fault)和失败(failure)不等价</p>
+<p>错误常常定义为一个组件偏离了他的规范(例如非预期的不正常运行)</p>
+<p>失败是指系统作为一个整体停止了其服务</p>
+<h2 id="硬件错误"><a href="#硬件错误" class="headerlink" title="硬件错误"></a>硬件错误</h2><p>例如硬盘的平均失败时间(MTFF mean time to failure)</p>
+<p>应对方式:</p>
+<ul>
+<li>增加冗余存储 RAID</li>
+<li>电源保障 UPS</li>
+<li>热替换CPU</li>
+<li>服务备份  </li>
+</ul>
+<h2 id="软件错误"><a href="#软件错误" class="headerlink" title="软件错误"></a>软件错误</h2><p>一般认为硬件错误是随机的.<br>如果是因为硬件问题,一台机器的硬盘坏了不一定暗示了其他机器的会坏,错误之间常常弱相关.</p>
+<p>而软件bug则会因为特定条件被触发,带来的问题可能会更严重,也更难排查.  </p>
+<h2 id="人为错误"><a href="#人为错误" class="headerlink" title="人为错误"></a>人为错误</h2><p>最主要的错误来源.</p>
+<p>应对方式:</p>
+<ul>
+<li>做设计时尽量减少产生错误的机会，例如更友好的管理界面。</li>
+<li>将容易产生失误的地方和造成错误的地方解耦，沙箱环境。</li>
+<li>测试，从单测到系统集成测试到人力测试。</li>
+<li>快速且容易的恢复机制。</li>
+<li>设置详细且清晰的监控，例如性能指标和错误率。</li>
+<li>优秀的管理和训练。</li>
+</ul>
+<h1 id="可扩展性"><a href="#可扩展性" class="headerlink" title="可扩展性"></a>可扩展性</h1><p>如何应对不断上升的负载.  </p>
+<h2 id="描述负载"><a href="#描述负载" class="headerlink" title="描述负载"></a>描述负载</h2><p>首先要能简明地描述当前系统负载,不然无法讨论负载增长的问题.</p>
+<p>可以使用一些数字来描述：负载参数(load parameter)  </p>
+<p>选择的参数取决于系统架构:</p>
+<ul>
+<li>对于web服务来说可以是QPS</li>
+<li>对于数据库来说是读写比</li>
+<li>对于聊天室来说是并发活跃连接数</li>
+<li>对于缓存是命中率</li>
+</ul>
+<h2 id="描述性能"><a href="#描述性能" class="headerlink" title="描述性能"></a>描述性能</h2><p>描述好负载之后就可以研究在负载增加的时候系统的表现如何.<br>可以从两方面考虑:</p>
+<ul>
+<li>系统资源(CPU 内存 网络带宽）不变的情况下系统受到的影响。</li>
+<li>需要增加多少资源来保持性能不受到影响。</li>
+</ul>
+<p>性能指代:对于处理系统例如hadoop来说是吞吐量,对在线系统来说是响应时间.</p>
+<p>响应时间-百分比 几个9<br>要考虑可能最慢的请求是因为数据过多,而大量数据的用户则是核心用户.<br>百分比常常用于SLO(service level objectives)和SLA(service level agreements)</p>
+<h2 id="处理负载的方式"><a href="#处理负载的方式" class="headerlink" title="处理负载的方式:"></a>处理负载的方式:</h2><p>scaling up 和 scaling out<br>垂直扩展会变得昂贵<br>需要考虑一个合适的方式,一些情况下几台高性能机器会比一堆低性能虚拟机更加简单和便宜.</p>
+<p>一些系统是elastic,弹性收缩的,在负载增加时自动增加计算资源.</p>
+<p>无状态服务的水平扩展会很容易,但如果要处理状态的话就会带来额外的复杂度。<br>现在一些通用的做法是在达到极限或者要满足HA之前数据库是单个节点。<br>但分布式数据系统是未来的趋势。  </p>
+<p>要根据实际的问题来设计,没有银弹.<br>如何设计取决于负载参数,例如读写比,对于读多比不同的应用设计可能会是截然不同的.  </p>
+<h2 id="可维护性"><a href="#可维护性" class="headerlink" title="可维护性"></a>可维护性</h2><p>易操作</p>
+<p>设计简洁</p>
+<p>易迭代</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>abaabaqua
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://bingowith.me/2018/03/20/ddia-note-chapter1/" title="设计数据密集型应用笔记1:可靠 可扩展可维护的应用">https://bingowith.me/2018/03/20/ddia-note-chapter1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/13/async-api-latency/" rel="prev" title="使用异步任务降低API延迟_实践总结">
+                  <i class="fa fa-chevron-left"></i> 使用异步任务降低API延迟_实践总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/28/jetty-8-default-character-encoding/" rel="next" title="jetty8 text/plain默认字符编码的坑">
+                  jetty8 text/plain默认字符编码的坑 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  <script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abaabaqua</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{&quot;enable&quot;:true,&quot;shortname&quot;:&quot;bingowithme&quot;,&quot;count&quot;:true,&quot;i18n&quot;:{&quot;disqus&quot;:&quot;disqus&quot;}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>
