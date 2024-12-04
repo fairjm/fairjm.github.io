@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Optimizing Java笔记:高级垃圾回收 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原书地址:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;optimizing-java&#x2F;9781492039259&#x2F;   感觉挺不错的一本书,断断续续在读.来自原书第七章的笔记,记录一些感觉比较重要的概念.原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Optimizing Java笔记:高级垃圾回收">
+<meta property="og:url" content="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原书地址:https:&#x2F;&#x2F;www.safaribooksonline.com&#x2F;library&#x2F;view&#x2F;optimizing-java&#x2F;9781492039259&#x2F;   感觉挺不错的一本书,断断续续在读.来自原书第七章的笔记,记录一些感觉比较重要的概念.原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014212327110-502030643.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213009574-2070952287.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213745798-1022468652.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20181014213907441-607899238.png">
+<meta property="article:published_time" content="2018-10-14T13:42:00.000Z">
+<meta property="article:modified_time" content="2018-10-14T13:42:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20181014212327110-502030643.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-optimizing-java-ch7-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/10/14/optimizing-java-ch7-note/" class="article-date">
+  <time class="dt-published" datetime="2018-10-14T13:42:00.000Z" itemprop="datePublished">2018-10-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Optimizing Java笔记:高级垃圾回收
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原书地址:<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/optimizing-java/9781492039259/">https://www.safaribooksonline.com/library/view/optimizing-java/9781492039259/</a>  </p>
+<p>感觉挺不错的一本书,断断续续在读.<br>来自原书第七章的笔记,记录一些感觉比较重要的概念.<br>原书这个章节内容比较丰富,笔记只是选择性地进行了一些归纳和简单翻译,建议有兴趣的不妨阅读一下原书.  </p>
+<hr>
+<span id="more"></span>
+<h1 id="Tradeoffs-and-Pluggable-Collectors"><a href="#Tradeoffs-and-Pluggable-Collectors" class="headerlink" title="Tradeoffs and Pluggable Collectors"></a>Tradeoffs and Pluggable Collectors</h1><p>权衡的可插拔垃圾回收器  </p>
+<p>在Sun的环境中 GC子系统是可插拔的子系统<br>GC的运行不能改变程序的语义 但性能上可能会有差异</p>
+<p>只有权衡 没有银弹  </p>
+<p>需要权衡的因素：  </p>
+<ul>
+<li>停顿时间</li>
+<li>吞吐量（GC所占运行时时间)</li>
+<li>停顿频率</li>
+<li>回收效率</li>
+<li>停顿一致性(是否所有停顿时间大致一样)</li>
+</ul>
+<h1 id="并发GC原理"><a href="#并发GC原理" class="headerlink" title="并发GC原理"></a>并发GC原理</h1><p>在一些特定的系统 比如动画播放,常常有固定的帧率,用来提供有规律的 固定的机会执行GC.<br>但通用的GC就不会有这样的知识来提高停顿的确定性了  </p>
+<h1 id="JVM-safepoints"><a href="#JVM-safepoints" class="headerlink" title="JVM safepoints"></a>JVM safepoints</h1><p>安全点<br>基于协商<br>有两个主要规则控制:  </p>
+<ul>
+<li>JVM不能强制一个线程进入安全点状态   </li>
+<li>JVM可以阻止一个线程离开安全点状态</li>
+</ul>
+<p>一个简化的过程:<br>1.JVM设置一个全局的”<code>time to safepoint</code>“ flag.<br>2.每个应用线程独自拉取这个flag 发现被设置了<br>3.他们停下并且等待再次醒来 </p>
+<p>这个标志被设置意味着素有线程都必须停下来.  </p>
+<p>停的快的线程也要等待还没停的线程停止(这个时间可能不会完全被pause time statistics统计到)  </p>
+<p>通常的app线程使用<code>poll</code>的机制<br>解释器会在任意两个字节码之间去检查 <code>JIT</code>编译器通常会在退出编译方法的位置插入一个<code>poll</code>  </p>
+<p>这个有点像<code>CountDownLatch</code> 所有线程到这个位置了才去做GC</p>
+<p>自动在safepoint的状态:  </p>
+<ol>
+<li>正被monitor block了</li>
+<li>正在执行JNI代码</li>
+</ol>
+<p>不可能在safepoint的状态:</p>
+<ol>
+<li>正执行了部分<code>bytecode</code>(解释器模式)</li>
+<li>已经被<code>OS</code>中断了</li>
+</ol>
+<h1 id="三色标记"><a href="#三色标记" class="headerlink" title="三色标记"></a>三色标记</h1><p>tri-color marking算法<br>工作原理:</p>
+<ul>
+<li>GC roots染为灰色</li>
+<li>所有的其他对象染成白色</li>
+<li>一个标记线程移动到随机的灰色节点上</li>
+<li>如果这个节点有白色子节点们 标记线程会先将子节点染成灰色 再将该节点染成黑色</li>
+<li>过程一直进行直到没有灰色节点剩余</li>
+<li>所有黑色节点已经被证明可达并且必须保持存活</li>
+<li>白色节点可被回收</li>
+</ul>
+<p>并发收集也频繁利用<code>SATB</code>(snapshot at the beginning)<br>如果对象在收集开始是可达或者在收集之后被分配的 就认为是存活的<br>这带来了一些额外的工作 需要应用线程在收集过程中创建的对象染黑 非收集过程中的染白  </p>
+<p>在这个过程中 应用线程会不断改变对像图<br>还有一个情况是标记黑色的对象在这个过程中又去指向了白色的对象<br><img src="/images/1244488-20181014212327110-502030643.png">  </p>
+<p>解决方式:</p>
+<ol>
+<li>黑色更新指向外部白色对象的时候变为灰色</li>
+<li>不允许黑色指向外部白色对象</li>
+<li>维护一个修改的队列 然后进行第二轮fixup<br>以及其他的</li>
+</ol>
+<h1 id="CMS"><a href="#CMS" class="headerlink" title="CMS"></a>CMS</h1><p>为老年代设计的极其低停顿的收集器<br>一般和一个轻量修改的年轻代并行收集器一起用(<code>ParNew</code> 而不是<code>Parallel GC</code>)</p>
+<p>步骤:  </p>
+<ol>
+<li>初始标记(Initial Mark) STW</li>
+<li>并发标记(Concurrent Mark)</li>
+<li>并发预清理(Concurrent Preclean)</li>
+<li>重标记(Remark) STW</li>
+<li>并发清理(Concurrent Sweep)</li>
+<li>并发重置(Concurrent Reset)</li>
+</ol>
+<p>将一个长的STW停顿变为两个较短的STW停顿</p>
+<p>明显的影响:</p>
+<ul>
+<li>应用线程不会像之前一样停的久</li>
+<li>单个完整的GC循环会花得更久</li>
+<li>CMS GC循环的时候应用吞吐量会下降</li>
+<li>GC会花更多的内存跟踪对象</li>
+<li>使用更多的CPU时间用来进行GC</li>
+<li>CMS不会压缩heap 所以老年代会碎片化</li>
+</ul>
+<p>默认情况 <code>CMS</code>会用一半可用线程来处理并发阶段 剩下一半运行Java代码<br>这时候如果<code>Eden</code>满了…就会触发<code>YGC</code> 但这时候已经没那么多线程了..<code>YGC</code>会更久<br><code>YGC</code>之后一些对象可能被提升到老年代了 这两个收集器之间需要一些协调 这也是为什么<code>CMS</code>需要一个稍微不同的Young收集器(<code>ParNew</code>)<br>另一种情况 如果<code>YGC</code>提升到老年代的对象过多…老年代没有空间…emmmm<br>就触发了并发模式失败(concurrent mode failure,<code>CMF</code>),JVM只能降级转为使用<code>ParallelOld</code><br>为了避免频繁的<code>CMF</code> <code>CMS</code>需要在老年代完全满之前就开始一轮收集循环 默认是75%<br>另外一个场景会引发<code>CMF</code>的是内存碎片 提升的对象没有连续的内存空间可放<br>降级的<code>ParallelOld</code>有压缩  </p>
+<p><strong>使用CMS的主要问题是避免CMF</strong>  </p>
+<p>内部<code>CMS</code>使用一个<code>free list</code>记录内存块来管理可用空间<br>在Concurrent sweep阶段 连续的可用块会被sweeper线程合并在一起 这样可以提供更大的可用空间块来避免因为内存问题造成的<code>CMF</code><br>但这个过程也是并发的 sweeper会锁上free lists.  </p>
+<h2 id="基本参数"><a href="#基本参数" class="headerlink" title="基本参数"></a>基本参数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+<p>启用CMS(同时激活ParNew)</p>
+<p>此外还有60多个参数…</p>
+<h1 id="G1"><a href="#G1" class="headerlink" title="G1"></a>G1</h1><p>Java6引入 Java7里重写 Java8u40就是可靠和生产可用的<br>不建议在8u40之前使用他</p>
+<p>比CMS更容易优化<br>对老年代提升更不敏感<br>在大heap下更好的scale(特别是停顿时间)<br>能够避免(或大幅降低 回退到)full STW收集  </p>
+<p>G1和并行GC CMS不同 每代没有专用的 连续空间的内容<br>此外他也没有沿用半球空间(s0 s1)的布局  </p>
+<h2 id="G1堆空间和Regions"><a href="#G1堆空间和Regions" class="headerlink" title="G1堆空间和Regions"></a>G1堆空间和Regions</h2><p>G1堆基于<code>regions</code>的概念.<br>默认<strong>1M</strong>(在更大堆下会更大)<br>注意G1的堆空间是连续的 只是每代本身不连续<br><img src="/images/1244488-20181014213009574-2070952287.png"></p>
+<p>G1的算法允许1 2 4 - <del>64M</del> 应该为32MB<br>参考:<a target="_blank" rel="noopener" href="http://hg.openjdk.java.net/jdk/jdk/file/f08c1d7a5c53/src/hotspot/share/gc/g1/heapRegionBounds.inline.hpp">heapRegionBounds</a><br>默认 他期望有2048-4095个regions  </p>
+<h2 id="G1算法设计"><a href="#G1算法设计" class="headerlink" title="G1算法设计"></a>G1算法设计</h2><p>使用并发标记阶段<br>是一个evacuating(搬空)收集器<br>提供”基于统计的压缩”(statistical compaction)    </p>
+<p>如果一个对象占用超过一半一个region的大小 就会被认为是一个巨大(humongous)对象.<br>直接分配在特殊的<code>humongous regions</code>中.空间连续.  </p>
+<p>年轻代的概念保留 Eden survivor regions.<br>但不连续<br>空间随着整体停顿目标变化.  </p>
+<p>RSets(remembered sets)<br>pre-region entries<br>记录自身对象被外部region对象引用的情况<br>这个是用来处理ygc时 一部分年轻代对象被老年代引用着<br>不需要扫描整个heap只要检查这个RSets看看外部有没有老年代的region引用着就好了<br><img src="/images/1244488-20181014213745798-1022468652.png">  </p>
+<p><code>RSets</code>和<code>card table</code>都是帮助GC解决浮动垃圾(floating garbage)的问题.  dead对象间的引用.  </p>
+<h2 id="G1阶段"><a href="#G1阶段" class="headerlink" title="G1阶段"></a>G1阶段</h2><ol>
+<li>初始标记(Initial Mark) STW</li>
+<li>并发根扫描(Concurrent Root Scan)</li>
+<li>并发标记(Concurrent Mark)</li>
+<li>重标记(Remark) STW</li>
+<li>清理(Cleanup) STW</li>
+</ol>
+<h2 id="基本参数-1"><a href="#基本参数-1" class="headerlink" title="基本参数"></a>基本参数</h2><p>启用参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:UseG1GC</span><br></pre></td></tr></table></figure>
+<p>G1是基于停顿目标的 允许开发者指定一个期望的停顿最大时间<br>这只是一个目标 没有保证一定能达成<br>毕竟回收的的前提是分配 分配过程很多是不可预测的  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxFCPauseMillis=200</span><br></pre></td></tr></table></figure>
+<p>200ms<br>实践中 100ms以下的目标是很难达到的   </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1HeapRegionSize=n</span><br></pre></td></tr></table></figure>
+<p>必须是2的倍数 1- <del>64</del> 32 单位是MB  </p>
+<h1 id="Shenandoah"><a href="#Shenandoah" class="headerlink" title="Shenandoah"></a>Shenandoah</h1><p>红帽 openjdk项目<br>项目wiki:<a target="_blank" rel="noopener" href="https://wiki.openjdk.java.net/display/shenandoah/Main">https://wiki.openjdk.java.net/display/shenandoah/Main</a><br>还不能用于生产  </p>
+<p>和G1目的一样 是为了降低大堆下的停顿时间  </p>
+<ol>
+<li>初始标记 (Initial Mark) STW</li>
+<li>并发标记(Concurrent Marking)</li>
+<li>最终标记(Final Marking) STW</li>
+<li>并发压缩(Concurrent Compaction)</li>
+</ol>
+<p>阶段看上去类似<br>一些实现机制比如SATB也相似<br>但有一些根本上的不同<br>最显著的特点就是在压缩阶段 应用线程依旧可以访问对象<br>使用了<code>brooks pointer</code>.    </p>
+<p>每个对象使用了一个额外的字(<code>word</code>)来标记是否在上一个gc阶段发生了重定位(relocated) 并且放置了新的位置</p>
+<p>如果对象没被重放置 <code>brooks pointer</code>指向内存里的下一个字  </p>
+<p>压缩阶段涉及到复制 在这个过程中复制对象 然后将原对象的字指向新的复制的对象 相当于做了一个路由<br><img src="/images/1244488-20181014213907441-607899238.png"></p>
+<p>并发压缩<br>现在的抽空(evacuation)步骤如下:</p>
+<ol>
+<li>复制对象到<code>TLAB</code>(冒险的)</li>
+<li>使用<code>CAS</code>操作更新<code>brooks pointer</code>到那个冒险的副本</li>
+<li>如果成功 那么压缩线程赢了这次race,之后所有的访问该对象会经过<code>Brooks pointer</code></li>
+<li>如果失败 压缩对象失败.那个冒险的副本会被取消,赢得的线程设置<code>Brooks pointer</code>.</li>
+</ol>
+<p>在提供了该回收器上使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseShenandoahGC</span><br></pre></td></tr></table></figure>
+
+<h1 id="C4-Azul-Zing"><a href="#C4-Azul-Zing" class="headerlink" title="C4(Azul Zing)"></a>C4(Azul Zing)</h1><h1 id="Balanced-IBM-J9"><a href="#Balanced-IBM-J9" class="headerlink" title="Balanced(IBM J9)"></a>Balanced(IBM J9)</h1><p>Open J9</p>
+<h1 id="Lengacy-Hotspot-Collectors"><a href="#Lengacy-Hotspot-Collectors" class="headerlink" title="Lengacy Hotspot Collectors"></a>Lengacy Hotspot Collectors</h1><p>一些组合在Java8被废弃 在Java9会被移除  </p>
+<h2 id="Serial和SerialOld"><a href="#Serial和SerialOld" class="headerlink" title="Serial和SerialOld"></a>Serial和SerialOld</h2><p>和Parallel ParallelOld类似 但使用单个线程</p>
+<h2 id="Incremental-CMS-iCMS"><a href="#Incremental-CMS-iCMS" class="headerlink" title="Incremental CMS(iCMS)"></a>Incremental CMS(iCMS)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+CMSIncrementalMode</span><br></pre></td></tr></table></figure>
+<p>一些改进尝试 Java9中被移除</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/10/14/optimizing-java-ch7-note/" data-id="cm49fdrkq001zr8vafwtnf28l" data-title="Optimizing Java笔记:高级垃圾回收" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/19/why-lambda-inner-class-only-access-final-var/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          lambda和匿名内部类使用外部变量为什么要语义final?
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/21/java-application-offheap-memory-leak-analyze/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">记一次尴尬的Java应用内存泄露排查</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

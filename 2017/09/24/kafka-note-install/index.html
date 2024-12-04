@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>kafka学习笔记1:测试环境搭建 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="最近因为架构中引入了kafka,一些之前在代码中通过RPC调用强耦合但是适合异步处理的内容可以用kafka重构一下.考虑从头学一下kafka了解其特性和使用场景。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka学习笔记1:测试环境搭建">
+<meta property="og:url" content="https://bingowith.me/2017/09/24/kafka-note-install/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="最近因为架构中引入了kafka,一些之前在代码中通过RPC调用强耦合但是适合异步处理的内容可以用kafka重构一下.考虑从头学一下kafka了解其特性和使用场景。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170924141841165-1167762603.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170924142156571-346165170.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170924142211259-23564339.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170924142622790-2144780732.png">
+<meta property="article:published_time" content="2017-09-24T07:00:00.000Z">
+<meta property="article:modified_time" content="2017-09-24T07:00:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20170924141841165-1167762603.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-kafka-note-install" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/09/24/kafka-note-install/" class="article-date">
+  <time class="dt-published" datetime="2017-09-24T07:00:00.000Z" itemprop="datePublished">2017-09-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      kafka学习笔记1:测试环境搭建
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近因为架构中引入了kafka,一些之前在代码中通过RPC调用强耦合但是适合异步处理的内容可以用kafka重构一下.<br>考虑从头学一下kafka了解其特性和使用场景。  </p>
+<span id="more"></span> 
+<h1 id="环境选择"><a href="#环境选择" class="headerlink" title="环境选择"></a>环境选择</h1><p>首先是测试环境的搭建,平时使用的是win,但kafka以及zk在win上会存在一些bug(例如 <a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/KAFKA-1194),%E6%9C%80%E5%A5%BD%E8%BF%98%E6%98%AF%E5%9C%A8linux%E5%B9%B3%E5%8F%B0%E4%B8%8A%E6%90%AD%E5%BB%BA">https://issues.apache.org/jira/browse/KAFKA-1194),最好还是在linux平台上搭建</a>.<br>虚拟机是一个不错的选择但开销比较大,日常使用的笔记本8G内存开启虚拟机不是很方便,<code>bash on windows</code>是个不错的选择.<br>(另在<code>Store</code>中可以下载<code>ubuntu</code>等子系统,现在只限于insider)<br><img src="/images/1244488-20170924141841165-1167762603.png"><br>在组件中开启后重启电脑更新.</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>重启后,在命令行或者powershell中输入bash进入环境.<br><img src="/images/1244488-20170924142156571-346165170.png"><br>但这里的环境和外部的windows不互通,windwos装了java也无法在bash中使用.<br>需要先安装一些额外的组件.  </p>
+<h2 id="java安装"><a href="#java安装" class="headerlink" title="java安装"></a>java安装</h2><p><img src="/images/1244488-20170924142211259-23564339.png"><br>输入后选择一个即可(这里选择了openjdk-8-jre-headless)</p>
+<h2 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h2><p>kafka依赖zk<br>简单的关系如下(图片来源kafka权威指南):<br><img src="/images/1244488-20170924142622790-2144780732.png"><br>所以使用kafka之前需要配置好zk.  </p>
+<pre><code>cd ~
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
+tar -zxf zookeeper-3.4.6.tar.gz
+mv zookeeper-3.4.6 /usr/local/zookeeper
+mkdir -p /var/lib/zookeeper
+vim /usr/local/zookeeper/conf/zoo.cfg
+/usr/local/zookeeper/bin/zkServer.sh start  
+</code></pre>
+<p>zoo.cfg的内容和zoo_sample.cfg大致相同,将dataDir换为<code>/var/lib/zookeeper</code>即可.<br>内容如下:    </p>
+<pre><code>tickTime=2000
+dataDir=/var/lib/zookeeper
+clientPort=2181
+</code></pre>
+<p>启动后zk在2181端口运行  </p>
+<h2 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h2><p>kafka安装过程类似.<br>这里学习使用0.9.0.1版本,去年2月发布.<br>和所看的书保持一致避免出现不兼容问题导致书中例子无法运行阻碍进度(新版本的功能之后再额外学习).  </p>
+<pre><code>wget http://mirror.bit.edu.cn/apache/kafka/0.9.0.1/kafka_2.11-0.9.0.1.tgz
+tar —zxf kafka 2.11-0.9.0.1.tgz
+mv kafka 2.11-0.9.0.1 /usr/local/kafka
+mkdir /tmp/kafka—logs
+/usr/local/kafka/bin/kafka—server—start.sh -daemon /usr/local/kafka/config/server.properties
+</code></pre>
+<p>创建topic并验证: </p>
+<pre><code># /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181
+--replication-factor 1 --partitions 1 --topic test
+Created topic &quot;test&quot;.
+# /usr/local/kafka/bin/kafka-topics.sh --zookeeper localhost:2181
+--describe --topic test
+Topic:test    PartitionCount:1    ReplicationFactor:1    Configs:
+    Topic: test    Partition: 0    Leader: 0    Replicas: 0    Isr: 0
+</code></pre>
+<p>同时zk的&#x2F;brokers&#x2F;topics下会多出一个test.  </p>
+<p>至此整个安装过程就结束了.  </p>
+<p>上面的<code>/usr/local/kafka/config/server.properties</code>是broker的配置,其中一些配置的含义如下:  </p>
+<ul>
+<li><p>broker.id<br>都必须要有一个id 默认是0<br>在一个集群里必须唯一</p>
+</li>
+<li><p>port<br>监听的端口 默认是9092<br>指定1024以下的端口要用root跑 但不建议</p>
+</li>
+<li><p>zookeeper.connent<br>连接zk的地址 默认是localhost的2181<br>格式是hostname:port&#x2F;path<br>默认path不写是根  </p>
+</li>
+<li><p>log.dirs<br>log块的存储位置<br>可以用，分隔存多个<br>一个分区的日志会存在一个路径下  </p>
+</li>
+<li><p>num.recovery.threads.per.data.dir<br>用来启动和结束时做日志恢复相关<br>和dirs的数量相关 如果是3 dirs数量是2 那会有6个线程</p>
+</li>
+<li><p>num.partitions<br>一个新的topic会有多少个分区<br>分区数只能比这个数字大 不能比这个小</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/09/24/kafka-note-install/" data-id="cm49fdrkl001ir8va9zb284gn" data-title="kafka学习笔记1:测试环境搭建" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/28/kafka-note-producer/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          kafka学习笔记2:生产者
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

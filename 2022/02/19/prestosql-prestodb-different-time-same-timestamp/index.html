@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>prestosql(trino) hive时间戳显示不正确排查 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="TLDR: 服务器的时区设置有问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="prestosql(trino) hive时间戳显示不正确排查">
+<meta property="og:url" content="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="TLDR: 服务器的时区设置有问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-19T05:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-19T05:00:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-prestosql-prestodb-different-time-same-timestamp" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" class="article-date">
+  <time class="dt-published" datetime="2022-02-19T05:00:00.000Z" itemprop="datePublished">2022-02-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      prestosql(trino) hive时间戳显示不正确排查
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>TLDR: 服务器的时区设置有问题。  </p>
+<span id="more"></span>
+<hr>
+<p><code>prestosql</code>也老早改名<code>trino</code>了…<br>公司的数仓很早就建了且没有升级，所以版本很老。<br><code>hive</code>使用的是1.1版本,对应的<code>ORC</code>版本是0.12。<br>装了一个远古版本的<code>prestodb</code>，后来在2019年又装了一个<code>prestosql</code>。  </p>
+<p>讲完了背景说一下问题。<br><code>hive</code>中有<code>timestamp</code>字段的表，在<code>hive</code>和<code>prestodb</code>中显示正常，比如<code>2022-02-19 08:00:00</code>,但是在<code>prestosql</code>中显示的是<code>2022-02-19 16:00:00</code>，也就是多了8H。<br>最开始排查，检查<code>hive</code>,<code>prestosql</code>和<code>prestodb</code>的当前时间和时区，都显示为正常。排除物理机时区不同或者设置了不同时区。    </p>
+<p>既然数据库设置没问题，那看一下<code>ORC</code>,dump了一下元信息，发现对应字段类型是<code>timestamp</code>，dump一下数据，发现存储的是<code>2022-02-19 08:00:00</code>。<br>???<br>存的是<code>2022-02-19 08:00:00</code>？看<code>ORC</code>的类型可知时间戳分类两个类型，一个是UTC一个是with timezone offset的，stripe信息中没有timezone信息，为什么timestamp存的是东八区的时间，而不是UTC？  </p>
+<p>看到这个渐渐有点明朗，东八区的时间的确是<code>2022-02-19 08:00:00</code>，但时间戳存的也是<code>2022-02-19 08:00:00</code>，那也就是<code>hive</code>和<code>prestodb</code>直接把这个当作东八区来用了所以正常显示，而<code>prestosql</code>是认为<code>2022-02-19 08:00:00</code>是UTC时间，所以查询显示的时候自动加了当前时区的8小时。  </p>
+<p>再检查了一下使用的<code>ORC</code>版本，发现版本很低，对比release信息，这个版本是不支持timezone offset的。<br>找到定义文档，发现一段话：  </p>
+<blockquote>
+<p>Before ORC-135, the local timezone offset was included and they were stored as minimum and maximum. After ORC-135, the timestamp is adjusted to UTC before being converted to milliseconds and stored in minimumUtc and maximumUtc.<br>emmm，所以他存的timestamp实际上是包括了本地时间偏移。  </p>
+</blockquote>
+<p><del>再加上<code>hive</code>和<code>prestodb</code>用的版本过低，读取timestamp的时候用的就是当前时区。所以显示没问题。<br>而<code>prestosql</code>版本更新，且支持<code>ORC</code>的timestamp with timezone offset，那如果stripe里没有时区会怎么样呢，我们使用的版本看起来是会默认把<code>timestamp</code>当作UTC</del>.(见后面分析)</p>
+<h2 id="经过上面一顿分析，参考trino的文档找到了一个参数hive-orc-time-zone，实测无效因为这个是341版本实装的，版本过低。在看了一眼老版本要用参数hive-time-zone，设置回Asia-Shanghai后回复正常了。"><a href="#经过上面一顿分析，参考trino的文档找到了一个参数hive-orc-time-zone，实测无效因为这个是341版本实装的，版本过低。在看了一眼老版本要用参数hive-time-zone，设置回Asia-Shanghai后回复正常了。" class="headerlink" title="经过上面一顿分析，参考trino的文档找到了一个参数hive.orc.time-zone，实测无效因为这个是341版本实装的，版本过低。在看了一眼老版本要用参数hive.time-zone，设置回Asia/Shanghai后回复正常了。  
+  "></a>经过上面一顿分析，参考trino的文档找到了一个参数<code>hive.orc.time-zone</code>，实测无效因为这个是341版本实装的，版本过低。<br>在看了一眼老版本要用参数<code>hive.time-zone</code>，设置回<code>Asia/Shanghai</code>后回复正常了。  
+  </h2><p>本来以为事情就这么解决。<br>但后来一想这个<code>trino</code>升级应该不会这么不谨慎吧，如果有这个问题那应该大面积爆发且爆栈，issue很多才对。<br>实际上这个资料都很难搜到。<br>那可不可能是自己的问题呢。  </p>
+<p>再次对比<code>prestodb</code>和<code>presosql</code>，他们现在配置的区别就是<code>prestosql</code>设置了time-zone。<br>这个参数很早就支持了，那为什么<code>prestodb</code>不设置也可以呢。<br>查了下这个参数的默认值用的是<code>JVM Default</code>。<br>emmm， 那主要就是两个<code>user.timezone</code>这个属性。<br>用<code>jcmd pid VM.system_properties</code>检查了一下… …<br>果然，<code>prestosql</code>写的是<code>user.timezone=UTC</code>，而<code>prestodb</code>的是<code>user.timezone=Asia/Shanghai</code>。<br>破案… …<br>这个属性一般不用自己设置，看了下服务器，emmm，部署<code>prestosql</code>的用的是UTC，所以他把<code>hive.time-zone</code>设置为了<code>UTC</code>,读取<code>ORC</code>也错了。  </p>
+<p>哎，走了一些弯路还在怀疑版本更新之后的一些兼容性问题。<br>不过也是必要的，最后发现是环境问题也是因为知道了对应的参数和其默认值。<br>排查问题最主要的还是要尽量刨根究底，不然会有错误的认知和结论。<br>哎，还是太菜了 …( ＿ ＿)ノ｜。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://orc.apache.org/specification/ORCv1/">ORC Specification v1</a><br><a target="_blank" rel="noopener" href="https://trino.io/docs/current/release/release-341.html">Trino Release 341(8 Sep 2020)</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/2493749/how-to-set-a-jvm-timezone-properly">How to set a JVM TimeZone Properly</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" data-id="cm49fdrkt0025r8va18jdb6ya" data-title="prestosql(trino) hive时间戳显示不正确排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/03/20/spring-boot-mysql-to-h2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          spring boot应用 从mysql迁移h2
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/01/08/hexo-github-action/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Hexo github action注意事项</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

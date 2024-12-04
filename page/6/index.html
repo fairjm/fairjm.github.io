@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="记录日常~ coding &amp; life">
+<meta property="og:type" content="website">
+<meta property="og:title" content="小麦的杂货铺">
+<meta property="og:url" content="https://bingowith.me/page/6/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="记录日常~ coding &amp; life">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-8886406" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/04/19/8886406/" class="article-date">
+  <time class="dt-published" datetime="2018-04-19T13:39:00.000Z" itemprop="datePublished">2018-04-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/04/19/8886406/">编码之痛:操作系统迁移后redis缓存无法命中</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前几天一台内网服务器从ubuntu迁移到了centos，检查一切正常后就没有太在意。  </p>
+<p>今天有同事反馈迁移后的机器上的服务一个缓存总是无法获取，对比了下环境、JVM参数，尝试了war包替换等方式照样复现。<br>在有问题的机器上装了redis-cli让同事去看也是可以获取到的，一时没有了头绪。<br>打算请教其他同事，让有问题的同事把查询等发我一下，然后就看到了… …. key设置为了中文，一下子头大了… …  </p>
+        
+          <p class="article-more-link">
+            <a href="/2018/04/19/8886406/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/04/19/8886406/" data-id="cm49fdrjz0004r8vaavz1d9xy" data-title="编码之痛:操作系统迁移后redis缓存无法命中" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-jetty-8-default-character-encoding" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/03/28/jetty-8-default-character-encoding/" class="article-date">
+  <time class="dt-published" datetime="2018-03-28T13:48:00.000Z" itemprop="datePublished">2018-03-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/03/28/jetty-8-default-character-encoding/">jetty8 text/plain默认字符编码的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>今天在测试一个content-type为<code>text/plain</code>的API时发现后端requestBody乱码了，而线上正常。<br>自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。<br>最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。    </p>
+        
+          <p class="article-more-link">
+            <a href="/2018/03/28/jetty-8-default-character-encoding/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/03/28/jetty-8-default-character-encoding/" data-id="cm49fdrkj001cr8vahqricjue" data-title="jetty8 text/plain默认字符编码的坑" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-ddia-note-chapter1" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/03/21/ddia-note-chapter1/" class="article-date">
+  <time class="dt-published" datetime="2018-03-20T18:05:00.000Z" itemprop="datePublished">2018-03-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/03/21/ddia-note-chapter1/">设计数据密集型应用笔记1:可靠 可扩展可维护的应用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原书地址:<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/designing-data-intensive-applications/9781491903063/">Designing Data-Intensive Applications, 1st Edition</a><br>之前群里有人推荐,再在safaribooksonline上有60多个好评就先看了一章,阅读体验良好,这边记录一下笔记.<br>似乎之前看到过图灵社区在招这本书的译者,不过那时候可能都读了很多了.<br>主要是笔记的性质,记录一下概要和重要概念,有兴趣的可以购买阅读或者订阅safaribooksonline,此外作者在<a target="_blank" rel="noopener" href="https://github.com/ept/ddia-references">github</a>放出了这本书所有章节的引用,看了些第一章的引用都是很不错的资料,或许可以不看这本书直接看提供的资料也可以(笑</p>
+<hr>
+        
+          <p class="article-more-link">
+            <a href="/2018/03/21/ddia-note-chapter1/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/03/21/ddia-note-chapter1/" data-id="cm49fdrk8000jr8va4ts4f2fm" data-title="设计数据密集型应用笔记1:可靠 可扩展可维护的应用" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-async-api-latency" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/02/13/async-api-latency/" class="article-date">
+  <time class="dt-published" datetime="2018-02-13T07:18:00.000Z" itemprop="datePublished">2018-02-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/02/13/async-api-latency/">使用异步任务降低API延迟_实践总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>之前在想如何降低API的延迟，这些API里有几个比较耗时的操作且是串行执行，那通过异步执行的方式理论上可以降低运行的时间，如下图所示：<br><img src="/images/1244488-20180213120710156-2118264085.png">  </p>
+        
+          <p class="article-more-link">
+            <a href="/2018/02/13/async-api-latency/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/02/13/async-api-latency/" data-id="cm49fdrk3000ar8va4axke768" data-title="使用异步任务降低API延迟_实践总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-failure-control-patterns" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/02/01/failure-control-patterns/" class="article-date">
+  <time class="dt-published" datetime="2018-02-01T13:03:00.000Z" itemprop="datePublished">2018-02-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/02/01/failure-control-patterns/">常用失败控制模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>本文内容主要翻译自<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/reactive-systems-architecture/9781491980705/">Reactive Systems Architecture</a>第一章1.9节。</p>
+        
+          <p class="article-more-link">
+            <a href="/2018/02/01/failure-control-patterns/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/02/01/failure-control-patterns/" data-id="cm49fdrkb000qr8va7wzs2nzw" data-title="常用失败控制模式" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-docker-maven-springboot" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/12/22/docker-maven-springboot/" class="article-date">
+  <time class="dt-published" datetime="2017-12-22T13:22:00.000Z" itemprop="datePublished">2017-12-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/12/22/docker-maven-springboot/">使用maven插件构建docker镜像</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="为什么要用插件"><a href="#为什么要用插件" class="headerlink" title="为什么要用插件"></a>为什么要用插件</h1><p>主要还是自动化的考虑，如果额外使用Dockerfile进行镜像生成，可能会需要自己手动指定jar&#x2F;war位置，并且打包和生成镜像间不同步，带来很多琐碎的工作。  </p>
+<h1 id="插件选择"><a href="#插件选择" class="headerlink" title="插件选择"></a>插件选择</h1><p>使用比较多的是spotify的插件:<a target="_blank" rel="noopener" href="https://github.com/spotify/docker-maven-plugin">https://github.com/spotify/docker-maven-plugin</a><br>和 <a target="_blank" rel="noopener" href="https://github.com/spotify/dockerfile-maven%E3%80%82">https://github.com/spotify/dockerfile-maven。</a><br>但这里我选择另一款插件：<a target="_blank" rel="noopener" href="https://github.com/fabric8io/docker-maven-plugin%E3%80%82">https://github.com/fabric8io/docker-maven-plugin。</a><br>因为他文档比较详细，在使用上也比较方便。<br>文档地址：<a target="_blank" rel="noopener" href="https://dmp.fabric8.io/">https://dmp.fabric8.io/</a>  </p>
+        
+          <p class="article-more-link">
+            <a href="/2017/12/22/docker-maven-springboot/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/12/22/docker-maven-springboot/" data-id="cm49fdrk8000kr8va4ppz0ctt" data-title="使用maven插件构建docker镜像" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-locksuport" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/11/30/locksuport/" class="article-date">
+  <time class="dt-published" datetime="2017-11-29T17:43:00.000Z" itemprop="datePublished">2017-11-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/11/30/locksuport/">LockSupport浅析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。"><a href="#最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。" class="headerlink" title="最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。"></a>最初想有没有必要写这类文章，网上相关的文章很多，有些更为透彻，自己再写一篇不免有重复造轮子的感觉。<br>但想想写文除了分享知识外也可以帮助自己总结归纳，也稍稍可以提高点自我满足感。<br>
+        
+          <p class="article-more-link">
+            <a href="/2017/11/30/locksuport/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/11/30/locksuport/" data-id="cm49fdrko001pr8va8xw21jxl" data-title="LockSupport浅析" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-jetty-ServletRequestListener-async" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/11/19/jetty-ServletRequestListener-async/" class="article-date">
+  <time class="dt-published" datetime="2017-11-19T09:51:00.000Z" itemprop="datePublished">2017-11-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/11/19/jetty-ServletRequestListener-async/">异步请求中jetty处理ServletRequestListener的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>标题起得比较诡异，其实并不是坑，而是jetty似乎压根就没做对异步request的<code>ServletRequestListener</code>的特殊处理，如果文中有错误欢迎提出，可能自己有所疏漏了。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/11/19/jetty-ServletRequestListener-async/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/11/19/jetty-ServletRequestListener-async/" data-id="cm49fdrkj001dr8va7x8vftgq" data-title="异步请求中jetty处理ServletRequestListener的坑" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-microservice-thought" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/11/11/microservice-thought/" class="article-date">
+  <time class="dt-published" datetime="2017-11-11T12:13:00.000Z" itemprop="datePublished">2017-11-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/11/11/microservice-thought/">微服务化路上的只言片语</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>类似于杂谈性质的文，总结下公司实行微服务化上遇到的一些问题。<br>虽然参与了开发过程，但整体更像是个旁观者，前期还是大家讨论怎么做，后来慢慢就由负责架构的同事专职做规划，拆分任务去完成。  </p>
+        
+          <p class="article-more-link">
+            <a href="/2017/11/11/microservice-thought/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/11/11/microservice-thought/" data-id="cm49fdrko001rr8va6o5pen6w" data-title="微服务化路上的只言片语" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-html5-flash-video-speed-up" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/10/21/html5-flash-video-speed-up/" class="article-date">
+  <time class="dt-published" datetime="2017-10-21T10:56:00.000Z" itemprop="datePublished">2017-10-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/10/21/html5-flash-video-speed-up/">几种方式加速网页视频播放速度</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>现在有不少视频网站,自带了播放加速功能,例如油管,bilibili,慕课等等.节省了很多看视频的时间,特别是看一些技术教程类的视频,不管是念ppt还是手把手演示.  </p>
+<p>在自己付费的一些网站中,一些是自带播放器不支持视频加速的.因为已经被加速惯坏,变得很不习惯,今天特意研究了一下,对于几种形式给出一些解决方法.  </p>
+        
+          <p class="article-more-link">
+            <a href="/2017/10/21/html5-flash-video-speed-up/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/10/21/html5-flash-video-speed-up/" data-id="cm49fdrkh0014r8vabcen9vwk" data-title="几种方式加速网页视频播放速度" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/5/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/">下一页 &raquo;</a>
+  </nav>
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

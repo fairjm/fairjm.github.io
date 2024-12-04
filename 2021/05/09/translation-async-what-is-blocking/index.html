@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>[翻译]async: 什么是blocking | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原文来自:https:&#x2F;&#x2F;ryhl.io&#x2F;blog&#x2F;async-what-is-blocking&#x2F;作者:Alice Ryhl翻译 by abaabaqua Rust的async&#x2F;await特性是通过一种称为协作式调度(cooperative scheduling)的机制来实现的，这对于编写异步Rust代码的人来说有一些重要的影响。   这篇博文的目标读者是异步Rust的新用户。我将使用T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]async: 什么是blocking">
+<meta property="og:url" content="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原文来自:https:&#x2F;&#x2F;ryhl.io&#x2F;blog&#x2F;async-what-is-blocking&#x2F;作者:Alice Ryhl翻译 by abaabaqua Rust的async&#x2F;await特性是通过一种称为协作式调度(cooperative scheduling)的机制来实现的，这对于编写异步Rust代码的人来说有一些重要的影响。   这篇博文的目标读者是异步Rust的新用户。我将使用T">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-09T04:38:00.000Z">
+<meta property="article:modified_time" content="2021-05-09T04:38:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-translation-async-what-is-blocking" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/05/09/translation-async-what-is-blocking/" class="article-date">
+  <time class="dt-published" datetime="2021-05-09T04:38:00.000Z" itemprop="datePublished">2021-05-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      [翻译]async: 什么是blocking
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原文来自:<a target="_blank" rel="noopener" href="https://ryhl.io/blog/async-what-is-blocking/">https://ryhl.io/blog/async-what-is-blocking/</a><br>作者:<a target="_blank" rel="noopener" href="https://ryhl.io/">Alice Ryhl</a><br>翻译 by <a href="https://bingowith.me/">abaabaqua</a></p>
+<p><code>Rust</code>的<code>async</code>&#x2F;<code>await</code>特性是通过一种称为协作式调度(cooperative scheduling)的机制来实现的，这对于编写异步<code>Rust</code>代码的人来说有一些重要的影响。  </p>
+<p>这篇博文的目标读者是异步<code>Rust</code>的新用户。我将使用<code>Tokio</code>运行时作为示例，但这里提出的观点适用于任何异步运行时。  </p>
+<p>如果你只从这篇文章中记住一件事，那应该是:<br>异步代码不应该长时间不到达<code>.await</code>。(注:指的是运行中) </p>
+<span id="more"></span>
+
+<h1 id="Blocking-vs-non-blocking-code"><a href="#Blocking-vs-non-blocking-code" class="headerlink" title="Blocking vs. non-blocking code"></a>Blocking vs. non-blocking code</h1><p>编写一个可以同时处理许多事情的应用程序的质朴的方法是为每个任务生成一个新线程。如果任务的数量很少，这就是一个完美的解决方案，但是随着任务的数量变得越来越多，你最终会因为数量过多的线程而遇到问题。这个问题在不同的编程语言中有不同的解决方案，但它们都归结为同一件事: 非常快速地切换每个线程上当前运行的任务，这样所有的任务都有机会运行。在<code>Rust</code>中，这种切换发生在当你<code>.await</code>一些事上。</p>
+<p>在写异步rust 时，短语<code>阻塞线程(blocking the thread)</code>意味着<code>阻止运行时切换当前任务</code>。这可能是一个主要问题，这意味着同一运行时上的其他任务将停止运行，直到线程不再被阻塞。为了防止这种情况，我们应该编写能够快速切换的代码，也就是不要长时间不进行<code>.await</code>。  </p>
+<p>让我们来举个例子:  </p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[tokio::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No .await here!</span></span><br><span class="line">    std::thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">5</span>));</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Five seconds later...&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码看起来是正确的，运行它将看起来正常工作。但它有一个致命的缺陷: 它阻塞了线程。上述情况没有其他任务，所以看不出问题，但在真正的程序中就不一样了。为了说明这一点，考虑下面的例子:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">sleep_then_print</span>(timer: <span class="type">i32</span>) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Start timer &#123;&#125;.&quot;</span>, timer);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No .await here!</span></span><br><span class="line">    std::thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Timer &#123;&#125; done.&quot;</span>, timer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[tokio::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// The join! macro lets you run multiple things concurrently.</span></span><br><span class="line">    tokio::join!(</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">1</span>),</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">2</span>),</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">3</span>),</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Start timer 1.</span><br><span class="line">Timer 1 done.</span><br><span class="line">Start timer 2.</span><br><span class="line">Timer 2 done.</span><br><span class="line">Start timer 3.</span><br><span class="line">Timer 3 done.</span><br></pre></td></tr></table></figure>
+<p>这个例子将花费三秒钟运行，timer将在没有任何并发的情况下一个接一个地运行。原因很简单: <code>Tokio</code>运行时无法将一个任务切换为另一个任务，因为这种切换只能发生在<code>.await</code>。因为<code>sleep_then_print</code>中没有<code>.await</code>，在运行时就不会发生切换。</p>
+<p>然而，如果我们使用<code>Tokio</code>的<a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/time/fn.sleep.html">sleep</a>函数，它使用一个<code>.await</code>来睡眠，那么这个函数就会正常工作:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> tokio::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">sleep_then_print</span>(timer: <span class="type">i32</span>) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Start timer &#123;&#125;.&quot;</span>, timer);</span><br><span class="line"></span><br><span class="line">    tokio::time::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>)).<span class="keyword">await</span>;</span><br><span class="line"><span class="comment">//                                            ^ execution can be paused here</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Timer &#123;&#125; done.&quot;</span>, timer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[tokio::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// The join! macro lets you run multiple things concurrently.</span></span><br><span class="line">    tokio::join!(</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">1</span>),</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">2</span>),</span><br><span class="line">        <span class="title function_ invoke__">sleep_then_print</span>(<span class="number">3</span>),</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Start timer 1.</span><br><span class="line">Start timer 2.</span><br><span class="line">Start timer 3.</span><br><span class="line">Timer 1 done.</span><br><span class="line">Timer 2 done.</span><br><span class="line">Timer 3 done.</span><br></pre></td></tr></table></figure>
+<p>这段代码只需一秒钟就可以运行，并且如预期地在同一时间正确地运行所有三个函数。</p>
+<p>要知道，事情并不总是这么明显。通过使用<a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/macro.join.html">tokio::join！</a>，这三个任务都保证在同一个线程上运行，但如果你用<a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/fn.spawn.html">tokio::spawn</a>替换它，并使用一个多线程的运行时，你将能够同时运行多个阻塞任务直到用完线程。默认的<code>Tokio</code>运行时按照核心数生成线程，你的电脑通常会有8个<code>CPU</code>。这足以使你在本地测试时忽略这个问题，并在真实场景下运行代码时非常快地耗尽线程。</p>
+<p>为了给出多少时间算的上过久的定义，一个好的经验法则是每个<code>.await</code>的时间间隔不超过10到100微秒。这取决于你正在编写的应用程序的类型。</p>
+<h1 id="如果我想要阻塞呢"><a href="#如果我想要阻塞呢" class="headerlink" title="如果我想要阻塞呢?"></a>如果我想要阻塞呢?</h1><p>有时候我们只是想阻塞线程。这是完全正常的。有两个常见的原因:</p>
+<p>1.昂贵的<code>CPU-Bound</code>(受限于CPU资源的)计算<br>2.Synchronous IO. 同步IO  </p>
+<p>在这两种情况下，我们都在处理一个会在一段时间内阻止任务<code>.await</code>的操作。为了解决这个问题，我们必须将阻塞操作移动到<code>Tokio</code>线程池外部的线程中去。关于这一点有三种形式可以使用:  </p>
+<p>1.使用<a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/task/fn.spawn_blocking.html">tokio::task::spawn_blocking</a>函数<br>2.使用<a target="_blank" rel="noopener" href="https://lib.rs/crates/rayon">rayon</a> crate<br>3.通过<a target="_blank" rel="noopener" href="https://doc.rust-lang.org/stable/std/thread/fn.spawn.html">std::thread::spawn</a>创建一个专门的线程  </p>
+<p>让我们仔细浏览下每个解决方案，看看什么时候应该使用它。  </p>
+<h2 id="spawn-blocking函数"><a href="#spawn-blocking函数" class="headerlink" title="spawn_blocking函数"></a>spawn_blocking函数</h2><p><code>Tokio</code>运行时包含一个单独的线程池，专门用于运行阻塞函数，你可以使用 <a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/task/fn.spawn_blocking.html">spawn_blocking</a>在其上运行任务。这个线程池的上限是大约500个线程，因此可以在这个线程池上进行大量阻塞操作。</p>
+<p>由于线程池有如此多的线程，它最适合用于阻塞 <code>I/O</code> (如与文件系统交互)或使用阻塞数据库库(如<a target="_blank" rel="noopener" href="https://lib.rs/crates/diesel">diesel</a>)。  </p>
+<p>线程池不适合昂贵的<code>CPU-bound</code>计算，因为线程池的线程数量比计算机上的 CPU核心数量多得多。当线程数等于CPU核心数时，<code>CPU-bound</code>的计算运行效率最高。也就是说，如果只需要运行几个<code>CPU-bound</code>的计算，我不会责怪你用<code>spawn_blocking</code>运行它们，因为这样做非常简单。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[tokio::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// This is running on Tokio. We may not block here.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">blocking_task</span> = tokio::task::<span class="title function_ invoke__">spawn_blocking</span>(|| &#123;</span><br><span class="line">        <span class="comment">// This is running on a thread where blocking is fine.</span></span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Inside spawn_blocking&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// We can wait for the blocking task like this:</span></span><br><span class="line">    <span class="comment">// If the blocking task panics, the unwrap below will propagate the</span></span><br><span class="line">    <span class="comment">// panic.</span></span><br><span class="line">    blocking_task.<span class="keyword">await</span>.<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="The-rayon-crate"><a href="#The-rayon-crate" class="headerlink" title="The rayon crate"></a>The rayon crate</h2><p><a target="_blank" rel="noopener" href="https://lib.rs/crates/rayon">rayon</a>是一个著名的库，它提供了一个专门用于昂贵的<code>CPU-bound</code>计算的线程池，你可以将它与<code>Tokio</code>一起用于此目的。与<code>spawn_blocking</code>不同，<code>rayon</code>的线程池的最大线程数量很少，这就是为什么它适合进行昂贵计算的原因。</p>
+<p>我们将计算大列表的和作为例子，但是请注意在实践中，除非数组非常非常大，否则只计算和是足够便宜的，可以直接在<code>Tokio</code>运行。  </p>
+<p>使用<code>rayon</code>的主要危险是，在等待<code>rayon</code>完成时，必须注意不要阻塞线程。要做到这一点，可以将<a target="_blank" rel="noopener" href="https://docs.rs/rayon/1/rayon/fn.spawn.html">rayon::spawn</a> 和<a target="_blank" rel="noopener" href="https://docs.rs/tokio/0.3/tokio/sync/oneshot/index.html">tokio::sync::oneshot</a>结合起来，就像这样:  </p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">parallel_sum</span>(nums: <span class="type">Vec</span>&lt;<span class="type">i32</span>&gt;) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> (send, recv) = tokio::sync::oneshot::<span class="title function_ invoke__">channel</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Spawn a task on rayon.</span></span><br><span class="line">    rayon::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="comment">// Perform an expensive computation.</span></span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">sum</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">num</span> <span class="keyword">in</span> nums &#123;</span><br><span class="line">            sum += num;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Send the result back to Tokio.</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_</span> = send.<span class="title function_ invoke__">send</span>(sum);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Wait for the rayon task.</span></span><br><span class="line">    recv.<span class="keyword">await</span>.<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Panic in rayon::spawn&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[tokio::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">nums</span> = <span class="built_in">vec!</span>[<span class="number">1</span>; <span class="number">1024</span> * <span class="number">1024</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">parallel_sum</span>(nums).<span class="keyword">await</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述例子使用了<code>rayon</code>的线程池来运行昂贵的操作。请注意，例子中对 <code>parallel_sum</code>的每个调用只使用了<code>rayon</code>线程池中的一个线程。如果你的应用程序中有很多对<code>parallel_ sum</code>的调用，那么这是有意义的，但是也可以使用<code>rayon</code>的并行迭代器在几个线程上计算和:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> rayon::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Spawn a task on rayon.</span></span><br><span class="line">rayon::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">    <span class="comment">// Compute the sum on multiple threads.</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = nums.<span class="title function_ invoke__">par_iter</span>().<span class="title function_ invoke__">sum</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send the result back to Tokio.</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">_</span> = send.<span class="title function_ invoke__">send</span>(sum);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>注意，当使用并行迭代器时，仍然需要<code>rayon::spawn</code>调用，因为并行迭代器是阻塞的。</p>
+<h2 id="生成一个专用线程"><a href="#生成一个专用线程" class="headerlink" title="生成一个专用线程"></a>生成一个专用线程</h2><p>如果阻塞操作是需要永久运行下去的，那么应该在专用线程上运行它。例如，考虑一个管理数据库连接的线程，他需要使用通道来接收要执行的操作。因为这个线程在循环中监听该通道，所以它永远不会退出。  </p>
+<p>在上述两个线程池中的任何一个上运行这样的任务都会是一个问题，因为它实际上从池中永久地带走了一个线程。一旦这样做了几次，线程池中就没有更多的线程了，所有其他阻塞任务都无法执行。  </p>
+<p>当然，如果你不在意每次启动一个新线程的成本，也可以使用专用线程来运行较短生命周期的任务。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>如果你忘了，以下是你需要记住的主要事情:<br>异步代码不应该长时间不到达<code>.await</code>。  </p>
+<p>下面你将看到一张备忘单，上面列出了当你想要阻塞的时候可以使用的方法:  </p>
+<div style="overflow-x: auto;max-width: 100%;">
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>CPU-bound computation</th>
+<th>Synchronous IO</th>
+<th>Running forever</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>spawn_blocking</code></strong></td>
+<td>次优</td>
+<td>OK</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong><code>rayon</code></strong></td>
+<td>OK</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>专用线程</strong></td>
+<td>OK</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+</tbody></table>
+</div>
+
+<p>最后，我建议阅读<code>Tokio</code>教程中关于<a target="_blank" rel="noopener" href="https://tokio.rs/tokio/tutorial/shared-state">共享状态</a>的章节。本章将解释如何在异步代码中正确使用 <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/stable/std/sync/struct.Mutex.html">std::sync::Mutex</a>，并更深入地说明为什么即使锁定<code>Mutex</code>是阻塞的，也可以这样做。(剧透一下: 如果你的阻塞时间很短，它真的算阻塞吗?)  </p>
+<p>我还强烈推荐<code>Tokio</code>博客中的一篇文章: <a target="_blank" rel="noopener" href="https://tokio.rs/blog/2020-04-preemption">Reducing tail latencies with automatic cooperative task yielding</a>。  </p>
+<p>感谢<a target="_blank" rel="noopener" href="https://v5.chriskrycho.com/">Chris Krycho</a>和<a target="_blank" rel="noopener" href="https://snor.re/">snocl</a>阅读本文草稿并提供有用的建议。所有的错误都是我自己的。</p>
+<p>原文来自:<a target="_blank" rel="noopener" href="https://ryhl.io/blog/async-what-is-blocking/">https://ryhl.io/blog/async-what-is-blocking/</a><br>作者:<a target="_blank" rel="noopener" href="https://ryhl.io/">Alice Ryhl</a><br>翻译 by <a href="https://bingowith.me/">abaabaqua</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/" data-id="cm49fdrla002zr8va8pq8cef2" data-title="[翻译]async: 什么是blocking" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/01/08/hexo-github-action/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Hexo github action注意事项
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/05/05/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>playwright 一些方法解决被cloudflare block的问题 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="在尝试从一个使用Cloudflare Web应用程序防火墙（WAF）保护的网站获取数据时,我遇到了一些挑战.该网站的安全措施非常严格,以至于在正常浏览几个页面后,Cloudflare的检查页面就会出现. 传统的HTTP客户端方法,如直接使用httpclient来抓取页面数据,很快就会遭遇阻碍. 即便尝试使用代理IP池,问题依旧存在,因为Cloudflare的检测机制能够在短时间内多次访问后迅速触发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="playwright 一些方法解决被cloudflare block的问题">
+<meta property="og:url" content="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="在尝试从一个使用Cloudflare Web应用程序防火墙（WAF）保护的网站获取数据时,我遇到了一些挑战.该网站的安全措施非常严格,以至于在正常浏览几个页面后,Cloudflare的检查页面就会出现. 传统的HTTP客户端方法,如直接使用httpclient来抓取页面数据,很快就会遭遇阻碍. 即便尝试使用代理IP池,问题依旧存在,因为Cloudflare的检测机制能够在短时间内多次访问后迅速触发">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-31T17:30:00.000Z">
+<meta property="article:modified_time" content="2024-01-31T16:30:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="playwright">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-playwright-cloudflare-bypass" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/02/01/playwright-cloudflare-bypass/" class="article-date">
+  <time class="dt-published" datetime="2024-01-31T17:30:00.000Z" itemprop="datePublished">2024-02-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      playwright 一些方法解决被cloudflare block的问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>在尝试从一个使用Cloudflare Web应用程序防火墙（WAF）保护的网站获取数据时,我遇到了一些挑战.该网站的安全措施非常严格,以至于在正常浏览几个页面后,Cloudflare的检查页面就会出现.</p>
+<p>传统的HTTP客户端方法,如直接使用httpclient来抓取页面数据,很快就会遭遇阻碍.</p>
+<p>即便尝试使用代理IP池,问题依旧存在,因为Cloudflare的检测机制能够在短时间内多次访问后迅速触发.在多次尝试后,我决定使用playwright这个自动化库来模拟正常的浏览器行为.</p>
+<p>虽然在使用playwright的过程中遇到了一些问题,但我最终找到了解决方案.现在,尽管速度稍慢,但我能够正常地从网站获取数据.接下来,我将分享如何克服这些挑战的经验.</p>
+<span id="more"></span>
+
+<h1 id="直接403"><a href="#直接403" class="headerlink" title="直接403"></a>直接403</h1><p>这是cloudflare的基本防护,他会检查是否使用了webdriver进行模拟爬取.<br>解决方式:  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">final</span> <span class="type">BrowserContext</span> <span class="variable">context</span> <span class="operator">=</span> browser.newContext();</span><br><span class="line">...</span><br><span class="line">context.setDefaultTimeout(<span class="number">180_000</span>);</span><br><span class="line">context.setDefaultNavigationTimeout(<span class="number">180_000</span>);</span><br><span class="line">context.addInitScript(<span class="string">&quot;Object.defineProperty(navigator, &#x27;webdriver&#x27;, &#123;get: () =&gt; undefined&#125;)&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这里同时也将默认超时拉长,避免在等待某些元素触发的条件下超时.</p>
+<h1 id="使用本地安装的浏览器"><a href="#使用本地安装的浏览器" class="headerlink" title="使用本地安装的浏览器"></a>使用本地安装的浏览器</h1><p>可以直接指定本地安装的浏览器:  </p>
+<blockquote>
+<p>While Playwright can download and use the recent Chromium build, it can operate against the branded Google Chrome and Microsoft Edge browsers available on the machine (note that Playwright doesn’t install them by default). In particular, the current Playwright version will support Stable and Beta channels of these browsers.</p>
+</blockquote>
+<blockquote>
+<p>Available channels are chrome, msedge, chrome-beta, msedge-beta or msedge-dev.  </p>
+</blockquote>
+<p>启动的时候指定即可:  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Browser</span> <span class="variable">browser</span> <span class="operator">=</span> playwright.chromium().launch(<span class="keyword">new</span> <span class="title class_">BrowserType</span>.LaunchOptions().setChannel(<span class="string">&quot;msedge&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="是否触发了cloudflare判断"><a href="#是否触发了cloudflare判断" class="headerlink" title="是否触发了cloudflare判断"></a>是否触发了cloudflare判断</h1><p>因为触发了cloudflare页面的url并不会有明显的变化,只有多一次跳转.<br>这里直接使用页面元素即可, 处理代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">checkMeetChallenge</span><span class="params">(Page page)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="type">ElementHandle</span> <span class="variable">stage</span> <span class="operator">=</span> page.querySelector(<span class="string">&quot;div#challenge-stage&quot;</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">checkCount</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (stage != <span class="literal">null</span>) &#123;</span><br><span class="line">        tryToClickChallenge(page, stage);</span><br><span class="line">        <span class="keyword">if</span> (checkCount &gt;= <span class="number">6</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (page.querySelector(<span class="string">&quot;div#challenge-stage&quot;</span>) != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Exception</span>(<span class="string">&quot;meet challenge restart&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;handleCategory - meet challenge. wait 20s to check it again. count:&#123;&#125;&quot;</span>, checkCount);</span><br><span class="line">        checkCount++;</span><br><span class="line">        page.waitForTimeout(<span class="number">20_000</span>);</span><br><span class="line">        stage = page.querySelector(<span class="string">&quot;div#challenge-stage&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上层的调用代码中,我先判断了我需要的元素是否存在,如果不存在有两种可能,一种是已经爬完了,另一种是触发了cloudflare.<br>那个meet challenge restart是一层兜底, 如果点击失败加上长时间等待还在, 那就重启浏览器, 重启之后大概率不会重新触发防护, 也算是最后一个措施了.</p>
+<h1 id="处理防护页的人工点击"><a href="#处理防护页的人工点击" class="headerlink" title="处理防护页的人工点击"></a>处理防护页的人工点击</h1><p>首先先看一下那个防护页面的结构:  </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;challenge-stage&quot;</span> <span class="attr">style</span>=<span class="string">&quot;display: flex;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;turnstile-wrapper&quot;</span> <span class="attr">class</span>=<span class="string">&quot;captcha-prompt spacer&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">iframe</span></span></span><br><span class="line"><span class="tag">                <span class="attr">src</span>=<span class="string">&quot;https://challenges.cloudflare.com/cdn-cgi/challenge-platform/xxxxxx&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">allow</span>=<span class="string">&quot;cross-origin-isolated; fullscreen&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">sandbox</span>=<span class="string">&quot;allow-same-origin allow-scripts allow-popups&quot;</span> <span class="attr">id</span>=<span class="string">&quot;cf-chl-widget-sppzq&quot;</span> <span class="attr">tabindex</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">title</span>=<span class="string">&quot;包含  Cloudflare  安全质询的小组件 &quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">style</span>=<span class="string">&quot;border: none; overflow: hidden; width: 300px; height: 65px;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span><span class="tag">&lt;<span class="name">input</span></span></span><br><span class="line"><span class="tag">                <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;cf-turnstile-response&quot;</span> <span class="attr">id</span>=<span class="string">&quot;cf-chl-widget-sppzq_response&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>点击的组件被放在了一个iframe里,正常要获取元素点击比较麻烦.<br>但是<code>playwright</code>直接模拟鼠标在位置上点击即可.<br>具体思路是定位到外层的<code>div#challenge-stage</code>, 然后用<code>page.mouse().move</code>移动到元素上,在用click()点击.<br>代码:  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">BoundingBox</span> <span class="variable">box</span> <span class="operator">=</span> stageDiv.boundingBox();</span><br><span class="line">page.mouse().move(box.x + <span class="number">100</span>, box.y + box.height / <span class="number">2</span>);</span><br><span class="line">page.waitForTimeout(<span class="number">1_000</span> + ThreadLocalRandom.current().nextInt(<span class="number">100</span>, <span class="number">1000</span>));</span><br><span class="line">page.mouse().click(box.x + <span class="number">100</span>, box.y + box.height / <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<p>其实你不点击它也没关系,我在测试的时候发现这个challenge页面会在1分钟左右自己消失,可以在检测出是challenge之后循环waitForTimeout即可.  </p>
+<p>最后就是要注意时间间隔,中间留一点时间.<br>这些做完基本就可以慢慢获取数据了.  </p>
+<p>我之前还做了很多随机滚动(mouse.wheel),移动到下一页点击等措施,结果发现做不做一样,可能在一些情况下比较有用.<br>因为<code>playwright</code>很多动作其实是要scheduled的,它并不立即触发,比如你click下一页之后就算<code>waitForLoadState</code>再用<code>locator</code>或<code>querySelector</code>获取元素他还是会报错,这种情况可以手动<code>waitForTimeout</code>一下,我不知道这样处理是不是常规做法,但至少解决了我的问题.</p>
+<p>相关参考链接:<br><a target="_blank" rel="noopener" href="https://playwright.dev/">playwright</a><br><a target="_blank" rel="noopener" href="https://playwright.dev/docs/browsers">playwright Browsers</a><br><a target="_blank" rel="noopener" href="https://www.zenrows.com/blog/playwright-cloudflare-bypass#what-is-cloudflare">How to Bypass Cloudflare with Playwright in 2024</a>  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/" data-id="cm49fdrks0023r8vaa5o6bnfm" data-title="playwright 一些方法解决被cloudflare block的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/01/27/docker-container-log-too-large/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">docker container目录下log过大解决</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>小麦的杂货铺</title>
+  <icon>https://bingowith.me/icon.png</icon>
+  <subtitle>日常随笔~</subtitle>
+  <link href="https://bingowith.me/atom.xml" rel="self"/>
+  
+  <link href="https://bingowith.me/"/>
+  <updated>2024-12-04T04:50:00.000Z</updated>
+  <id>https://bingowith.me/</id>
+  
+  <author>
+    <name>abaabaqua</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Spring Boot Docker优雅关机总结</title>
+    <link href="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/"/>
+    <id>https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/</id>
+    <published>2024-12-04T04:50:00.000Z</published>
+    <updated>2024-12-04T04:50:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;1-问题背景&quot;&gt;&lt;a href=&quot;#1-问题背景&quot; class=&quot;headerlink&quot; title=&quot;1. 问题背景&quot;&gt;&lt;/a&gt;1. 问题背景&lt;/h2&gt;&lt;p&gt;在 Docker 环境中运行 Spring Boot 应用时，为了确保应用能够优雅关机（Graceful Shutdown），需要正确配置多个组件。错误的配置可能导致应用无法正常接收关闭信号，从而无法执行优雅关机流程。&lt;/p&gt;
+&lt;p&gt;今天才发现服务器上配置有问题没支持, 本地是没问题的。。。最后发现是配置有问题, 这里总结一下。&lt;/p&gt;
+&lt;p&gt;日志中出现&lt;code&gt;INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete&lt;/code&gt;表示成功(我使用的是 tomcat 容器, 其他的日志内容可能不太一样)。&lt;/p&gt;
+&lt;h2 id=&quot;2-Docker-关机流程&quot;&gt;&lt;a href=&quot;#2-Docker-关机流程&quot; class=&quot;headerlink&quot; title=&quot;2. Docker 关机流程&quot;&gt;&lt;/a&gt;2. Docker 关机流程&lt;/h2&gt;&lt;p&gt;Docker 容器的关闭过程如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Docker 向容器的 1 号进程（PID 1）发送 SIGTERM 信号&lt;/li&gt;
+&lt;li&gt;等待 &lt;code&gt;stop_grace_period&lt;/code&gt; 时间（默认 10 秒）&lt;/li&gt;
+&lt;li&gt;如果进程还未退出，发送 SIGKILL 信号强制终止&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;3-常见配置错误&quot;&gt;&lt;a href=&quot;#3-常见配置错误&quot; class=&quot;headerlink&quot; title=&quot;3. 常见配置错误&quot;&gt;&lt;/a&gt;3. 常见配置错误&lt;/h2&gt;</summary>
+    
+    
+    
+    
+    <category term="java" scheme="https://bingowith.me/tags/java/"/>
+    
+    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
+    
+    <category term="spring boot" scheme="https://bingowith.me/tags/spring-boot/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>shopify CLI国内开发配置</title>
+    <link href="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/"/>
+    <id>https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/</id>
+    <published>2024-09-22T06:01:00.000Z</published>
+    <updated>2024-09-22T06:01:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Shopify CLI是开发Shopify应用和主题的重要工具,但在中国等网络受限地区使用时常遇到困难。&lt;br&gt;官方仓库有一些issue都提到了这些问题, 但是官方一直没有加对应的配置。&lt;br&gt;比如: &lt;a href=&quot;https://github.com/Shopify/cli/issues/3225&quot;&gt;[Bug]: Execute Shopify theme dev with error message: request to xxx.theme.json?xxx processing failed, reason: read ETIMEDOUT&lt;/a&gt;&lt;br&gt;本文将指导你如何正确配置Shopify CLI,以便在中国顺利进行Shopify开发。&lt;/p&gt;
+&lt;h2 id=&quot;主要问题&quot;&gt;&lt;a href=&quot;#主要问题&quot; class=&quot;headerlink&quot; title=&quot;主要问题&quot;&gt;&lt;/a&gt;主要问题&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;Shopify CLI默认不支持配置代理&lt;/li&gt;
+&lt;li&gt;不读取系统环境变量&lt;/li&gt;
+&lt;li&gt;内置的Cloudflare tunneling在中国连接不稳定&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;本指南基于Shopify CLI 3.67.1版本。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
+    
+    <category term="nodejs" scheme="https://bingowith.me/tags/nodejs/"/>
+    
+    <category term="shopify CLI" scheme="https://bingowith.me/tags/shopify-CLI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>react native的expo router安卓下modal不生效的解法</title>
+    <link href="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/"/>
+    <id>https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/</id>
+    <published>2024-06-19T05:33:00.000Z</published>
+    <updated>2024-06-19T05:33:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近跟着教程学&lt;code&gt;react native&lt;/code&gt;,教程使用的是iOS,而我在windows下开发用的安卓真机,除了一些样式上的区别大体的功能差不多.&lt;br&gt;但路由的&lt;code&gt;modal&lt;/code&gt;显示不一样感觉观感差的有点多.&lt;br&gt;这是因为安卓原生是没有iOS那种modal的路由的,&lt;code&gt;expo router&lt;/code&gt;使用的是&lt;code&gt;react navigation&lt;/code&gt;的&lt;code&gt;native stack&lt;/code&gt;,这个设置项在安卓下没有效果.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="react native" scheme="https://bingowith.me/tags/react-native/"/>
+    
+    <category term="expo router" scheme="https://bingowith.me/tags/expo-router/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AWS安装cloudwatch agent后没有指标出现解决</title>
+    <link href="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/"/>
+    <id>https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/</id>
+    <published>2024-06-05T05:10:00.000Z</published>
+    <updated>2024-06-05T05:10:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;EC2的指标没有内存相关,而内存是个很重要的指标,要在cloudwatch中监控需要使用cloudwatch agent(CWAgent), 照着官方文档做结果发现没有指标… 最后发现文档里少说了一步&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="aws" scheme="https://bingowith.me/tags/aws/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用Azure openai java SDK序列化/反序列化message</title>
+    <link href="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/"/>
+    <id>https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/</id>
+    <published>2024-06-04T08:15:00.000Z</published>
+    <updated>2024-06-05T04:57:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;有个功能需要在数据库中配置模板将用户输入填入占位符, 因为要配置多轮message以及各个参数,使用自己配置的方式会比较麻烦,就想着把&lt;code&gt;ChatCompletionsOptions&lt;/code&gt;整个序列化到数据库里,然后拿出来再填入占位符.&lt;br&gt;但是直接使用jackson会导致对于user的&lt;code&gt;ChatRequestUserMessage&lt;/code&gt;会序列化和反序列化都失败.  &lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="openai" scheme="https://bingowith.me/tags/openai/"/>
+    
+    <category term="azure" scheme="https://bingowith.me/tags/azure/"/>
+    
+    <category term="java" scheme="https://bingowith.me/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了</title>
+    <link href="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/"/>
+    <id>https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/</id>
+    <published>2024-03-08T08:16:00.000Z</published>
+    <updated>2024-03-08T08:16:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h2&gt;&lt;p&gt;最近，我们在开发Shopify应用时，遇到了一个非常恼人的问题。我们希望允许商家降级他们当前的订阅计划，但是要求降级要在下一个计费周期才生效，当前的计划应该保持不变直到下一个计费周期。&lt;/p&gt;
+&lt;p&gt;我们发现了Shopify的 &lt;code&gt;APPLY_ON_NEXT_BILLING_CYCLE&lt;/code&gt; 替换行为，本以为这就是我们想要的功能。但是，在测试时，我们发现当前的订阅立即被取消，降级后的订阅直接变成了 &lt;code&gt;ACTIVE&lt;/code&gt; 状态，而这个行为应该是在下一个计费周期才触发的。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>playwright 一些方法解决被cloudflare block的问题</title>
+    <link href="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/"/>
+    <id>https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/</id>
+    <published>2024-01-31T17:30:00.000Z</published>
+    <updated>2024-01-31T16:30:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在尝试从一个使用Cloudflare Web应用程序防火墙（WAF）保护的网站获取数据时,我遇到了一些挑战.该网站的安全措施非常严格,以至于在正常浏览几个页面后,Cloudflare的检查页面就会出现.&lt;/p&gt;
+&lt;p&gt;传统的HTTP客户端方法,如直接使用httpclient来抓取页面数据,很快就会遭遇阻碍.&lt;/p&gt;
+&lt;p&gt;即便尝试使用代理IP池,问题依旧存在,因为Cloudflare的检测机制能够在短时间内多次访问后迅速触发.在多次尝试后,我决定使用playwright这个自动化库来模拟正常的浏览器行为.&lt;/p&gt;
+&lt;p&gt;虽然在使用playwright的过程中遇到了一些问题,但我最终找到了解决方案.现在,尽管速度稍慢,但我能够正常地从网站获取数据.接下来,我将分享如何克服这些挑战的经验.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="java" scheme="https://bingowith.me/tags/java/"/>
+    
+    <category term="playwright" scheme="https://bingowith.me/tags/playwright/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>docker container目录下log过大解决</title>
+    <link href="https://bingowith.me/2024/01/27/docker-container-log-too-large/"/>
+    <id>https://bingowith.me/2024/01/27/docker-container-log-too-large/</id>
+    <published>2024-01-26T16:16:00.000Z</published>
+    <updated>2024-01-26T16:16:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;现在和朋友一起搞点东西,部署都很简单,服务器上装个&lt;code&gt;docker&lt;/code&gt;,服务丢上去,写个docker compose配置就跑着.&lt;br&gt;有个服务最近流量涨的比较多,再加上有段时间没有部署,看服务器上的磁盘使用越来越多.  &lt;/p&gt;
+&lt;p&gt;起初以为是应用的日志太多了,应用日志每天归档为gzip,保留60天,看了下并没有多少,用lsof检查也确认没有roll掉的被持有,再去容器内部看了下发现体积远没有这么大.  &lt;/p&gt;
+&lt;p&gt;于是开始用&lt;code&gt;du --max-depth=1&lt;/code&gt; 检查发现是&lt;code&gt;/var/lib/docker/containers/&lt;/code&gt;目录, 再一看容器id就是这个服务, 再定位是&lt;code&gt;&amp;lt;container-id&amp;gt;-json.log &lt;/code&gt;文件.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
+    
+    <category term="docker compose" scheme="https://bingowith.me/tags/docker-compose/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>blazor maui hybrid app显示本地图片</title>
+    <link href="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/"/>
+    <id>https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/</id>
+    <published>2023-12-25T04:54:00.000Z</published>
+    <updated>2023-12-25T04:54:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;啊… …&lt;br&gt;一通操作下来感觉就是两个字 折磨&lt;br&gt;跨平台有跨平台的好处 但框架本身支持的有限 很多东西做起来很曲折 哎&lt;/p&gt;
+&lt;p&gt;这里总结一下笔者为了折腾本地图片显示的尝试&lt;br&gt;为什么要做本地图片展示呢 如果是做需要网络连接的app 这个一般是不需要的(要做上传前预览&amp;#x2F;编辑的话还是要的)&lt;br&gt;但对于离线的app肯定是要的 总会有场景用户导入图片&amp;#x2F;文件之类的吧  &lt;/p&gt;
+&lt;p&gt;笔者只测试了windows和安卓这两个平台,mac和iOS因为没有设备和开发者账号所以调试不了😀&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="maui" scheme="https://bingowith.me/tags/maui/"/>
+    
+    <category term="blazor" scheme="https://bingowith.me/tags/blazor/"/>
+    
+    <category term="ASP.NET" scheme="https://bingowith.me/tags/ASP-NET/"/>
+    
+    <category term="C#" scheme="https://bingowith.me/tags/C/"/>
+    
+    <category term="dotnet" scheme="https://bingowith.me/tags/dotnet/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用Azure openai java SDK在流式输出时处理functioncall</title>
+    <link href="https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/"/>
+    <id>https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/</id>
+    <published>2023-11-14T18:54:00.000Z</published>
+    <updated>2023-11-14T18:54:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;emmm,新的功能和api都出了,还在写旧格式的感觉有点过时。&lt;br&gt;之前都是用非流式的使用function, 刚好遇到这个处理了下顺便记录一下。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="openai" scheme="https://bingowith.me/tags/openai/"/>
+    
+    <category term="azure" scheme="https://bingowith.me/tags/azure/"/>
+    
+    <category term="SSE" scheme="https://bingowith.me/tags/SSE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>shopify插件开发的问题记录</title>
+    <link href="https://bingowith.me/2023/08/19/shopify-plugin-development-issue-tracking/"/>
+    <id>https://bingowith.me/2023/08/19/shopify-plugin-development-issue-tracking/</id>
+    <published>2023-08-19T06:36:00.000Z</published>
+    <updated>2023-08-19T06:36:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h1&gt;&lt;p&gt;Shopify作为流行的电商平台,支持安装各种插件扩展功能&lt;br&gt;插件开发中难免会遇到各种问题,记录和跟踪这些问题非常重要&lt;br&gt;emmmm…之前遇到过一些问题,但时间有点长记得不清楚了… …&lt;br&gt;这里先记录一些最近遇到的,之后再不断补充&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
+    
+    <category term="troubleshooting" scheme="https://bingowith.me/tags/troubleshooting/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ChatGPT Plugin开发setup - Java(Spring Boot) Python(fastapi)</title>
+    <link href="https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/"/>
+    <id>https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/</id>
+    <published>2023-05-15T05:40:00.000Z</published>
+    <updated>2023-05-15T05:40:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;记录一下快速模板,整体很简单,如果不接auth,只需要以下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;提供一个&lt;code&gt;/.well-known/ai-plugin.json&lt;/code&gt;接口,返回openAI所需要的格式&lt;/li&gt;
+&lt;li&gt;提供openAPI规范的文档&lt;/li&gt;
+&lt;li&gt;CORS设置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其他的和普通的web开发类似.  &lt;/p&gt;
+&lt;p&gt;本地开发就直接使用localhost即可,前几天官方localhost&lt;a href=&quot;https://community.openai.com/t/localhost-dev-plugins-not-working-any-more/203968&quot;&gt;无法联通&lt;/a&gt;,最近应该修复了.  &lt;/p&gt;
+&lt;p&gt;要让GPT更好理解接口内容,接口需要写详细的文档,在文档内写清楚各个参数作用和可选值以及示例.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="java" scheme="https://bingowith.me/tags/java/"/>
+    
+    <category term="GPT" scheme="https://bingowith.me/tags/GPT/"/>
+    
+    <category term="python" scheme="https://bingowith.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>leptos手工集成tailwindcss</title>
+    <link href="https://bingowith.me/2023/04/08/leptos-tailwindcss/"/>
+    <id>https://bingowith.me/2023/04/08/leptos-tailwindcss/</id>
+    <published>2023-04-07T18:22:00.000Z</published>
+    <updated>2023-04-07T18:22:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近在看&lt;code&gt;leptos&lt;/code&gt;,之前使用过&lt;code&gt;bulma&lt;/code&gt;作为css库,感觉样式太少,想结合&lt;code&gt;tailwindcss&lt;/code&gt;.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>[翻译]没有线程</title>
+    <link href="https://bingowith.me/2023/02/22/translation-there-is-no-thread/"/>
+    <id>https://bingowith.me/2023/02/22/translation-there-is-no-thread/</id>
+    <published>2023-02-22T06:48:00.000Z</published>
+    <updated>2023-02-22T06:48:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;原文来自:&lt;a href=&quot;https://blog.stephencleary.com/2013/11/there-is-no-thread.html&quot;&gt;https://blog.stephencleary.com/2013/11/there-is-no-thread.html&lt;/a&gt;&lt;br&gt;作者:&lt;a href=&quot;https://blog.stephencleary.com/&quot;&gt;Stephen Cleary&lt;/a&gt;&lt;br&gt;翻译 by &lt;a href=&quot;https://bingowith.me/&quot;&gt;abaabaqua&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这是最纯粹形式的异步的一个基本事实：没有线程。&lt;/p&gt;
+&lt;p&gt;反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西……”&lt;/p&gt;
+&lt;p&gt;不要理会那些哭声。如果异步操作是纯粹的，那么就没有线程。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>高性能MySQL(第4版) 第一章 MySQL架构 读书笔记</title>
+    <link href="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/"/>
+    <id>https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/</id>
+    <published>2022-11-08T06:20:01.000Z</published>
+    <updated>2022-11-08T06:20:01.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;这本书去年11月出的,今年中文版也出了,并且直接上了&lt;a href=&quot;https://weread.qq.com/web/bookDetail/00a32b70813ab746fg018ec7&quot;&gt;微信读书&lt;/a&gt;,之后有空就读一读,分享下读书笔记~    &lt;/p&gt;
+&lt;p&gt;原文内容比较充实,建议有时间可以读一下原文.&lt;br&gt;第一章主要是个概览.&lt;/p&gt;
+&lt;h1 id=&quot;MySQL的逻辑架构&quot;&gt;&lt;a href=&quot;#MySQL的逻辑架构&quot; class=&quot;headerlink&quot; title=&quot;MySQL的逻辑架构&quot;&gt;&lt;/a&gt;MySQL的逻辑架构&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;/images/hpm4_ch01_01.png&quot;&gt;&lt;br&gt;默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.&lt;br&gt;线程池&lt;/p&gt;
+&lt;p&gt;优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的统计信息.&lt;/p&gt;
+&lt;p&gt;query cache 5.7.20弃用 8.0移除&lt;br&gt;考虑应用自己在redis中缓存&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="MySQL" scheme="https://bingowith.me/tags/MySQL/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>shardingsphere-jdbc 水平分表学习记录</title>
+    <link href="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/"/>
+    <id>https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/</id>
+    <published>2022-11-05T07:43:10.000Z</published>
+    <updated>2022-11-05T07:51:22.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;前司使用的是自己魔改的&lt;code&gt;TDDL&lt;/code&gt;,在家时间比较多就尝试学一些业内比较常用的中间件.  &lt;/p&gt;
+&lt;p&gt;这里记录一下学习中遇到的一些问题.  &lt;/p&gt;
+&lt;h1 id=&quot;环境&quot;&gt;&lt;a href=&quot;#环境&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="java" scheme="https://bingowith.me/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>[翻译]单线程共享可变性的问题</title>
+    <link href="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/"/>
+    <id>https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/</id>
+    <published>2022-10-26T04:12:00.000Z</published>
+    <updated>2022-10-26T04:12:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;原文链接: &lt;a href=&quot;https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/&quot;&gt;https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/&lt;/a&gt;&lt;br&gt;作者: &lt;a href=&quot;https://manishearth.github.io/&quot;&gt;Manish Goregaokar&lt;/a&gt;&lt;br&gt;翻译 by &lt;a href=&quot;https://bingowith.me/&quot;&gt;abaabaqua&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注&lt;/strong&gt;: 这篇文章写的比较早,早期的Rust编译器有很多不友善的地方,代码示例中部分当时无法编译的现在已经可以了,译者会增改一些代码导致和原文不同.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Edit(2017年1月):我重新发现了&lt;a href=&quot;http://smallcultfollowing.com/babysteps/blog/2013/06/11/on-the-connection-between-memory-management-and-data-race-freedom/&quot;&gt;Niko的文章&lt;/a&gt;,文章也提到了这一点并达到了同样的认识.我怀疑我下意识地从这篇文章中得到了这个想法,至少是部分的想法.&lt;/p&gt;
+&lt;p&gt;这是我一直想写的一篇文章;Rust 1.0的发布给了我继续接下去的完美动力.&lt;/p&gt;
+&lt;p&gt;虽然这篇文章是讨论Rust设计中的一个选择,并且例子都是用Rust写的,但这里讨论的原则在很大程度上适用于其它语言.我还将尝试让那些没有Rust背景的人更容易理解这篇文章;如果需要解释一些代码或术语,请告诉我.&lt;/p&gt;
+&lt;p&gt;我将在这里讨论的是Rust做的一个选择,不允许同一数据有多个可变别名(或者当有active的不可变别名时只能有一个可变别名) ，即使是在同一个线程.本质上讲,它不允许做这样的事情:&lt;/p&gt;
+&lt;figure class=&quot;highlight rust&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;mut &lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;x&lt;/span&gt; = &lt;span class=&quot;type&quot;&gt;Vec&lt;/span&gt;::&lt;span class=&quot;title function_ invoke__&quot;&gt;new&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;ptr&lt;/span&gt; = &amp;amp;&lt;span class=&quot;keyword&quot;&gt;mut&lt;/span&gt; x; &lt;span class=&quot;comment&quot;&gt;// 获取队`x`的可变引用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ptr.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = x[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 不允许 (无法编译): 只要`ptr`是active的,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                  &lt;span class=&quot;comment&quot;&gt;// x不能读取 ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;);    &lt;span class=&quot;comment&quot;&gt;// .. 也不能写入&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;println!&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&amp;quot;&amp;#123;:?&amp;#125;&amp;quot;&lt;/span&gt;, ptr); &lt;span class=&quot;comment&quot;&gt;// 这段是译者新加 现在的编译器限制判断是否active更加智能 不是看整个作用域了&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 另外一种,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;mut &lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;x&lt;/span&gt; = &lt;span class=&quot;type&quot;&gt;Vec&lt;/span&gt;::&lt;span class=&quot;title function_ invoke__&quot;&gt;new&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;ptr&lt;/span&gt; = &amp;amp;x; &lt;span class=&quot;comment&quot;&gt;// 创建一个不可变引用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = ptr[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 允许, 不改变值&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = x[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 同样允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 不允许 (无法编译): 只要`ptr`是active,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               &lt;span class=&quot;comment&quot;&gt;// `x`被冻结了可变性&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;println!&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&amp;quot;&amp;#123;:?&amp;#125;&amp;quot;&lt;/span&gt;, ptr); &lt;span class=&quot;comment&quot;&gt;// 译者新加 原因一样&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    
+    <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
+    
+    <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>flink kafka source的avro反序列化问题</title>
+    <link href="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/"/>
+    <id>https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/</id>
+    <published>2022-05-11T05:00:00.000Z</published>
+    <updated>2022-05-11T05:00:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;对接了一个&lt;code&gt;kafka&lt;/code&gt;,里面的topic使用&lt;code&gt;avro&lt;/code&gt;编码,且每个topic的&lt;code&gt;schema&lt;/code&gt;都不相同使用schema registry管理。&lt;br&gt;现在要反序列化&lt;code&gt;key&lt;/code&gt;和&lt;code&gt;message&lt;/code&gt;,查看了现有的:&lt;/p&gt;
+&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;org.apache.flink&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;flink-avro-confluent-registry&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;内的&lt;code&gt;ConfluentRegistryAvroDeserializationSchema&lt;/code&gt;.&lt;br&gt;发现无论是&lt;code&gt;forSpecific&lt;/code&gt;返回一个特定的类,还是&lt;code&gt;forGeneric&lt;/code&gt;返回&lt;code&gt;GenericRecord&lt;/code&gt;都需要指定&lt;code&gt;read schame&lt;/code&gt;,而registry仅作为&lt;code&gt;write schema&lt;/code&gt;使用, 也就是虽然返回的是&lt;code&gt;GenericRecord&lt;/code&gt;, 但实际上都是同一个&lt;code&gt;Schema&lt;/code&gt;反序列化的, 每个record的格式是一致的.&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>windwos下运行hadoop相关代码(hdfs,mr)</title>
+    <link href="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/"/>
+    <id>https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/</id>
+    <published>2022-04-16T18:28:14.000Z</published>
+    <updated>2022-04-16T18:28:14.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近在学习一些&lt;code&gt;hadoop&lt;/code&gt;相关的知识,需要在本地运行&lt;code&gt;hdfs&lt;/code&gt;和&lt;code&gt;mr&lt;/code&gt;相关的代码.&lt;br&gt;因为开发机使用的是windows,所以会有一些不太方便.  &lt;/p&gt;
+&lt;p&gt;可以在windows下解压&lt;code&gt;hadoop&lt;/code&gt;,然后在应用的&lt;code&gt;env&lt;/code&gt;中指定&lt;code&gt;HADOOP_HOME&lt;/code&gt;为解压路径.&lt;br&gt;在windows中需要&lt;code&gt;winutils.exe&lt;/code&gt;工具,当前网上好心人预编译好的只到&lt;code&gt;3.3.0&lt;/code&gt;.&lt;br&gt;见: &lt;a href=&quot;https://kontext.tech/article/446/hadoop-330-winutils&quot;&gt;https://kontext.tech/article/446/hadoop-330-winutils&lt;/a&gt;  &lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>spring boot应用 从mysql迁移h2</title>
+    <link href="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/"/>
+    <id>https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/</id>
+    <published>2022-03-20T10:21:00.000Z</published>
+    <updated>2022-03-20T10:21:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;此前有个应用用了&lt;code&gt;mysql&lt;/code&gt;做数据存储，但实际存储的数据很少就几张表加起来一共几千行，并且一直没有修改的需求，应用内也只是进行查询。&lt;br&gt;实际上是静态的数据。  &lt;/p&gt;
+&lt;p&gt;因为使用的是云服务商的产品，想着之后就不续费了需要将数据迁移。  &lt;/p&gt;
+&lt;p&gt;有几个选项：  &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;改用文件存储，读取到内存后处理；&lt;/li&gt;
+&lt;li&gt;换成嵌入式数据库。</summary>
+    
+    
+    
+    
+    <category term="MySQL" scheme="https://bingowith.me/tags/MySQL/"/>
+    
+    <category term="spring boot" scheme="https://bingowith.me/tags/spring-boot/"/>
+    
+    <category term="H2" scheme="https://bingowith.me/tags/H2/"/>
+    
+  </entry>
+  
+</feed>

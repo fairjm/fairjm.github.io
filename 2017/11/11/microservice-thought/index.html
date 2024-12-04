@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>微服务化路上的只言片语 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="类似于杂谈性质的文，总结下公司实行微服务化上遇到的一些问题。虽然参与了开发过程，但整体更像是个旁观者，前期还是大家讨论怎么做，后来慢慢就由负责架构的同事专职做规划，拆分任务去完成。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务化路上的只言片语">
+<meta property="og:url" content="https://bingowith.me/2017/11/11/microservice-thought/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="类似于杂谈性质的文，总结下公司实行微服务化上遇到的一些问题。虽然参与了开发过程，但整体更像是个旁观者，前期还是大家讨论怎么做，后来慢慢就由负责架构的同事专职做规划，拆分任务去完成。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20171111185303966-1783146899.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20171111190838825-2019097568.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20171111192904138-445418165.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20171111194311809-309411812.png">
+<meta property="article:published_time" content="2017-11-11T12:13:00.000Z">
+<meta property="article:modified_time" content="2017-11-11T12:13:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20171111185303966-1783146899.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-microservice-thought" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/11/11/microservice-thought/" class="article-date">
+  <time class="dt-published" datetime="2017-11-11T12:13:00.000Z" itemprop="datePublished">2017-11-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      微服务化路上的只言片语
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>类似于杂谈性质的文，总结下公司实行微服务化上遇到的一些问题。<br>虽然参与了开发过程，但整体更像是个旁观者，前期还是大家讨论怎么做，后来慢慢就由负责架构的同事专职做规划，拆分任务去完成。  </p>
+<span id="more"></span>
+<h1 id="万事开头难"><a href="#万事开头难" class="headerlink" title="万事开头难"></a>万事开头难</h1><p><img src="/images/1244488-20171111185303966-1783146899.png"><br>最初的架构(数据库和其他部分都做了简化)</p>
+<p>初衷并不是为了赶时髦，为了团队KPI之类的，而是遇到了一个很现实的问题。<br>研发团队慢慢从几个人发展为十几，几十人，所有人都在一个项目上开发，代码仓库越来越大，merge冲突越来越频繁，部署时也往往会因为一些bug导致全站部署拖延。<br>再加上访问量越来越高，带来的不确定性越来越大，一些流量较大的业务可能会导致整站都挂掉。<br>内部和外部都出现了问题。</p>
+<p>当时虽然研发团队的人比较多了，但大家都基本是做业务兼做非业务的东西，没有成立专门的非业务部门。<br>大家都是在业务开发之外安排了微服务化相关的开发，这导致了进程缓慢，并且也隐式确定了微服务化不能影响现有业务开发。  </p>
+<p>最开始设想划分粒度应该粗一些，按照各个大频道来划分（有点类似于分子站）。<br>但遇上了一个问题，BL和DAL层的代码是共用的，再加上之前的模块化不合理，导致一个模块直接使用了属于另一个模块的业务代码。<br>让这更糟糕的是业务还在飞快迭代，这两层的代码也会发生很大的改变。<br>这时就有两种选择：<br>一种是复制，把需要的BL和DAL层代码复制到各服务中；<br>另一种是抽取依赖，把BL和DAL层代码抽离成一个单独的jar，被各个服务依赖。  </p>
+<p>前者会需要做频繁的同步，容易出现问题，很耗费精力。<br>当时我们选择了后者，先将他变为一个技术债解决现在的问题。  </p>
+<p><img src="/images/1244488-20171111190838825-2019097568.png"><br>结构就成为了这样<br>组内也有同事开始脱离业务，慢慢专注在微服务化这一方向上，随后从业务组中慢慢抽离出了一个基础架构组（简称基架）。</p>
+<h1 id="路由-服务间调用"><a href="#路由-服务间调用" class="headerlink" title="路由 服务间调用"></a>路由 服务间调用</h1><p>这一部分我就基本是路人了，会更接近于讲故事。<br>现在，<code>spring cloud</code>已经成为了一个比较成熟的解决方案，<code>dubbo</code>也重新被维护。<br>但当时，比较靠谱的选择只有<code>dubbo</code>，可能是出于对今后自己维护方便的考虑，基架最后的方案是参考<code>dubbo</code>，再结合一些现有的技术来实现自己的服务注册中心和服务请求路由。<br>注册中心用zk实现，里面存储服务版本、各个微服务名称、微服务版本以及服务器列表和<code>API</code>。<br>服务间调用使用了<code>netty</code>，<code>ribbon</code>等框架。<br>具体细节在这里不做过多描述了。<br>除了保留session处理相关、文件上传下载相关服务等接口以及页面渲染，原来的主站变为了一个<code>gateway</code>。<br>于是变成了以下这样：<br><img src="/images/1244488-20171111192904138-445418165.png">  </p>
+<h1 id="我们的坑"><a href="#我们的坑" class="headerlink" title="我们的坑"></a>我们的坑</h1><p>至此其实已经稍微有点微服务的样子了… …<br>但还存在很多问题。<br>细心的朋友可能发现了上图中所有的服务还都依赖一个db！（以及对应的只读实例等）<br>所以…存储挂了，该挂的还是都挂了。<br>于是再接下来的一段时间里，基架那边进行了一些比较大的业务拆分，将一些核心业务进行了分表分库使用单独的存储，这工作今日还在进行，为网站的稳定做出来很大贡献。<br><img src="/images/1244488-20171111194311809-309411812.png"></p>
+<h1 id="明天"><a href="#明天" class="headerlink" title="明天"></a>明天</h1><p>其实还有很多东西都没有(链路监控已经做好了…插不进上面 这里说下):<br>一些服务间直接调用的解耦，举个例子，一个用户发完帖子后，现在是在代码里依次调用其他服务去执行一些操作，其实这里应该用消息发布的模式去做；<br>配置中心；<br>安全性；<br>等等。<br>其实想一想这些是现在的spring cloud开箱即用的功能，如果当时这方案已经成熟或许可以少走一些弯路也说不定。  </p>
+<h1 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h1><p>和技术和业务无关。<br>专门成立了基架组其实有好处也有坏处，好处是有一部分人可以专门攻坚网站遇到的问题，坏处是其他人怎么办。<br>首先这并不是说业务组没有机会做一些技术相关的事，而是业务组做这些事的机会其实减少了，这给人带来的技术提升也不一样。<br>那在业务组怎么提升自己的技术能力呢？<br>这也是我一直思考的问题。</p>
+<p>我现在的一些方式无非就是课余多看书看资料，增长自己的知识和视野。<br>但其实这样也挺容易迷茫的，如何实用化呢，怎么确保自己所学落地呢？<br>我的想法以及之后的做法会是直接在项目里用上，但这也不是说随便往项目中加入不必要的东西，而是要加入会带来性能提升潜力的东西，至于能否提升就要看自己的实战了。<br>书看完就过，没有自己的想法和思考终究只是表面上的东西，会随着时间漫漫淡忘，昨天在看NIO.2的笔记，14年记的现在基本已经忘却了，这就很糟糕了。<br>最悲惨的不是学过后忘记了相关知识，而是忘记了曾经自己学过。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/11/11/microservice-thought/" data-id="cm49fdrko001rr8va6o5pen6w" data-title="微服务化路上的只言片语" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/11/19/jetty-ServletRequestListener-async/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          异步请求中jetty处理ServletRequestListener的坑
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/10/21/html5-flash-video-speed-up/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">几种方式加速网页视频播放速度</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

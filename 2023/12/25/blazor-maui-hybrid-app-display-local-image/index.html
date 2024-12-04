@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>blazor maui hybrid app显示本地图片 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="啊… …一通操作下来感觉就是两个字 折磨跨平台有跨平台的好处 但框架本身支持的有限 很多东西做起来很曲折 哎 这里总结一下笔者为了折腾本地图片显示的尝试为什么要做本地图片展示呢 如果是做需要网络连接的app 这个一般是不需要的(要做上传前预览&#x2F;编辑的话还是要的)但对于离线的app肯定是要的 总会有场景用户导入图片&#x2F;文件之类的吧   笔者只测试了windows和安卓这两个平台,m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="blazor maui hybrid app显示本地图片">
+<meta property="og:url" content="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="啊… …一通操作下来感觉就是两个字 折磨跨平台有跨平台的好处 但框架本身支持的有限 很多东西做起来很曲折 哎 这里总结一下笔者为了折腾本地图片显示的尝试为什么要做本地图片展示呢 如果是做需要网络连接的app 这个一般是不需要的(要做上传前预览&#x2F;编辑的话还是要的)但对于离线的app肯定是要的 总会有场景用户导入图片&#x2F;文件之类的吧   笔者只测试了windows和安卓这两个平台,m">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-25T04:54:00.000Z">
+<meta property="article:modified_time" content="2023-12-25T04:54:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="maui">
+<meta property="article:tag" content="blazor">
+<meta property="article:tag" content="ASP.NET">
+<meta property="article:tag" content="C#">
+<meta property="article:tag" content="dotnet">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-blazor-maui-hybrid-app-display-local-image" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/12/25/blazor-maui-hybrid-app-display-local-image/" class="article-date">
+  <time class="dt-published" datetime="2023-12-25T04:54:00.000Z" itemprop="datePublished">2023-12-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      blazor maui hybrid app显示本地图片
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>啊… …<br>一通操作下来感觉就是两个字 折磨<br>跨平台有跨平台的好处 但框架本身支持的有限 很多东西做起来很曲折 哎</p>
+<p>这里总结一下笔者为了折腾本地图片显示的尝试<br>为什么要做本地图片展示呢 如果是做需要网络连接的app 这个一般是不需要的(要做上传前预览&#x2F;编辑的话还是要的)<br>但对于离线的app肯定是要的 总会有场景用户导入图片&#x2F;文件之类的吧  </p>
+<p>笔者只测试了windows和安卓这两个平台,mac和iOS因为没有设备和开发者账号所以调试不了😀</p>
+<span id="more"></span>
+
+<h1 id="复制到wwwroot"><a href="#复制到wwwroot" class="headerlink" title="复制到wwwroot"></a>复制到wwwroot</h1><p>这是最简单直接的方法,什么都不用改,把图片复制到wwwroot下然后直接使用图片地址就行了<br>代码如下:  </p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">PickAndShow</span>(<span class="params">PickOptions options</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> result = <span class="keyword">await</span> FilePicker.Default.PickAsync(options);</span><br><span class="line">        <span class="keyword">if</span> (result != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">await</span> <span class="keyword">using</span> <span class="keyword">var</span> stream = <span class="keyword">await</span> result.OpenReadAsync();</span><br><span class="line">            <span class="keyword">var</span> originalFileName = result.FileName;</span><br><span class="line">            <span class="keyword">var</span> extension = Path.GetExtension(originalFileName);</span><br><span class="line">            <span class="keyword">var</span> targetFileName = Guid.NewGuid() + extension;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, <span class="string">&quot;wwwroot&quot;</span>, <span class="string">&quot;images&quot;</span>, targetFileName);</span><br><span class="line">            Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, <span class="string">&quot;wwwroot&quot;</span>, <span class="string">&quot;images&quot;</span>));</span><br><span class="line">            <span class="keyword">await</span> <span class="keyword">using</span> <span class="keyword">var</span> targetStream = <span class="keyword">new</span> FileStream(path, FileMode.Create);</span><br><span class="line">            Debug.WriteLine(<span class="string">$&quot;copy path:<span class="subst">&#123;path&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">await</span> stream.CopyToAsync(targetStream);</span><br><span class="line">            _objUrl = <span class="string">$&quot;images/<span class="subst">&#123;targetFileName&#125;</span>&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">    &#123;</span><br><span class="line">        Debug.WriteLine(ex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个的优点就是简单直接<br>缺点就是安卓不支持… 安卓的wwwroot在app bundle里 只能读不能写<br>适合只需要windows的使用<br>但你只需要windows 还用maui是不是有🍪  </p>
+<h1 id="base64-objectURL"><a href="#base64-objectURL" class="headerlink" title="base64&#x2F;objectURL"></a>base64&#x2F;objectURL</h1><p>这两个我一起说 因为原理是一样的<br>存在sqlite appdata或者其他什么地方<br>需要用的时候读取转化为base64和objectURL  </p>
+<p>但是使用base64的时候我发现了很严重的内存泄漏,传了很多图片测试之后应用的内存直接炸了.<br>见: <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/77513507/how-to-avoid-memory-leaks-when-using-base64-images-in-blazor">https://stackoverflow.com/questions/77513507/how-to-avoid-memory-leaks-when-using-base64-images-in-blazor</a>  </p>
+<p>可能是我用的png有关,但他的确会造成内存较大的消耗,并且有不必要的开销,你转成base64,浏览器还得给他转回来.  </p>
+<p>用objectURL是个更好的选择<br>在index.html中放入这段代码:  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="variable language_">window</span>.<span class="property">createObjectURL</span> = <span class="title function_">async</span> (imageStream) =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> arrayBuffer = <span class="keyword">await</span> imageStream.<span class="title function_">arrayBuffer</span>();</span><br><span class="line">        <span class="keyword">const</span> blob = <span class="keyword">new</span> <span class="title class_">Blob</span>([arrayBuffer]);</span><br><span class="line">        <span class="keyword">return</span> <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(blob);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">window</span>.<span class="property">revokeObjectURL</span> = <span class="function">(<span class="params">url</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable constant_">URL</span>.<span class="title function_">revokeObjectURL</span>(url);</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>扩展一下<code>IJSRuntime</code>,这是为了方便使用,也可以直接调,都是一样的:  </p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">IJSRuntimeExtensions</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ValueTask&lt;<span class="built_in">string</span>&gt; <span class="title">CreateObjectUrl</span>(<span class="params"><span class="keyword">this</span> IJSRuntime js, Stream stream, <span class="built_in">bool</span> leaveOpen = <span class="literal">false</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> dotNetStreamReference = <span class="keyword">new</span> DotNetStreamReference(stream, leaveOpen);</span><br><span class="line">        <span class="keyword">return</span> js.InvokeAsync&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;createObjectURL&quot;</span>, dotNetStreamReference);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">RevokeObjectUrl</span>(<span class="params"><span class="keyword">this</span> IJSRuntime js, <span class="built_in">string</span>? url</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.WriteLine(<span class="string">$&quot;Revoke call url <span class="subst">&#123;url&#125;</span>&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (url <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">await</span> js.InvokeVoidAsync(<span class="string">&quot;revokeObjectURL&quot;</span>, url);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>哪里需要用调用一下获得objectURL即可  </p>
+<h1 id="复制到appdata下-覆盖CreateFileProvider"><a href="#复制到appdata下-覆盖CreateFileProvider" class="headerlink" title="复制到appdata下 覆盖CreateFileProvider"></a>复制到appdata下 覆盖CreateFileProvider</h1><p>从爆栈上发现的,测试了下windows和安卓上都可用,意外的简单直接.<br>见:<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/75282680/2078863">https://stackoverflow.com/a/75282680/2078863</a></p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CustomFilesBlazorWebView</span> : <span class="title">BlazorWebView</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> IFileProvider <span class="title">CreateFileProvider</span>(<span class="params"><span class="built_in">string</span> contentRootDir</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> lPhysicalFiles = <span class="keyword">new</span> PhysicalFileProvider(FileSystem.Current.AppDataDirectory);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> CompositeFileProvider(lPhysicalFiles, <span class="keyword">base</span>.CreateFileProvider(contentRootDir));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后用这个替换原本的BlazorWebView即可.<br>之后就将文件复制到Appdata下:</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="built_in">string</span> ImageDir = <span class="string">&quot;image&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;<span class="built_in">string</span>&gt; <span class="title">CopyToImageDir</span>(<span class="params"><span class="built_in">byte</span>[] bytes, <span class="built_in">string</span> originalFileName</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> appFilePath = Path.Combine(GetImageDirPath(), CreateNewName(originalFileName));</span><br><span class="line">    Directory.CreateDirectory(GetImageDirPath());</span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">using</span> <span class="keyword">var</span> fileStream = File.Create(appFilePath);</span><br><span class="line">    <span class="keyword">await</span> fileStream.WriteAsync(bytes);</span><br><span class="line">    <span class="keyword">return</span> appFilePath;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetImageDirPath</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> Path.Combine(FileSystem.AppDataDirectory, ImageDir);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CreateNewName</span>(<span class="params"><span class="built_in">string</span> originalFileName</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> extension = Path.GetExtension(originalFileName);</span><br><span class="line">    <span class="keyword">var</span> uuid = Guid.NewGuid().ToString();</span><br><span class="line">    <span class="keyword">var</span> newFileName = <span class="string">$&quot;<span class="subst">&#123;Path.GetFileNameWithoutExtension(originalFileName)&#125;</span>_<span class="subst">&#123;uuid&#125;</span><span class="subst">&#123;extension&#125;</span>&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> newFileName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>url使用<code>image/filename</code>即可  </p>
+<hr>
+<p>这些方案都不可避免要将文件复制都某个地方.<br>其实优化下可以直接读原始文件, 但是不同平台限制不太一样, 比如在安卓上<code>FilePicker</code>返回的fullPath是cache地址不是实际地址, 需要自己写native代码用安卓原生的文件选择.<br>其他还有不少大佬的方案,这里只做几个实现比较简单的总结.<br>市面上有许多由资深开发者提出的复杂方案,但在这里,我只总结了几个实现起来相对简单的方法.<br>唉,MAUI本身的使用确实颇具挑战性.虽然将Blazor集成进UI在某种程度上缓解了这一问题,但由于其跨平台的特性,很多功能似乎都不尽如人意.<br>初看上去,基础的使用似乎没什么问题,但一旦动手实现更复杂的功能,就会发现受到了各种限制.想要突破这些限制,就必须编写与平台相关的代码,而这又要求你必须深入了解Windows、安卓和iOS等系统的原生代码是如何编写的.</p>
+<p>这种局面确实令人尴尬,这或许也是跨平台框架普遍存在的问题.</p>
+<p>微软的努力将决定未来的发展,但从他们那边来看,情况似乎并不乐观.<br>就以本文读取本地图片的问题为例：<br><a target="_blank" rel="noopener" href="https://github.com/dotnet/maui/issues/2907">https://github.com/dotnet/maui/issues/2907</a><br><a target="_blank" rel="noopener" href="https://github.com/dotnet/aspnetcore/issues/25274">https://github.com/dotnet/aspnetcore/issues/25274</a><br>早在2021年甚至2020年,就有人提出了这个问题.<br>经过多个相关问题的讨论,认为在<code>.NET 7</code>中实现这一功能风险太大,决定推迟到<code>.NET 8</code>.  </p>
+<blockquote>
+<p>mkArtakMSFT modified the milestones: Backlog, .NET 7 Planning on Nov 6, 2021<br>danroth27 modified the milestones: .NET 7 Planning, .NET 8 Planning on Aug 24, 2022<br>While we have made progress on this feature, at this point we think the risk is too high to include this in the .NET 7 release. Moving to .NET 8. </p>
+<p>2023-06-30 bot: We’ve moved this issue to the Backlog milestone. This means that it is not going to be worked on for the coming release. We will reassess the backlog following the current release and consider this item at that time. To learn more about our issue management process and to have better expectation regarding different types of issues you can read our Triage Process.</p>
+</blockquote>
+<p>然而,即便<code>.NET 8</code>已经发布,这个功能依旧没有得到官方的实现, 只有各种workaround……这实在令人沮丧.</p>
+<p>MAUI给人的感觉好像是一个被遗弃的项目.随着.NET 9或.NET 10的推出,微软可能会宣布停止支持MAUI,并推出另一个全新的框架.<br>毕竟微软的作风一贯如此.</p>
+<p>相关参考链接:<br><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/blazor/images?view=aspnetcore-8.0">Work with images in ASP.NET Core Blazor</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/dotnet/maui/issues/2907">[Bug] Not allowed to load local resource for Android</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/dotnet/aspnetcore/issues/25274">Blazor Image component to display images that are not accessible through HTTP endpoints</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/72513093/how-to-display-local-image-as-well-as-resources-image-in-net-maui-blazor/75282680#75282680">How to display local image as well as resources image in .Net MAUI Blazor</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/dotnet/maui/issues/8857">Overriding CreateFileProvider for BlazorWebView throws exception</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/" data-id="cm49fdrk6000fr8va42xp8kus" data-title="blazor maui hybrid app显示本地图片" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maui/" rel="tag">maui</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/01/27/docker-container-log-too-large/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          docker container目录下log过大解决
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/11/15/azure-openai-java-sdk-stream-function-handle/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">使用Azure openai java SDK在流式输出时处理functioncall</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

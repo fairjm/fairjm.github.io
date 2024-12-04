@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>kafka学习笔记2:生产者 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="这次的笔记主要记录一下kafka的生产者的使用和一些重要的参数。文中主要截图均来自kafka权威指南 主要涉及到两个类KafkaProducer和ProducerRecord.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka学习笔记2:生产者">
+<meta property="og:url" content="https://bingowith.me/2017/09/28/kafka-note-producer/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="这次的笔记主要记录一下kafka的生产者的使用和一些重要的参数。文中主要截图均来自kafka权威指南 主要涉及到两个类KafkaProducer和ProducerRecord.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170928020637934-1434965689.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20170928022156544-25388878.png">
+<meta property="article:published_time" content="2017-09-27T18:48:00.000Z">
+<meta property="article:modified_time" content="2017-09-27T18:48:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20170928020637934-1434965689.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-kafka-note-producer" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/09/28/kafka-note-producer/" class="article-date">
+  <time class="dt-published" datetime="2017-09-27T18:48:00.000Z" itemprop="datePublished">2017-09-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      kafka学习笔记2:生产者
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这次的笔记主要记录一下kafka的生产者的使用和一些重要的参数。<br>文中主要截图均来自<a target="_blank" rel="noopener" href="https://www.safaribooksonline.com/library/view/kafka-the-definitive/9781491936153/">kafka权威指南</a></p>
+<h2 id="主要涉及到两个类KafkaProducer和ProducerRecord"><a href="#主要涉及到两个类KafkaProducer和ProducerRecord" class="headerlink" title="主要涉及到两个类KafkaProducer和ProducerRecord."></a>主要涉及到两个类<code>KafkaProducer</code>和<code>ProducerRecord</code>.<br><span id="more"></span></h2><h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p>生产者的主要架构如下：<br><img src="/images/1244488-20170928020637934-1434965689.png"></p>
+<p>首先创建了一个<code>ProducerRecord</code><br>进行序列化 kv变为<code>ByteArray</code><br>进入Partitioner 如果之前指定了分区 那这一步什么都不会做<br>接着将Record放入要被发送到的同样的topic和分区的batch中<br>另一个单独的thread会进行发送操作<br>发送成功会返回<code>RecordMetadata</code>(包含topic 分区 偏移量)<br>失败的话会返回错误 producer会重试几次(retries配置)直到成功或者放弃返回错误  </p>
+<h1 id="构造Kafka-Producer"><a href="#构造Kafka-Producer" class="headerlink" title="构造Kafka Producer"></a>构造Kafka Producer</h1><p>示例代码如下:   </p>
+<pre><code>Properties properties = new Properties();
+properties.put(&quot;bootstrap.servers&quot;, &quot;192.168.56.101:9092&quot;);
+properties.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+properties.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+properties.put(&quot;metadata.fetch.timeout.ms&quot;, 5000);
+KafkaProducer&lt;String, String&gt; producer = new KafkaProducer&lt;String, String&gt;(properties);
+ProducerRecord&lt;String, String&gt; record = new ProducerRecord&lt;String, String&gt;(&quot;CustomerCountry&quot;,
+        &quot;Precision Products&quot;, &quot;France&quot;);
+Future&lt;RecordMetadata&gt; f = producer.send(record);
+</code></pre>
+<p>返回的是一个Future,有以下处理方式:</p>
+<ul>
+<li>不在乎异常 可以不处理  </li>
+<li>直接get拿到结果 同步的获取方式<br>另外send方法也支持传入回调的方式进行异步处理</li>
+</ul>
+<h2 id="bootstrap-servers"><a href="#bootstrap-servers" class="headerlink" title="bootstrap.servers"></a>bootstrap.servers</h2><p>指定了要连接到的broker,可以用<code>,</code>分隔写入多个，连接broker cluster时不需要写入全部的broker地址，broker本身会同步其他broker的信息，但最少放两个以免写一个对应的broker挂了。<br>在实际使用中，可能会出现<code>org.apache.kafka.common.errors.TimeoutException: Failed to update metadata after 60000 ms.</code>这个错误，请求本身是发送成功的，检查zk topic也建立了，但就是获取不到metadata。<br>这是因为填入的broker服务器和kafka在zk上注册的host不一致导致的(在zk上可以通过<code>get /brokers/ids/&#123;id&#125;</code>查看)，可以通过修改kafka的<code>server.properties</code>的<code>advertised.host.name</code>和<code>advertised.port</code>改正。<br>但是要注意hosts文件会影响，比如配置了自己ip到一个域名上导致失败，注意代码在运行时log打出的实际的值。<br>例如电脑上装了银联控件，结果把localhost映射到了一个奇怪的地址：<br><img src="/images/1244488-20170928022156544-25388878.png"></p>
+<p>例子中已经改为了ip。<br>另外实验环境也迁移至了虚拟机上，上一节用bash on windows搭建好的环境不知道为什么无论怎么改都获取不到metadata</p>
+<h2 id="key-serialization"><a href="#key-serialization" class="headerlink" title="key.serialization"></a>key.serialization</h2><h2 id="用来指定key的序列化器-下面会提到"><a href="#用来指定key的序列化器-下面会提到" class="headerlink" title="用来指定key的序列化器(下面会提到)
+  "></a>用来指定key的序列化器(下面会提到)
+  </h2><h1 id="配置Producers"><a href="#配置Producers" class="headerlink" title="配置Producers"></a>配置Producers</h1><p>文档：<a target="_blank" rel="noopener" href="http://kafka.apache.org/documentation.html#producerconfigs">http://kafka.apache.org/documentation.html#producerconfigs</a><br>因为用的是0.9.0.1，一些参数在最新版已经被弃用了，自己使用多注意下。<br>这些的默认配置在ProducerConfig的static块中定义：</p>
+<pre><code>static &#123;
+    CONFIG = new ConfigDef().define(BOOTSTRAP_SERVERS_CONFIG, Type.LIST, Importance.HIGH, CommonClientConfigs.BOOSTRAP_SERVERS_DOC)
+                            .define(BUFFER_MEMORY_CONFIG, Type.LONG, 32 * 1024 * 1024L, atLeast(0L), Importance.HIGH, BUFFER_MEMORY_DOC)
+                            .define(RETRIES_CONFIG, Type.INT, 0, between(0, Integer.MAX_VALUE), Importance.HIGH, RETRIES_DOC)
+                            .define(ACKS_CONFIG,
+                                    Type.STRING,
+                                    &quot;1&quot;,
+                                    in(&quot;all&quot;, &quot;-1&quot;, &quot;0&quot;, &quot;1&quot;),
+                                    Importance.HIGH,
+                                    ACKS_DOC)
+    ... ...
+</code></pre>
+<p>这里列举一下比较重要的参数：  </p>
+<h2 id="ACKS"><a href="#ACKS" class="headerlink" title="ACKS"></a>ACKS</h2><p>指定一次写成功需要多少个分区分片必须收到record  </p>
+<ul>
+<li><p>0<br>不会等待broker的返回 不会知道是否成功 高吞吐  </p>
+</li>
+<li><p>1<br>接受leader的 比0安全 但也会有还来不及复制leader就挂掉等导致失败的情况</p>
+</li>
+<li><p>all<br>所有的复本都接收到消息并回应 最安全的模式 但相对的延迟就比较惨了</p>
+</li>
+</ul>
+<p>默认值为1  </p>
+<h2 id="BUFFER-MEMORY"><a href="#BUFFER-MEMORY" class="headerlink" title="BUFFER.MEMORY"></a>BUFFER.MEMORY</h2><p>缓存等待发送的消息<br>如果超过了 会在抛错前等待<code>max.block.ms</code>秒<br>默认32M</p>
+<h2 id="COMPRESSION-TYPE"><a href="#COMPRESSION-TYPE" class="headerlink" title="COMPRESSION.TYPE"></a>COMPRESSION.TYPE</h2><p>默认是none 不压缩<br>可以是snappy gzip lz4<br>snappy用较少的cpu完成还行的压缩 性能和网络带宽的权衡<br>gzip是使用更多的cpu和时间但是压缩更好 网络带宽是主要限制时使用</p>
+<h2 id="RETRIES"><a href="#RETRIES" class="headerlink" title="RETRIES"></a>RETRIES</h2><p>重试次数 默认是0<br>默认间隔100ms (通过<code>retry.backoff.ms</code>控制)<br>不是所有的错误都会重试(<code>RetriableException</code>)<br>不要在业务里做重试  </p>
+<h2 id="BATCH-SIZE"><a href="#BATCH-SIZE" class="headerlink" title="BATCH.SIZE"></a>BATCH.SIZE</h2><p>多个record被发送到同一个分区的时候 producer会进行批处理<br>内存 默认16k<br>满了就发 但不意味着只有满了才会发(见下一个参数)<br>设太大不会导致他的延迟 只不过会用更多的内存<br>设太小就惨了 会导致过于频繁  </p>
+<h2 id="LINGER-MS"><a href="#LINGER-MS" class="headerlink" title="LINGER.MS"></a>LINGER.MS</h2><p>在发送当前batch时等多久额外的信息<br>默认是0<br>producer会在batch满了或者这个时间到了发送 默认是0就意味着即时发送<br>大于0会导致延迟 但是增加吞吐量</p>
+<h2 id="CLIENT-ID"><a href="#CLIENT-ID" class="headerlink" title="CLIENT.ID"></a>CLIENT.ID</h2><p>任何字符串 自己定义 用来打log和metrics</p>
+<h2 id="MAX-IN-FLIGHT-REQUESTS-PER-CONNECTION"><a href="#MAX-IN-FLIGHT-REQUESTS-PER-CONNECTION" class="headerlink" title="MAX.IN.FLIGHT.REQUESTS.PER.CONNECTION"></a>MAX.IN.FLIGHT.REQUESTS.PER.CONNECTION</h2><p>可以设置可以发送多少个请求不等回应 也就是允许同时有多少条消息在空中飞<br>默认是5<br>设大了会增加内存使用 但是提高吞吐<br>设过大了会导致降低吞吐 因为batch变得低效了<br>设置成1可以保证消息即使是在重试下也有序(下面顺序保证中提到)</p>
+<h2 id="TIMEOUT-MS-REQUEST-TIMEOUT-MS-METADATA-FETCH-TIMEOUT-MS"><a href="#TIMEOUT-MS-REQUEST-TIMEOUT-MS-METADATA-FETCH-TIMEOUT-MS" class="headerlink" title="TIMEOUT.MS, REQUEST.TIMEOUT.MS, METADATA.FETCH.TIMEOUT.MS"></a>TIMEOUT.MS, REQUEST.TIMEOUT.MS, METADATA.FETCH.TIMEOUT.MS</h2><p>第1和第3在0.11.0.1版本中被移除了。。可以参考旧文档<br>第2 从服务端等待多久回应(默认30s)</p>
+<h2 id="MAX-BLOCK-MS"><a href="#MAX-BLOCK-MS" class="headerlink" title="MAX.BLOCK.MS"></a>MAX.BLOCK.MS</h2><p>在send()和显式通过partitionsFor()请求元数据中间等待的时间<br>在send buffer满了 以及metadata没返回阻塞</p>
+<h2 id="MAX-REQUEST-SIZE"><a href="#MAX-REQUEST-SIZE" class="headerlink" title="MAX.REQUEST.SIZE"></a>MAX.REQUEST.SIZE</h2><p>一次请求的数据大小限制(限制最大的消息 以及批处理的大小)<br>默认1M 意味着可以同时发1000条1K的消息 或者发一条1M的消息<br>注意上一节broker里也有自己的配置 最好两个配置相匹配  </p>
+<h2 id="RECEIVE-BUFFER-BYTES-SEND-BUFFER-BYTES"><a href="#RECEIVE-BUFFER-BYTES-SEND-BUFFER-BYTES" class="headerlink" title="RECEIVE.BUFFER.BYTES SEND.BUFFER.BYTES"></a>RECEIVE.BUFFER.BYTES SEND.BUFFER.BYTES</h2><p>前者默认32K<br>后者默认128K<br>TCP发送和接受的buffer 用于socket写入和读取数据<br>设置为-1是用OS默认的设置<br>不同数据中心间可以适当提高点这个值因为网络环境会更差</p>
+<h2 id="顺序保证"><a href="#顺序保证" class="headerlink" title="顺序保证"></a>顺序保证</h2><p>kafka保证在一个分区里消息的顺序<br>上述可以发现 如果设置了<code>max.in.flights.request.pre.connection</code>大于1(默认5)<br>并且retries大于0(默认0)那就完蛋了<br>可能写给同一个分区第一条消息写入失败 进入retry<br>但第二条写入成功<br>建议设置per.connection为1 但这会严重限制吞吐 只用于顺序很重要的场合    </p>
+<hr>
+<h1 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h1><p>自定义可以自己实现<code>org.apache.kafka.common.serialization.Serializer</code>接口。  </p>
+<h2 id="使用Apache-Avro"><a href="#使用Apache-Avro" class="headerlink" title="使用Apache Avro"></a>使用Apache Avro</h2><p>优点:</p>
+<ul>
+<li>语言中立的序列化格式  </li>
+<li>兼容性</li>
+</ul>
+<p>用于写和读的schema必须兼容<br>反序列化器必须能够访问用于写数据的schema  </p>
+<p>保存每个record的schema开销很大(通常是两倍于record)<br>可以将schema保存在一个注册器中管理 只需要在消息中写入对应的id<br>Schema Registry - 有很多开源的选项 可以使用confluent platform<br>文档: <a target="_blank" rel="noopener" href="http://docs.confluent.io/current/schema-registry/docs/index.html">http://docs.confluent.io/current/schema-registry/docs/index.html</a> </p>
+<p>这个可以单独记一个笔记，等实践后再做整理。   </p>
+<hr>
+<h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><p>如果key为null并且默认的分区器被使用 会用round-robin来平衡<br>有key 默认的分区器会hash key(自带的hash算法) 因为要保证同一个key总是写入同样的分区 他会使用所有的分区(不管是否可用) 写到不可用的会报错<br>如果分区数改变了 映射关系就会改变 同样的key在之后可能会到其他分区中<br>所以预先确定分区的数量在这种i情况下比较重要</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/09/28/kafka-note-producer/" data-id="cm49fdrkm001jr8va6crja25x" data-title="kafka学习笔记2:生产者" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/08/netty-common-pattern/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          netty常用使用方式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/24/kafka-note-install/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">kafka学习笔记1:测试环境搭建</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

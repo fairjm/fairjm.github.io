@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>JVM内存知识备忘 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="又是一篇备忘…主要记录一些知识,进行一些资源的汇总.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM内存知识备忘">
+<meta property="og:url" content="https://bingowith.me/2018/09/15/jvm-memory-note/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="又是一篇备忘…主要记录一些知识,进行一些资源的汇总.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180915225940516-535609245.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180915230059584-477234180.png">
+<meta property="article:published_time" content="2018-09-15T15:35:00.000Z">
+<meta property="article:modified_time" content="2018-09-15T15:35:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20180915225940516-535609245.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-jvm-memory-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/09/15/jvm-memory-note/" class="article-date">
+  <time class="dt-published" datetime="2018-09-15T15:35:00.000Z" itemprop="datePublished">2018-09-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      JVM内存知识备忘
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>又是一篇备忘…<br>主要记录一些知识,进行一些资源的汇总.  </p>
+<span id="more"></span>
+<p>先来群里<code>liufor</code>大大提供的两张图,清晰易懂:<br><img src="/images/1244488-20180915225940516-535609245.png"><br>Dockerized Java<br><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=NQ5hTEp-GTM">https://www.youtube.com/watch?v=NQ5hTEp-GTM</a>    </p>
+<p><img src="/images/1244488-20180915230059584-477234180.png"><br>Java on Linux for devs and ops<br><a target="_blank" rel="noopener" href="https://www.slideshare.net/aragozin/java-on-linux-for-devs-and-ops">https://www.slideshare.net/aragozin/java-on-linux-for-devs-and-ops</a>  </p>
+<p>一些线上排查的注意事项:<br>1.greys不能用于增强系统类,即便他给了个开关,但不要用;<br>2.btrace增强后无法撤销,要撤销需要重启服务;<br>3.NMT不要开启detail,影响性能;<br>4.配置jemalloc和tamalloc的采样的时候注意采样率,千万别配0(全部采样);<br>5.jmap的-heap,jstack和jmap -F参数会导致JVM暂停.(SA.attch)</p>
+<h1 id="常用配置-命令"><a href="#常用配置-命令" class="headerlink" title="常用配置&amp;命令"></a>常用配置&amp;命令</h1><h2 id="常用命令-工具"><a href="#常用命令-工具" class="headerlink" title="常用命令&amp;工具"></a>常用命令&amp;工具</h2><h3 id="JVM启动用的命令行"><a href="#JVM启动用的命令行" class="headerlink" title="JVM启动用的命令行"></a>JVM启动用的命令行</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jcmd process_id VM.command_line</span><br></pre></td></tr></table></figure>
+
+<h3 id="手工触发gc"><a href="#手工触发gc" class="headerlink" title="手工触发gc"></a>手工触发gc</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jcmd process_id GC.run</span><br></pre></td></tr></table></figure>
+
+<h3 id="显示调优标志"><a href="#显示调优标志" class="headerlink" title="显示调优标志"></a>显示调优标志</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jcmd process_id VM.flags [-all]</span><br></pre></td></tr></table></figure>
+<p>all比较有用 可以看到全部的 包括默认值 在排查一些问题的时候能看的信息比较多  </p>
+<h3 id="内存dump-使用情况查看"><a href="#内存dump-使用情况查看" class="headerlink" title="内存dump 使用情况查看:"></a>内存dump 使用情况查看:</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jmap -dump:format=b,file=test.bin process_id  </span><br><span class="line">jmap -heap process_id  </span><br></pre></td></tr></table></figure>
+
+<h3 id="heap-dump分析"><a href="#heap-dump分析" class="headerlink" title="heap dump分析"></a>heap dump分析</h3><p>可以使用<code>MAT</code>,<code>Heap Analyzer</code>和<code>VisualVM</code>这些工具.  </p>
+<p>一些提取操作(比如要获得一个大字符串&#x2F;char[]的值)可以通过OQL表达式.<br>例子:<br>获取到了address 拿取数据(是个char[])</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">chars = heap.<span class="title function_">findObject</span>(<span class="string">&quot;0x666666666&quot;</span>)</span><br><span class="line"><span class="keyword">var</span> writer = <span class="keyword">new</span> java.<span class="property">io</span>.<span class="title class_">FileWriter</span>(<span class="string">&quot;D:/temp/oql/666.txt&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; chars.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    writer.<span class="title function_">write</span>(chars[i]);</span><br><span class="line">&#125;</span><br><span class="line">writer.<span class="title function_">close</span>()</span><br></pre></td></tr></table></figure>
+
+<p>visualVM中拿到index(这个index是sharp后面的 不是address)  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">filter</span>(heap.<span class="title function_">objects</span>(<span class="string">&#x27;char[]&#x27;</span>),</span><br><span class="line"> <span class="keyword">function</span>(<span class="params">it, index</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (index == <span class="number">66</span>) &#123;</span><br><span class="line">      <span class="keyword">var</span> writer = <span class="keyword">new</span> java.<span class="property">io</span>.<span class="title class_">FileWriter</span>(<span class="string">&quot;D:/temp/oql/666.txt&quot;</span>);</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; it.<span class="property">length</span>; i++) &#123;</span><br><span class="line">          writer.<span class="title function_">write</span>(it[i]);</span><br><span class="line">      &#125;</span><br><span class="line">      writer.<span class="title function_">close</span>();</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="更多内存信息"><a href="#更多内存信息" class="headerlink" title="更多内存信息"></a>更多内存信息</h3><p>在linux上使用,使用&#x2F;proc&#x2F;pid&#x2F;map内的信息,以及pmap.<br>使用gdp dump出内存查看信息<br>详见: <a target="_blank" rel="noopener" href="http://lysu.github.io/blog/2015/02/02/how-to-deal-with-non-heap-or-native-memory-leak/">http://lysu.github.io/blog/2015/02/02/how-to-deal-with-non-heap-or-native-memory-leak/</a>  </p>
+<h2 id="GC-log相关"><a href="#GC-log相关" class="headerlink" title="GC log相关"></a>GC log相关</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//日志数量 每个log大小 存放位置</span><br><span class="line">-XX:NumberOfGCLogFiles=7</span><br><span class="line">-XX:GCLogFileSize=64M</span><br><span class="line">-Xloggc:/opt/jetty/logs/gc.log</span><br><span class="line">//绝对时间戳 相对的用-XX:+PrintGCTimeStamps</span><br><span class="line">-XX:+PrintGCDateStamps</span><br><span class="line">//详细的信息 平均时间等 精简的用-XX:+PrintGC</span><br><span class="line">-XX:+PrintGCDetails</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="NMT"><a href="#NMT" class="headerlink" title="NMT"></a>NMT</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:NativeMemoryTracking=[off | summary | detail]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jcmd &lt;pid&gt; VM.native_memory [summary | detail | baseline | summary.diff | detail.diff | shutdown] [scale= KB | MB | GB]  </span><br></pre></td></tr></table></figure>
+<p>可以比较有效看到几个部分的内存使用情况 以及设置baseline后 在看具体的变化量<br>使用时要先设置JVM参数  生产环节慎用detail<br>参考文档:<br><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html">https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html</a><br>直接内存在internal中 但不包含Mapped ByteBuffer<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd">https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd</a>  </p>
+<h1 id="博客-文章"><a href="#博客-文章" class="headerlink" title="博客 &amp; 文章"></a>博客 &amp; 文章</h1><p>一些文章和不错的博客.<br>随着时间的迁移和JVM的升级,这里(包括这文)的内容可能会过时,自己甄别一下~  </p>
+<p>你假笨博客<br><a target="_blank" rel="noopener" href="http://lovestblog.cn/">http://lovestblog.cn/</a></p>
+<p>Alexey Ragozin的博客(也是第二图ppt的作者)<br><a target="_blank" rel="noopener" href="http://blog.ragozin.info/">http://blog.ragozin.info/</a>  </p>
+<p>JVM内存调优相关的一些笔记（杂）<br><a target="_blank" rel="noopener" href="https://zhanjindong.com/2016/03/02/jvm-memory-tunning-notes">https://zhanjindong.com/2016/03/02/jvm-memory-tunning-notes</a>  </p>
+<p>REDUCE LONG GC PAUSES<br><a target="_blank" rel="noopener" href="https://blog.gceasy.io/2016/11/22/reduce-long-gc-pauses/">https://blog.gceasy.io/2016/11/22/reduce-long-gc-pauses/</a>  </p>
+<p>Oh the Places Your Java Memory Goes<br><a target="_blank" rel="noopener" href="https://jkutner.github.io/2017/04/28/oh-the-places-your-java-memory-goes.html">https://jkutner.github.io/2017/04/28/oh-the-places-your-java-memory-goes.html</a>  </p>
+<p>入门科普，围绕JVM的各种外挂技术<br><a target="_blank" rel="noopener" href="http://calvin1978.blogcn.com/articles/vjtools-tools4.html">http://calvin1978.blogcn.com/articles/vjtools-tools4.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/09/15/jvm-memory-note/" data-id="cm49fdrkk001gr8vafmpzeen9" data-title="JVM内存知识备忘" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/21/java-application-offheap-memory-leak-analyze/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          记一次尴尬的Java应用内存泄露排查
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/08/school-days-memory/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">还未(划掉)毕业的这几天</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

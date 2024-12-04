@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>netty常用使用方式 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看SimpleChannelInboundHandler是否有一个messageReceived方法 有的话就是5)，netty3是以org.jboss开头为包名。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netty常用使用方式">
+<meta property="og:url" content="https://bingowith.me/2017/10/08/netty-common-pattern/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看SimpleChannelInboundHandler是否有一个messageReceived方法 有的话就是5)，netty3是以org.jboss开头为包名。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-10-07T16:55:00.000Z">
+<meta property="article:modified_time" content="2017-10-10T02:02:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-netty-common-pattern" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/10/08/netty-common-pattern/" class="article-date">
+  <time class="dt-published" datetime="2017-10-07T16:55:00.000Z" itemprop="datePublished">2017-10-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      netty常用使用方式
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近在重新看netty，在这里总结一些netty的一些常用的使用方式，类似于模板，方便速查。<br>以netty 4.1.x的API作记录，不同版本可能API有略微差异，需要注意netty5被废弃掉了（辨别方式是看<code>SimpleChannelInboundHandler</code>是否有一个<code>messageReceived</code>方法 有的话就是5)，netty3是以<code>org.jboss</code>开头为包名。</p>
+<span id="more"></span>
+<h1 id="统一模板"><a href="#统一模板" class="headerlink" title="统一模板"></a>统一模板</h1><p>大多数情况下使用netty的步骤是定义好<code>EventLoopGroup</code>,定义好<code>Bootstrap</code>(<code>ServerBootstrap</code>)以及使用的channel类型（一般就是<code>NioSocketChannel</code>，服务端是<code>NioServerSocketChannel</code>）。<br>剩下是业务相关，使用的<code>ChannelInitializer</code>和具体的handler。<br>主要就是2+N（N为自定义的handler数量）个类。<br>服务端启动模板（也可以不区分boss和worker 用一个）:  </p>
+<pre><code>public static void main(String[] args) throws InterruptedException &#123;
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try &#123;
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .childHandler(new MyChannelInitializer());
+            ChannelFuture future = serverBootstrap.bind(8999).sync();
+            future.channel().closeFuture().sync();
+        &#125; finally &#123;
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        &#125;
+&#125;
+</code></pre>
+<p>客户端启动模板：</p>
+<pre><code>EventLoopGroup group = new NioEventLoopGroup();
+try &#123;
+    Bootstrap bootstrap = new Bootstrap()
+            .group(group)
+            .channel(NioSocketChannel.class)
+            .handler(new MyChannelInitializer());
+    ChannelFuture future = bootstrap.connect(&quot;localhost&quot;, 8888).sync();
+    future.channel().closeFuture().sync();
+&#125; finally &#123;
+    group.shutdownGracefully();
+&#125;
+</code></pre>
+<p>ChannelInitializer模板（继承ChannelInitializer即可）：  </p>
+<pre><code>public class MyChannelInitializer extends ChannelInitializer&lt;SocketChannel&gt; &#123;
+
+    @Override
+    protected void initChannel(SocketChannel ch) throws Exception &#123;
+        ChannelPipeline pipeline = ch.pipeline();
+        pipeline.addLast(...);
+    &#125;
+
+&#125;
+</code></pre>
+<p>接下来的例子就以这个模板为骨架，主要涉及到初始化器的代码，启动代码一致。  </p>
+<h1 id="处理Http请求"><a href="#处理Http请求" class="headerlink" title="处理Http请求"></a>处理Http请求</h1><p>netty自带了对用的codec类比较方便。<br><code>pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());</code><br>自己实现的handler最简单的方式用<code>SimpleChannelInboundHandler</code>接收<code>HttpRequest</code>方法即可<br><code>class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt;</code><br>这里简单说下<code>SimpleChannelInboundHandler</code>这个类，他是简化处理接受信息并处理的一个类，主要做两件事。 </p>
+<p>第一件事是根据泛型决定是否处理这个消息，能够处理就自己处理，不行就交给下一个（可以参考<code>acceptInboundMessage</code>和<code>channelRead</code>方法）。<br>第二件事是消息的自动回收（有构造函数支持 默认是true），消息的引用计数会减一（所以在其他地方还要使用记得再retain一下）。<br>使用它可以节省很多冗余代码的编写。<br>一个简单例子：  </p>
+<pre><code>public class MyHttpHandler extends SimpleChannelInboundHandler&lt;HttpRequest&gt; &#123;
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception &#123;
+        System.out.println(msg.getClass());
+        System.out.println(msg.uri());
+        System.out.println(msg.method().name());
+        System.out.println(ctx.channel().remoteAddress());
+        System.out.println(&quot;headers:&quot;);
+        msg.headers().forEach(System.out::println);
+        ByteBuf buf = Unpooled.copiedBuffer(&quot;Hello World&quot;, CharsetUtil.UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, &quot;text/plain&quot;);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
+        ctx.writeAndFlush(response);
+//         ctx.channel().close();
+    &#125;
+&#125;
+</code></pre>
+<p>不过只用这个handler并不能拿到content,还需要配合<code>ChunkedWriteHandler</code>和<code>HttpObjectAggregator</code>得到<code>FullHttpRequest</code>对象。</p>
+<h2 id="处理WebSocket请求"><a href="#处理WebSocket请求" class="headerlink" title="处理WebSocket请求"></a>处理WebSocket请求</h2><p>只需要在上面的基础上增加一个<code>WebSocketServerProtocolHandler</code>即可，完整如下：</p>
+<pre><code>    pipeline.addLast(&quot;httpServerCodec&quot;, new HttpServerCodec());
+    pipeline.addLast(new ChunkedWriteHandler());
+    pipeline.addLast(new HttpObjectAggregator(8096));
+    pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;));
+</code></pre>
+<p>自己的处理器可以接收并处理<code>WebSocketFrame</code>的子类。  </p>
+<h1 id="自定义文本协议"><a href="#自定义文本协议" class="headerlink" title="自定义文本协议"></a>自定义文本协议</h1><p>netty提供了几个比较方便的用于自定义文本协议的编解码器。  </p>
+<h2 id="基于长度"><a href="#基于长度" class="headerlink" title="基于长度"></a>基于长度</h2><pre><code>pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
+pipeline.addLast(new LengthFieldPrepender(4));
+pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
+pipeline.addLast(new MyHandler());  
+</code></pre>
+<p>上述参数的意义直接搬了文档：  </p>
+<pre><code> lengthFieldOffset   = 0
+ lengthFieldLength   = 2
+ lengthAdjustment    = 0
+ initialBytesToStrip = 2 (= the length of the Length field)
+
+ BEFORE DECODE (14 bytes)         AFTER DECODE (12 bytes)
+ +--------+----------------+      +----------------+
+ | Length | Actual Content |-----&gt;| Actual Content |
+ | 0x000C | &quot;HELLO, WORLD&quot; |      | &quot;HELLO, WORLD&quot; |
+ +--------+----------------+      +----------------+
+</code></pre>
+<h2 id="基于分隔符"><a href="#基于分隔符" class="headerlink" title="基于分隔符"></a>基于分隔符</h2><pre><code>    ChannelPipeline pipeline = ch.pipeline();
+    pipeline.addLast(new DelimiterBasedFrameDecoder(4096, Delimiters.lineDelimiter()));
+    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));  
+</code></pre>
+<p>第二个参数需要一个<code>ByteBuf[]</code>，自己指定下分隔符即可。<br>注意使用这种发消息的时候要带上那个分隔符，不然会处理失败（被当做未结束）。  </p>
+<h1 id="广播实现"><a href="#广播实现" class="headerlink" title="广播实现"></a>广播实现</h1><p>利用了netty提供的一个很便利的类，<code>ChannelGroup</code>.<br>首先要了解一下Channel生命周期函数的调用：<br><code>channel added -&gt; channel registered -&gt; channel active -&gt; channel inactive -&gt; channel unregistered -&gt; channel removed</code><br>我们可以定义一个静态（保证共享和唯一）的<code>ChannelGroup</code>在channel added的时候把对应channel增加到<code>ChannelGroup</code>中即可（但不需要自己移除，这一点他自己实现了）<br>然后利用它的写方法就可以实现广播，或者forEach做下过滤做多播也可以。<br>这个实现和用什么协议无关，主要涉及到<code>ChannelGroup</code>使用。  </p>
+<h1 id="心跳"><a href="#心跳" class="headerlink" title="心跳"></a>心跳</h1><p>netty自带的<code>IdleStateHandler</code>，超时后会向下一个handler发出<code>IdleStateEvent</code>消息，接收并处理即可。 </p>
+<pre><code>@Override
+public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception &#123;
+    super.userEventTriggered(ctx, evt);
+    if (evt instanceof IdleStateEvent) &#123;
+        ctx.channel().writeAndFlush(&quot;超时&quot;).addListener((ChannelFuture ch) -&gt; ch.channel().close());
+    &#125;
+&#125;
+</code></pre>
+<p>它细分为3中类型的超时，读、写、读写，通过<code>IdleStateEvent</code>的state属性可以获取，可以单独判断。  </p>
+<p>其他的一些模式会在之后复习和使用过程中不断补完~<br>2017年10月08日00点53分 init<br>2017年10月10日10点02分 更新websocket</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2017/10/08/netty-common-pattern/" data-id="cm49fdrkq001wr8vahg1x3ves" data-title="netty常用使用方式" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/21/html5-flash-video-speed-up/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          几种方式加速网页视频播放速度
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/28/kafka-note-producer/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">kafka学习笔记2:生产者</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>维护之痛-数据统计任务小结 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="年初转组,接触了一些新业务.交接了一个数据统计系统,去年下半年开发完成,不再有新的需求.emmmm,妥妥的一个遗留系统… …有对应文档但比较老,一些存储和细节记录在了原开发自己的笔记中.最主要是bug累累,之前使用量和用户较少没有多少bug反馈,但随着今年用户增加基本每个月都会有一些bug.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="维护之痛-数据统计任务小结">
+<meta property="og:url" content="https://bingowith.me/2018/08/01/painful-to-maintain-data-statistic-system/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="年初转组,接触了一些新业务.交接了一个数据统计系统,去年下半年开发完成,不再有新的需求.emmmm,妥妥的一个遗留系统… …有对应文档但比较老,一些存储和细节记录在了原开发自己的笔记中.最主要是bug累累,之前使用量和用户较少没有多少bug反馈,但随着今年用户增加基本每个月都会有一些bug.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180801215156575-1411459964.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180830115528234-596690092.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180830162506504-991089972.png">
+<meta property="article:published_time" content="2018-08-01T13:53:00.000Z">
+<meta property="article:modified_time" content="2018-08-01T13:53:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20180801215156575-1411459964.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-painful-to-maintain-data-statistic-system" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/08/01/painful-to-maintain-data-statistic-system/" class="article-date">
+  <time class="dt-published" datetime="2018-08-01T13:53:00.000Z" itemprop="datePublished">2018-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      维护之痛-数据统计任务小结
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>年初转组,接触了一些新业务.<br>交接了一个数据统计系统,去年下半年开发完成,不再有新的需求.<br>emmmm,妥妥的一个遗留系统… …<br>有对应文档但比较老,一些存储和细节记录在了原开发自己的笔记中.<br>最主要是bug累累,之前使用量和用户较少没有多少bug反馈,但随着今年用户增加基本每个月都会有一些bug.  </p>
+<span id="more"></span>
+<p>该系统的简单架构如下:<br><img src="/images/1244488-20180801215156575-1411459964.png">  </p>
+<p>由一位同事单独完成,历时几个月,难以想象他经历了什么…但听闻他在开发过程中几乎崩溃了,自己完成了数据的获取,处理,聚合.<br>ES和spark的资源还是借用了其他组已经搭好的存储.  </p>
+<p>我们有专门的数据团队产出一些业务指标,但这位同事做这套系统的时候那边提供的帮助有限,差不是是无法获得数据源(日志)由他们提供,但如果数据库或其他存储里有数据源自己处理.  </p>
+<p>介于该系统的诸多问题,数据团队那边已经决定改为所需的指标都由他们提供,我们做一下对接的方式,现在正在进行中.<br>该文就来提一下我接手之后遇到的坑,以及一些处理方式.  </p>
+<h1 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h1><h2 id="数据指标定义有误"><a href="#数据指标定义有误" class="headerlink" title="数据指标定义有误"></a>数据指标定义有误</h2><p>这是一个非常尴尬的问题,维护一个系统最沮丧的莫过于,你发现他一开始做的就是错的.  </p>
+<p>数据系统产出的有趋势数据和汇总数据,趋势数据也就是每天的数据,而之前实现的时候汇总数据是趋势数据的累加.  </p>
+<p><img src="/images/1244488-20180830115528234-596690092.png">  </p>
+<p>但现实场景下一些指标是无法累加的.<br>例如上述场景下帖子的删除是可恢复的,今天删除恢复后明天又进行了删除,趋势数据里表示的是两天删除数都是1,<br>累加是2,但看这两天的汇总数据实际上就删除了1次,但还是会显示2,这时候用户就会疑惑自己的帖子明明就少了一个但为什么这周期汇总的数据是2呢.  </p>
+<p>当然这里也可以提示用户是删除这个行为发生了2次,但显然在这个指标下汇总数据上用户更关注是结果.  </p>
+<p>其他的诸如被回帖的帖子数,同一个帖子被两天都被回复和这两天的汇总量之间是不能简单相加的.    </p>
+<p>要去重需要有历史数据支撑,但该系统的计算都是以天为单位,要扩展这个功能需要进行很大的改造.<br>最后还是放弃了,现在正在接入数据团队的结果.  </p>
+<h2 id="系统稳定性问题"><a href="#系统稳定性问题" class="headerlink" title="系统稳定性问题"></a>系统稳定性问题</h2><p>该系统上线后一直不是很稳定,上图的链路过长,且业务都由之前开发一人维护.  </p>
+<p>中间任何一环出了问题都会导致数据项的缺失或者数据不准确.  </p>
+<p>这里总结一些遇到的一些问题和解决办法.</p>
+<h3 id="spring-batch挂了"><a href="#spring-batch挂了" class="headerlink" title="spring batch挂了"></a>spring batch挂了</h3><p>这个是接手后最先遇到的,当时还没看到这个系统的全貌,只看到了这冰山一角.  </p>
+<p>上述的链路的依赖是时间,系统实际运行过程中常常会有spring batch在计算了但上游数据还没准备完的情况.<br>这种问题比较难发现,往往是某几个账号的数据项不准确了.(趋势数据大幅度掉落等)  </p>
+<p>但处理方式是比较简单的,定时任务追加了一次,每天跑两次定时任务进行计算.  </p>
+<h3 id="spark-job挂了"><a href="#spark-job挂了" class="headerlink" title="spark job挂了"></a>spark job挂了</h3><p>遇到过几次,主要是代码问题.<br>解决方式也就是登录控制台看一下报错log根据错误内容修改代码重新设置任务.  </p>
+<p>代码bug无法避免,想通过邮件告警的方式进行及时提醒,但对应平台的邮箱配置有问题,询问了几次没有解决最后也搁置了.  </p>
+<h3 id="ES某个index数据被清空"><a href="#ES某个index数据被清空" class="headerlink" title="ES某个index数据被清空"></a>ES某个index数据被清空</h3><p>这个就比较难受了,发现计算一个指标使用的index里的doc少了很多,导致趋势图直接断崖了.  </p>
+<p>但去检查该<code>index</code>的<code>primary shard</code>又是好的… … …<br>联系存储的运维看了下也没发现什么问题.<br>当务之急只能先导回数据,还好原始数据存储在了数据库内,最后用<code>logstash</code>导入恢复.<br>之后没有再出现这个问题.  </p>
+<h3 id="kafka-sink挂了"><a href="#kafka-sink挂了" class="headerlink" title="kafka sink挂了"></a>kafka sink挂了</h3><p>原开发是找了内网两台空闲的机器起了<code>kafka connector</code>来将数据导入到ES中.<br>而且这个细节只存在于原开发的笔记中,因为基本没有交接,当时这个出问题的导致数据缺失的时候瞎猫找死耗子弄了好久.  </p>
+<p><img src="/images/1244488-20180830162506504-991089972.png"><br>kafka当时已经接入了prometheus,配置了一下报警规则,这一块出现问题可以及时发现.  </p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>现在回头想想,或许这套系统就不该做出来… …<br>我们有独立的数据团队来做这些,当时因为对方无暇去做这个,整个项目就赶鸭子上架一样由一位开发搭建整个系统和整套流程.<br>重复了对方重复的工作不说,还做得更糟,数据团队也不免吐槽了这个一番.    </p>
+<p>其次,这套系统上了之后缺乏关注和维护,他就像鸡肋一样,舍不得丢,也不愿专人维护,就连原开发自己都苦恼不已.最后就这样挂到我头上.  </p>
+<p>除去吐槽,简单总结一下这套系统不合理之处:  </p>
+<ul>
+<li>以时间作为任务触发的条件.<br>这个上面也有提到,不管是多个<code>spark</code>任务,<code>spring batch</code>任务,还是整个流程,都是以时间作为任务触发的.<br>上游任务出现延迟就会出现问题,接手之后的处理是在白天再跑一次,但最开始设计应该用hook更为合适.  </li>
+<li>缺少测试环境.<br>这套系统只有线上,batch可以本地跑,但除此之外没有ES和spark的内网环境,改了直接上线,验证线上数据.  </li>
+<li>无法快速验证.<br>最开始所有的fix都需要跑至少一天的数据才能看出问题(且ES和spark的聚合没办法,一些任务都不带userId).之后在batch中加入了账号参数可以只跑一个账号的数据.</li>
+</ul>
+<p>最后自己问题也不少,当初接手这套系统的时候没有了解他大体的结构.<br>只关注了<code>spring batch</code>和服务器一侧的实现,其他部分是在出现bug时才会去跟进发现.  </p>
+<p>并且自己掌握的技术能力有限,<code>ES</code>和<code>spark</code>的知识积累不够,现在也还在补这块的内容,自己身上有短板.  </p>
+<p>整个系统对于一个业务开发来说可以说是一个很好的学习机会了,这样的机会也来之不易.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/08/01/painful-to-maintain-data-statistic-system/" data-id="cm49fdrkr0021r8vacyt3di7m" data-title="维护之痛-数据统计任务小结" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/15/start-prometheus/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Prometheus使用入门
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/26/monitoring-introduction/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">监控基础</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

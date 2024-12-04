@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>rust学习感想 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="最近刚把The book看完了,手有些生,断断续续写点小东西,这边写一下这个歌阶段的一些学习感想,感受.文章很水,没有语言上的指导只有自己的一些见解,部分内容还可能是完全错误的,欢迎指正~~. 学习目的主要是想开阔一下视野.之前就偶尔会听到别人说rust在设计上有一些特别的地方,并且又由于是一门可以进行系统编程的语言,学习的收获也会比学其他的来得多,就这样开始了.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rust学习感想">
+<meta property="og:url" content="https://bingowith.me/2019/08/16/learning-rust/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="最近刚把The book看完了,手有些生,断断续续写点小东西,这边写一下这个歌阶段的一些学习感想,感受.文章很水,没有语言上的指导只有自己的一些见解,部分内容还可能是完全错误的,欢迎指正~~. 学习目的主要是想开阔一下视野.之前就偶尔会听到别人说rust在设计上有一些特别的地方,并且又由于是一门可以进行系统编程的语言,学习的收获也会比学其他的来得多,就这样开始了.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-15T19:43:15.000Z">
+<meta property="article:modified_time" content="2019-08-15T19:43:15.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-learning-rust" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/08/16/learning-rust/" class="article-date">
+  <time class="dt-published" datetime="2019-08-15T19:43:15.000Z" itemprop="datePublished">2019-08-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      rust学习感想
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近刚把<a target="_blank" rel="noopener" href="https://doc.rust-lang.org/book/title-page.html">The book</a>看完了,手有些生,断断续续写点小东西,这边写一下这个歌阶段的一些学习感想,感受.<br>文章很水,没有语言上的指导只有自己的一些见解,部分内容还可能是完全错误的,欢迎指正~~.</p>
+<p>学习目的主要是想开阔一下视野.<br>之前就偶尔会听到别人说rust在设计上有一些特别的地方,并且又由于是一门可以进行系统编程的语言,学习的收获也会比学其他的来得多,就这样开始了.  </p>
+<span id="more"></span>  
+<h1 id="低估的ownership概念"><a href="#低估的ownership概念" class="headerlink" title="低估的ownership概念"></a>低估的ownership概念</h1><p>最开始看不管是<code>ownership</code>还是<code>borrowing rules</code>,感觉设计上很精妙,自己仿佛变成了肉体垃圾收集器,看了书中几个例子就飘了,天真地觉得并不是很困难.这种错觉就像我能手动管理好内存的申请和释放一样,稍微复杂一点点的场景就立马吃瘪.<br>之前做练习写了个脚本,用<code>HashMap</code>做缓存传入一个函数中,并会在传入的函数中放入值.<br>先放出最后的成品:  </p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">handle</span>(client:&amp;Client, map: &amp;<span class="keyword">mut</span> HashMap&lt;<span class="type">String</span>, <span class="type">String</span>&gt;, email: &amp;<span class="type">str</span>, node_name :&amp;<span class="type">str</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">node_id</span> = <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(id) = map.<span class="title function_ invoke__">get</span>(node_name) &#123;</span><br><span class="line">        <span class="keyword">if</span> id == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">            <span class="literal">None</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(id))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">r</span> = <span class="title function_ invoke__">find_id_by_node_name</span>(&amp;client, node_name);</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(id) = r &#123;</span><br><span class="line">            map.<span class="title function_ invoke__">insert</span>(node_name.<span class="title function_ invoke__">to_string</span>(), id.<span class="title function_ invoke__">clone</span>());</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(id)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            map.<span class="title function_ invoke__">insert</span>(node_name.<span class="title function_ invoke__">to_string</span>(), <span class="string">&quot;&quot;</span>.<span class="title function_ invoke__">to_string</span>());</span><br><span class="line">            <span class="literal">None</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> node_id == <span class="literal">None</span> &#123; <span class="keyword">return</span> &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">user_id</span> = <span class="title function_ invoke__">find_id_by_email</span>(&amp;client, email);</span><br><span class="line">    <span class="keyword">if</span> user_id == <span class="literal">None</span> &#123; <span class="keyword">return</span> &#125;;</span><br><span class="line">    <span class="title function_ invoke__">move_to_node</span>(&amp;client, node_id.<span class="title function_ invoke__">unwrap</span>().<span class="title function_ invoke__">as_str</span>(), user_id.<span class="title function_ invoke__">unwrap</span>().<span class="title function_ invoke__">as_str</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最开始key和value都用了<code>&amp;str</code>,出现了各种报错比如borrow超过了生命周期,lifetime不一致等,中间为了避免报错一些地方用<code>String</code>,用<code>&amp;String</code>,随后<code>ownership moved</code>之类的错也跟着出现了.<br>恶化成了编译器报错,改掉这里,其他地方又爆了原因不一样的错,而且越修越多,报的错越来越看不懂.<br>感觉就像被人(编译器)打了一顿,打的人还不断告诉你你这样错了要那样做,那样做了之后又有了其他错.<br>这实质上还是自己对于所有权的概念理解太浅薄了,我需要将在函数内部产生的<code>String</code>增加到由参数传入的<code>HashMap</code>中,<code>HashMap</code>的生命周期在定义中就比函数中产生的变量长,而我最开始的泛型类型居然是<code>&amp;str</code>,于是就产生了一个borrow活得比他实际的数据更长的问题.<br>我要将他带出去,数据的ownership必须到<code>HashMap</code>中.(不过由于数据除了放到<code>HashMap</code>中还要参与之后的运算,于是通过<code>clone</code>等方法增加一些)  </p>
+<p>对于<code>ownership</code>和<code>borrow</code>这两个概念,还是要从引入他们的原因来分析,是为了取代运行时GC的.变量会在离开作用域后自动回收掉指向的数据(这里单单讨论堆,毕竟栈上的数据都是Copy),<code>ownership</code>可以想象成一根粗粗的箭头,只能有这一根并且支撑数据的存活(unsafe在此不讨论),而<code>borrow</code>则是细细的绳,如果箭头消失了,数据回收,绳就空荡荡(悬空)了.  </p>
+<h1 id="大小可知-大小不可知"><a href="#大小可知-大小不可知" class="headerlink" title="大小可知 大小不可知"></a>大小可知 大小不可知</h1><p>这个是最为困惑的一个点,主要体现在ch17上的内容.<br>看到了”为了编译过”而写的代码形式:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">State</span> <span class="keyword">for</span> <span class="title class_">Draft</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">request_review</span>(<span class="keyword">self</span>: <span class="type">Box</span>&lt;<span class="keyword">Self</span>&gt;) <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="keyword">dyn</span> State&gt; &#123;</span><br><span class="line">        <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(PendingReview &#123;&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>Box</code>的原因之一是为了解决编译期类型大小不可知的问题,而如果被<code>Box</code>持有的数据发生了move,那又把这个编译期大小不可知的问题给暴露出来.  </p>
+<blockquote>
+<p> In general, Rust doesn’t allow us to move a value out of a Box<T> because Rust doesn’t know how big the value inside the Box<T> will be: recall in Chapter 15 that we used Box<T> precisely because we had something of an unknown size that we wanted to store in a Box<T> to get a value of a known size.</p>
+</blockquote>
+<p>(ch20的内容)</p>
+<p>move Box本身.<br>在使用<code>trait object</code>中会常用到的一点.<br>可能需要多写一些代码才能更深入理解了.  </p>
+<h1 id="提供充足的声明式支持"><a href="#提供充足的声明式支持" class="headerlink" title="提供充足的声明式支持"></a>提供充足的声明式支持</h1><p>这个是比较惊喜的一点,rust的库中提供了很多声明式风格的api,语言本身也有模式匹配的支持,写起来和其他有运行时的语言一样便利(但要时刻记着<code>ownership</code>等概念).<br>这是语言设计和API设计上的选择,感觉相比某些语言还是相当友好的.<br>此外,使用了一些额外的类库也感觉到了API上的轻便,使用舒适,比如<code>serde_json</code>的<code>Value</code>设计.<br>相比java的类库<code>jackson</code>里的<code>JsonNode</code>,其子类的<code>get</code>实现会返回<code>null</code>,导致get之后必须检查一下(虽然可以用<code>Optional</code>一路串下去),<code>Value</code>有<code>Value::Null</code>(在使用[]的情况下),如果<code>jackson</code>设计不存在返回子类假设有个<code>MissingNode</code>的实例可能就会好很多.<br>不过这个具体类库具体分析了.  </p>
+<h1 id="语言本身的扩展性"><a href="#语言本身的扩展性" class="headerlink" title="语言本身的扩展性"></a>语言本身的扩展性</h1><p>这个其实支持macro的语言都有.<br>感觉这是一个很棒的方向,语言本身提供足够使用的语法即可,其他靠macro进行扩展,一个小内核+插件扩展的方式.<br>这个之后还要具体学习.  </p>
+<hr>
+<p>以上只是当前学习过程中的一点感想,随着不断学习可能会有不同的思考.<br>rust的学习过程还是比较有意思的,特别对于之前学的所有语言都是带运行时,不用太过在意gc,带来的思想上的冲击还是比较大的,特别是被编译器教做人… … …<br>此外补充一些收集的学习资料:  </p>
+<p>pingCAP的课程<br><a target="_blank" rel="noopener" href="https://university.pingcap.com/talentplan.shtml">https://university.pingcap.com/talentplan.shtml</a><br>对应的github:<br><a target="_blank" rel="noopener" href="https://github.com/pingcap/talent-plan/tree/master/rust/building-blocks">https://github.com/pingcap/talent-plan/tree/master/rust/building-blocks</a></p>
+<p>200行的绿色线程:<br><a target="_blank" rel="noopener" href="https://cfsamson.gitbook.io/green-threads-explained-in-200-lines-of-rust/">https://cfsamson.gitbook.io/green-threads-explained-in-200-lines-of-rust/</a></p>
+<p>GB模拟器:<br><a target="_blank" rel="noopener" href="https://blog.ryanlevick.com/DMG-01/public/book/">https://blog.ryanlevick.com/DMG-01/public/book/</a><br>nes模拟器:<br><a target="_blank" rel="noopener" href="http://www.michaelburge.us/2019/03/18/nes-design.html">http://www.michaelburge.us/2019/03/18/nes-design.html</a></p>
+<p>cheat sheet:<br><a target="_blank" rel="noopener" href="https://cheats.rs/">https://cheats.rs/</a></p>
+<p>exercism:<br><a target="_blank" rel="noopener" href="https://exercism.io/tracks/rust">https://exercism.io/tracks/rust</a>  </p>
+<p>async book:<br><a target="_blank" rel="noopener" href="https://rust-lang.github.io/async-book/index.html">https://rust-lang.github.io/async-book/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://arewegameyet.com/">http://arewegameyet.com/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2019/08/16/learning-rust/" data-id="cm49fdrkm001kr8vabh1dd20m" data-title="rust学习感想" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/03/et-lt-intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          理一理Edge-triggered和Level-triggered
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/12/2019-half-year-summary/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">2019年中总结~</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>[翻译]Java排错指南 - 5 确定崩溃何地发生 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原文地址: https:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;8&#x2F;docs&#x2F;technotes&#x2F;guides&#x2F;troubleshoot&#x2F;crashes001.html 这几天公司其他组遇到了一个segmentation fault的问题,找到了这个官方文档,基于Java8,感觉不错就翻译了下.一些地方翻译比较生硬,如有问题请麻烦指正~^_^ by fairjm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]Java排错指南 - 5 确定崩溃何地发生">
+<meta property="og:url" content="https://bingowith.me/2018/12/05/jvm-crash-troubleshoot/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原文地址: https:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;8&#x2F;docs&#x2F;technotes&#x2F;guides&#x2F;troubleshoot&#x2F;crashes001.html 这几天公司其他组遇到了一个segmentation fault的问题,找到了这个官方文档,基于Java8,感觉不错就翻译了下.一些地方翻译比较生硬,如有问题请麻烦指正~^_^ by fairjm">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-05T08:53:00.000Z">
+<meta property="article:modified_time" content="2018-12-05T08:53:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-jvm-crash-troubleshoot" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/12/05/jvm-crash-troubleshoot/" class="article-date">
+  <time class="dt-published" datetime="2018-12-05T08:53:00.000Z" itemprop="datePublished">2018-12-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      [翻译]Java排错指南 - 5 确定崩溃何地发生
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原文地址: <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/crashes001.html">https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/crashes001.html</a></p>
+<p>这几天公司其他组遇到了一个segmentation fault的问题,找到了这个官方文档,基于Java8,感觉不错就翻译了下.<br>一些地方翻译比较生硬,如有问题请麻烦指正~^_^ by fairjm</p>
+<hr>
+<span id="more"></span>
+
+<h1 id="5-1-确定崩溃何地发生"><a href="#5-1-确定崩溃何地发生" class="headerlink" title="5.1 确定崩溃何地发生"></a>5.1 确定崩溃何地发生</h1><p>这一节提供了一些例子来演示如何使用错误日志来找到崩溃的原因,并且给出一些排查这些问题的建议.  </p>
+<p>错误日志的头指出了错误的类型和有问题的帧(frame),thread stack指出了当前的线程和堆栈轨迹.查看<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/felog003.html#BABFFJBB">Header Format</a>  </p>
+<p>Crash in Native Code</p>
+<p>Crash in Compiled Code</p>
+<p>Crash in HotSpot Compiler Thread</p>
+<p>Crash in VM Thread</p>
+<p>Crash Due to Stack Overflow  </p>
+<h2 id="5-1-1-本地代码崩溃"><a href="#5-1-1-本地代码崩溃" class="headerlink" title="5.1.1 本地代码崩溃"></a>5.1.1 本地代码崩溃</h2><p>如果致命错误日志(fatal error log)指出的问题帧来自于本地库,那么可能是本地库或者JNI库代码存在bug.这种崩溃当然也有可能是其他原因造成的,但是分析这个库和其他的core file或者crash dump是一个很好的开始.<br>以下是一个致命错误日志的头:  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># An unexpected error has been detected by HotSpot Virtual Machine:</span><br><span class="line">#</span><br><span class="line">#  SIGSEGV (0xb) at pc=0x417789d7, pid=21139, tid=1024</span><br><span class="line">#</span><br><span class="line"># Java VM: Java HotSpot(TM) Server VM (6-beta2-b63 mixed mode)</span><br><span class="line"># Problematic frame:</span><br><span class="line"># C  [libApplication.so+0x9d7]</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中,<code>SIGSEGV</code>发生在线程执行<code>libApplication.so</code>中的代码.<br>一些其他例子是Java VM的本地库导致的.在下面的例子中,<code>JavaThread </code>在<code>_thread_in_vm </code>状态中失败了(表明它正在执行Java VM代码)  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># An unexpected error has been detected by HotSpot Virtual Machine:</span><br><span class="line">#</span><br><span class="line">#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x08083d77, pid=3700, tid=2896</span><br><span class="line">#</span><br><span class="line"># Java VM: Java HotSpot(TM) Client VM (1.5-internal mixed mode)</span><br><span class="line"># Problematic frame:</span><br><span class="line"># V  [jvm.dll+0x83d77]</span><br><span class="line"></span><br><span class="line">---------------  T H R E A D  ---------------</span><br><span class="line"></span><br><span class="line">Current thread (0x00036960):  JavaThread &quot;main&quot; [_thread_in_vm, id=2896]</span><br><span class="line"> :</span><br><span class="line">Stack: [0x00040000,0x00080000),  sp=0x0007f9f8,  free space=254k</span><br><span class="line">Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)</span><br><span class="line">V  [jvm.dll+0x83d77]</span><br><span class="line">C  [App.dll+0x1047]          &lt;========= C/native frame</span><br><span class="line">j  Test.foo()V+0</span><br><span class="line">j  Test.main([Ljava/lang/String;)V+0</span><br><span class="line">v  ~StubRoutines::call_stub</span><br><span class="line">V  [jvm.dll+0x80f13]</span><br><span class="line">V  [jvm.dll+0xd3842]</span><br><span class="line">V  [jvm.dll+0x80de4]</span><br><span class="line">V  [jvm.dll+0x87cd2]</span><br><span class="line">C  [java.exe+0x14c0]</span><br><span class="line">C  [java.exe+0x64cd]</span><br><span class="line">C  [kernel32.dll+0x214c7]</span><br><span class="line"> :</span><br></pre></td></tr></table></figure>
+<p>在这个例子中,虽然出问题的帧是VM的,线程栈显示一个本地例子(native routine)<code>App.dll</code>已经被VM调用(可能是通过JNI).  </p>
+<p>解决这个本地库崩溃的第一步是调查本地库发生崩溃的那段源代码.  </p>
+<ul>
+<li>如果本地库是由你的应用程序提供,那么调查本地库的源代码.大量的问题可以通过在运行应用程序时使用<code>-Xcheck:jni</code>参数被识别.查看<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/clopts002.html#CHDDEGBI">The -Xcheck:jni Option</a>.  </li>
+<li>如果这个本地库是由其他供应商提供,被你的程序所使用,那么就向他们提供bug报告和致命错误日志信息.  </li>
+<li>如果本地库是来自于JRE的(比如awt.dll,net.dll或其他的),那有可能你遇到了一个库或者API的bug.那么就尽可能获取足够的信息提交一个bug并指名库名称.你可以在JRE的发行版中的 jre&#x2F;lib 或 jre&#x2F;bin目录中找到JRE的库.</li>
+</ul>
+<p>如果可能的话,你可以通过本地debugger attach到core file或crash dump的方式来排查本地库崩溃.取决于你所使用的系统,本地debugger有<code>dbx</code>,<code>gdb</code>,或<code>windbg</code>.查看<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr020.html#BABBHHIE"> Native Operating System Tools</a></p>
+<h2 id="5-1-2-编译代码崩溃"><a href="#5-1-2-编译代码崩溃" class="headerlink" title="5.1.2 编译代码崩溃"></a>5.1.2 编译代码崩溃</h2><p>如果致命错误日志指出崩溃发生在编译代码(compiled code),那有可能你遇到了一个编译器导致的不正确代码生成的bug.你可以通过问题堆栈的类型是<code>J</code>(代表一个compiled java frame)来识别.  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># An unexpected error has been detected by HotSpot Virtual Machine:</span><br><span class="line">#</span><br><span class="line">#  SIGSEGV (0xb) at pc=0x0000002a99eb0c10, pid=6106, tid=278546</span><br><span class="line">#</span><br><span class="line"># Java VM: Java HotSpot(TM) 64-Bit Server VM (1.6.0-beta-b51 mixed mode)</span><br><span class="line"># Problematic frame:</span><br><span class="line"># J  org.foobar.Scanner.body()V</span><br><span class="line">#</span><br><span class="line">:</span><br><span class="line">Stack: [0x0000002aea560000,0x0000002aea660000),  sp=0x0000002aea65ddf0,</span><br><span class="line">  free space=1015k</span><br><span class="line">Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)</span><br><span class="line">J  org.foobar.Scanner.body()V</span><br><span class="line"></span><br><span class="line">[error occurred during error reporting, step 120, id 0xb]</span><br></pre></td></tr></table></figure>
+<p>注意:该例子无法获得一个完整的线程栈.输出的”error occurred during error reporting” 表示问题发生在试图获取堆栈跟踪(可能是栈损坏了).  </p>
+<p>通过更换编译器的方式可能可以临时解决(例如使用HotSpot Client VM取代HotSpot Server VM,或反过来)或者从编译中排除掉导致崩溃的方法.在这个例子中,将64位的Server VM换成32位的Client VM可能会有用.  </p>
+<p>更多可能的规避措施见<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/crashes002.html#CIHDIBJA">Working Around Crashes in the HotSpot Compiler Thread or Compiled Code</a>.</p>
+<h2 id="5-1-3-HotSpot编译器线程崩溃"><a href="#5-1-3-HotSpot编译器线程崩溃" class="headerlink" title="5.1.3 HotSpot编译器线程崩溃"></a>5.1.3 HotSpot编译器线程崩溃</h2><p>如果核心错误日志显示的当前线程是一个叫<code>CompilerThread0</code>,<code>CompilerThread1</code>或<code>AdapterCompiler</code>的<code>JavaThread</code>,那么你可能遇上了编译器bug.可能解决方式和上一节一样.(懒得复读了…)  </p>
+<h2 id="5-1-4-VM线程崩溃"><a href="#5-1-4-VM线程崩溃" class="headerlink" title="5.1.4 VM线程崩溃"></a>5.1.4 VM线程崩溃</h2><p>如果核心错误日志显示的当前线程是<code>VMThread</code>,那么查看一下在<code>THREAD</code>那节包含<code>VM_Operation </code>的那一行.<code>VMThread </code>是特殊的的HotSpot VM线程.它执行一些特殊的工作比如GC.如果<code>VM_Operation</code>表明操作是GC,那么你可能遇到了诸如堆损坏的问题.  </p>
+<p>包括GC问题之外,它同样可能是一些其他问题(例如编译器或者运行时bug)导致的对象引用在堆中处于一个不完整和不正确的状态.这种情况下,收集尽可能多的环境信息和尝试可能的规避方案.如果发现和GC有关,你可能通过修改GC配置的方式来临时保证正常运行.  </p>
+<p>对于更多的规避方案,查看<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/crashes002.html#CIHEEBDG">Working Around Crashes during Garbage Collection</a></p>
+<h2 id="5-1-5-爆栈崩溃"><a href="#5-1-5-爆栈崩溃" class="headerlink" title="5.1.5 爆栈崩溃"></a>5.1.5 爆栈崩溃</h2><p>java语言的一个栈溢出通常会导致线程抛出烦人的<code>java.lang.StackOverflowError</code>异常.另一方面,C和C++写入超过了栈的结束会引起一个栈溢出.这是一个致命的错误,会导致进程终止.  </p>
+<p>在HotSpot实现中,Java方法和C&#x2F;C++本地代码共享栈帧,即用户本地代码和VM自身.<br>Java方法产生的代码会检查栈离栈的结束是否会有固定距离可用的空间,所以本地代码的调用可以不担心是否会超过栈空间.<br>到栈结束的距离被称为<code>Shadow Pages</code>.这个大小取决于所在平台,shadow pages在3到20页之间.<br>这个距离是可以调整的,所以应用使用到了本地代码想要比默认更大的距离时可以增加shadow page的大小.<br>增加的参数是<code>-XX:StackShadowPages=n</code>,n设定为比当前平台默认值大.  </p>
+<p>如果你的应用遇上了segmentation fault但是没有core file或致命错误日志参见<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/felog.html#fatal_error_log_vm">Appendix A</a>,或者在windows上<code>STACK_OVERFLOW_ERROR </code>,或者得到一个消息”An irrecoverable stack overflow has occurred”,这说明超过了<code>StackShadowPages</code>,需要更大的空间.  </p>
+<p>如果你增加了<code>StackShadowPages</code>,你可能也需要使用<code>-Xss</code>参数增加默认的线程栈大小.增加默认的线程栈大小可能会减少可创建的线程数,所以请小心选择这个数值.线程栈的大小于不同平台上在256KB到1024KB.  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># An unexpected error has been detected by HotSpot Virtual Machine:</span><br><span class="line">#</span><br><span class="line">#  EXCEPTION_STACK_OVERFLOW (0xc00000fd) at pc=0x10001011, pid=296, tid=2940</span><br><span class="line">#</span><br><span class="line"># Java VM: Java HotSpot(TM) Client VM (1.6-internal mixed mode, sharing)</span><br><span class="line"># Problematic frame:</span><br><span class="line"># C  [App.dll+0x1011]</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">---------------  T H R E A D  ---------------</span><br><span class="line"></span><br><span class="line">Current thread (0x000367c0):  JavaThread &quot;main&quot; [_thread_in_native, id=2940]</span><br><span class="line">:</span><br><span class="line">Stack: [0x00040000,0x00080000),  sp=0x00041000,  free space=4k</span><br><span class="line">Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)</span><br><span class="line">C  [App.dll+0x1011]</span><br><span class="line">C  [App.dll+0x1020]</span><br><span class="line">C  [App.dll+0x1020]</span><br><span class="line">:</span><br><span class="line">C  [App.dll+0x1020]</span><br><span class="line">C  [App.dll+0x1020]</span><br><span class="line">...&lt;more frames&gt;...</span><br><span class="line"></span><br><span class="line">Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)</span><br><span class="line">j  Test.foo()V+0</span><br><span class="line">j  Test.main([Ljava/lang/String;)V+0</span><br><span class="line">v  ~StubRoutines::call_stub</span><br></pre></td></tr></table></figure>
+<p>你可以从例子中获得以下信息:  </p>
+<ul>
+<li>异常是<code>EXCEPTION_STACK_OVERFLOW</code>  </li>
+<li>线程的状态是<code>_thread_in_native</code>,表示线程在执行native或者JNI代码.  </li>
+<li>线程信息中,可用的空间仅仅只有4KB(windows系统中的单页).另外线程指针(sp)在<code>0x00041000</code>,很接近栈结束<code>0x00040000</code>.  </li>
+<li>输出的本地栈显示一个递归的本地方法是这个问题的原因.<code>...&lt;more frames&gt;...</code>表明还有更多的帧存在但是没有输出.输出只限于100帧.</li>
+</ul>
+<hr>
+<p>相关资料:<br><a target="_blank" rel="noopener" href="https://www.slideshare.net/AndreiPangin/do-we-need-unsafe-in-java">Do we need Unsafe in Java?</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://codegolf.stackexchange.com/questions/4399/shortest-code-that-raises-a-sigsegv?page=1&tab=votes#tab-top">Shortest code that raises a SIGSEGV</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/36109313/best-way-on-how-to-solve-debug-jvm-crash-sigsegv">Best way on how to solve&#x2F;debug JVM crash (SIGSEGV)
+</a></p>
+<p>openjdk相关bug:<br><a target="_blank" rel="noopener" href="https://bugs.openjdk.java.net/browse/JDK-8171429">JVM Crash in # Problematic frame: # J 569 C2 java.lang.Long.getChars(JI[C)V (221 bytes) @ 0x00007fb9b618dfd8 [0x00007fb9b618dc40+0x398]</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://bugs.openjdk.java.net/browse/JDK-8144565">JVM crash. Problematic frame: J 4518 C2 java.lang.Long.getChar</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/12/05/jvm-crash-troubleshoot/" data-id="cm49fdrkk001fr8va1es807ai" data-title="[翻译]Java排错指南 - 5 确定崩溃何地发生" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/01/30/translate-the-various-kinds-of-io-blocking-non/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          [翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/28/10035181/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Akka实践一些总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

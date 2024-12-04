@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>[翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="同事推荐,感觉写的不错就试着翻译了下.原文链接: https:&#x2F;&#x2F;www.rubberducking.com&#x2F;2018&#x2F;05&#x2F;the-various-kinds-of-io-blocking-non.html作者: Didier A. 我发现对于软件程序员来说很难分清楚各种类型的IO.对于阻塞,非阻塞,多路复用和异步IO有很多的混淆点.所以我想尝试解释清楚各种IO类型意味着什么">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步">
+<meta property="og:url" content="https://bingowith.me/2019/01/30/translate-the-various-kinds-of-io-blocking-non/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="同事推荐,感觉写的不错就试着翻译了下.原文链接: https:&#x2F;&#x2F;www.rubberducking.com&#x2F;2018&#x2F;05&#x2F;the-various-kinds-of-io-blocking-non.html作者: Didier A. 我发现对于软件程序员来说很难分清楚各种类型的IO.对于阻塞,非阻塞,多路复用和异步IO有很多的混淆点.所以我想尝试解释清楚各种IO类型意味着什么">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-30T12:38:00.000Z">
+<meta property="article:modified_time" content="2019-01-30T12:38:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-translate-the-various-kinds-of-io-blocking-non" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/01/30/translate-the-various-kinds-of-io-blocking-non/" class="article-date">
+  <time class="dt-published" datetime="2019-01-30T12:38:00.000Z" itemprop="datePublished">2019-01-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      [翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>同事推荐,感觉写的不错就试着翻译了下.<br>原文链接: <a target="_blank" rel="noopener" href="https://www.rubberducking.com/2018/05/the-various-kinds-of-io-blocking-non.html">https://www.rubberducking.com/2018/05/the-various-kinds-of-io-blocking-non.html</a><br>作者: <a target="_blank" rel="noopener" href="https://www.blogger.com/profile/15503004383957399868">Didier A.</a></p>
+<p>我发现对于软件程序员来说很难分清楚各种类型的IO.对于阻塞,非阻塞,多路复用和异步IO有很多的混淆点.<br>所以我想尝试解释清楚各种IO类型意味着什么</p>
+<span id="more"></span>
+<h1 id="在硬件层面"><a href="#在硬件层面" class="headerlink" title="在硬件层面."></a>在硬件层面.</h1><p>在现代操作系统中,IO(输入&#x2F;输出)是一种和外围设备交换数据的方式.包括读写磁盘或SSD,通过网络发送和接受数据,在显示器上显示,接入键盘和鼠标输入,等等.  </p>
+<p>现代操作系统和外围设备的交流取决于外围设备的特定类型以及他们的固件版本和硬件能力.<br>通常来说,你可以认为外围设备是很高级的,他们可以同时处理多个并发的读写数据请求.也就是说,串行交流的日子一去不返了.<br>在这些场景中,外围设备和CPU间的交流在硬件层面都是异步的.  </p>
+<p>这个异步机制被称为硬件中断.<br>想想一个简单的场景,CPU请求外围设备去读取一些数据,接着CPU会进入一个无限循环,每一次都会检查外围设备的数据是否可用,直到获得了数据为止.<br>这种方法被称为轮询(<code>polling</code>),因为CPU需要保持检查外围设备.<br>在现代硬件中,取而代之发生的是CPU请求外围硬件执行操作,然后就忘了这件事,继续处理其他的CPU指令.只要外围设备做完了,他会通过电路中断来通知CPU.<br>这发生在硬件中,CPU因此不需要停下来或者检查这个外围设备,可以继续执行其他的工作,直到周边设备说已经做完了.  </p>
+<h1 id="在软件层面"><a href="#在软件层面" class="headerlink" title="在软件层面"></a>在软件层面</h1><p>现在我们了解了硬件中发生的事,我们可以移动到软件这一侧了.<br>在这一层IO通过多种方式被暴露:阻塞,非阻塞,多路复用和异步.让我们一个个来仔细解释.  </p>
+<h2 id="阻塞"><a href="#阻塞" class="headerlink" title="阻塞"></a>阻塞</h2><p>还记得用户程序如何在一个进程内运行，代码是在线程的上下文中执行的吗？<br>你总是会遇到需要编写一个需要从文件中读取数据的程序的情况.<br>使用阻塞IO,你所做的是从你的线程中请求操作系统,将线程置于休眠(sleep),当数据可用于被消费时操作系统会唤醒线程.  </p>
+<p>也就是说,阻塞IO之所以被称为阻塞是因为使用他的线程会被阻塞直到IO完成.</p>
+<h2 id="非阻塞"><a href="#非阻塞" class="headerlink" title="非阻塞"></a>非阻塞</h2><p>阻塞IO的问题是当你的线程在休眠时,他除了等IO完成不能干其他事.<br>有时候,你的程序可能没有其他事可做了.<br>但如果还有其他事需要做的话,能在等待IO的时候并发做可是极好的.  </p>
+<p>其中一种实现方式被称为非阻塞IO.<br>他的思想是当你读取一个文件时,OS只是简单返回给你文件的内容或者一个等待状态告诉你IO还未完成,而不是将线程休眠.<br>他不会阻塞你的线程,但之后检查IO是否完成的工作还是交给了你.<br>这意味着当处于等待状态时,你可以去做一些工作,当你再次需要IO时,可以再读取一次,那时候IO可能已经完成了,文件的内容会返回,如果还是处于等待状态的话,你可以选择继续做其他事.  </p>
+<h2 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h2><p>非阻塞IO的问题是如果你在等待IO的过程中要做的其他事情就是另外的IO的话,事情会变得很奇怪.  </p>
+<p>在一个好的场景下,你请求OS去读取文件A的内容,然后去做一些重计算的工作,做完之后再去检查文件A是否完成读取,如果完成了,你再做一些关于这个文件内容的操作,不然就继续做其他的工作,循环往复.<br>但在一个坏的场景中,你没有重计算的工作要去做,而是需要去读取另一个文件B.<br>那除了等待他们还有什么事要做呢?<br>没有了,你的程序就进入了一个死循环,判断文件A是否被读取完毕,接着再去判断文件B,一遍又一遍.<br>要么你使用简单的状态轮询,这会导致过多消耗CPU,或者你手动加入一些随意的休眠时间,不过这也意味着你将延迟知道IO完成,这会降低程序的吞吐.</p>
+<p>为了避免这个问题,你可以使用多路复用IO来代替.<br>他所做的是你再次阻塞在IO上,但这次不仅仅是一个一个的IO操作,你可以将所有需要的IO操作塞入队列,阻塞在所有的操作上.  当其中有一个IO完成之后OS会唤醒你.<br>一些多路复用的实现提供了更多的控制,你可以设置在特定一些IO操作完成之后再被唤醒,例如A和C文件或B和D文件完成的时候.  </p>
+<p>所有你可以调用非阻塞读取文件A,然后非阻塞读取文件B,最后告诉操作系统将我的线程置于休眠,当A和B的IO都完成的时候或其中一个完成的时候再唤醒他.  </p>
+<h2 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h2><p>多路复用IO的问题是在IO完毕前你还是处于休眠状态.<br>又一次,这对一些程序来说可行,那些除了等待IO操作完成外没有其他操作要去执行的程序.<br>但有时候,你确实需要去做其他事情.<br>可能你正在计算PI的数字,同时也在汇总一些文件的值.<br>你想要进行的操作是将所有的读操作入队列,当等待他们读取完成前,你可以继续计算PI.当一个文件读取完成后,你可以汇总他的值,然后继续进行PI的计算直到另一个文件完成读取.  </p>
+<p>为了让这可行,你需要一种方式当IO完成时中断PI的计算,并且你需要IO来执行这个操作当他完成时.  </p>
+<p>这通过事件回调完成.执行读操作的调用会需要一个回调,并且调用立即返回.当IO完成时,操作系统会挂起你的线程,并执行你的回调.当回调完成时,他会恢复你的线程.</p>
+<h1 id="多线程-vs-单线程"><a href="#多线程-vs-单线程" class="headerlink" title="多线程 vs 单线程?"></a>多线程 vs 单线程?</h1><p>你可能已经注意到我所描述的所有线程都是关于单个线程的,也就是你的主线程.<br>真相是,IO的执行不依赖于线程,这我在最开始就已经解释过了,外围设备都是在他们自己的电路里异步执行IO.<br>所以阻塞,非阻塞,多路复用和异步IO都是可能在单线程模型中被执行的.<br>这也是为什么并发IO可以不借助于多线程支持来工作.</p>
+<p>现在,对于处理IO操作完成的结果,或者请求IO操作很明显是可以多线程的,如果你需要的话.这允许你在并发IO之上执行并发计算.所以没有什么东西阻止多线程和这些IO机制结合.  </p>
+<p>事实上,这里也有第五种受欢迎的基于多线程的IO.<br>他经常被混淆为非阻塞IO或异步IO,因为他对外暴露出的是类似他们的接口.<br>真相是,他是假装的非阻塞或异步IO.他的工作方式很简单,他使用阻塞IO,但是每个阻塞操作都是在他自己的线程中(注:多线程环境,非主线程中).<br>现在取决于他的实现机制,他要么接收一个回调,或者使用一种轮询模型,比如返回一个Future对象.</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>我希望这篇文章可以帮助你澄清对多种IO的理解.还有很重要的一点需要注意,他们不是被所有的操作系统和所有的外围设备支持的.相似的,不是所有的编程语言都暴露了操作系统支持的所有IO类型的API.</p>
+<p>这边请,所有类型的IO都解释了.  </p>
+<p>希望能对你有所帮助.  </p>
+<h1 id="更多阅读"><a href="#更多阅读" class="headerlink" title="更多阅读"></a>更多阅读</h1><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/50205346/172272">non-blocking IO vs async IO and implementation in Java</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://blog.omega-prime.co.uk/2015/09/03/asynchronous-and-non-blocking-io/">Asynchronous and non-blocking IO</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://www.linux-mag.com/id/331/">Multiplexed I&#x2F;O</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Reactor_pattern">Reactor pattern</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Proactor_pattern">Proactor pattern</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://blog.stephencleary.com/2013/11/there-is-no-thread.html">There is no thread</a></p>
+<p><a target="_blank" rel="noopener" href="http://davmac.org/davpage/linux/async-io.html">Asynchronous I&#x2F;O and event notification on linux</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/87892/what-is-the-status-of-posix-asynchronous-i-o-aio">What is the status of POSIX asynchronous I&#x2F;O (AIO)?</a>  </p>
+<p><a target="_blank" rel="noopener" href="http://lse.sourceforge.net/io/aio.html">Kernel Asynchronous I&#x2F;O (AIO) Support for Linux</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa365198(v=vs.85).aspx">I&#x2F;O Completion Ports</a>  </p>
+<h1 id="免责声明"><a href="#免责声明" class="headerlink" title="免责声明"></a>免责声明</h1><p>我不是一个系统层面的程序员,我也不是一个操作系统提供的所有种类IO方面的专家.这篇文章是我尽可能总结我所知的内容,更偏向于中间层面的知识.所以如果你发现有任何问题的话请指正我.  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2019/01/30/translate-the-various-kinds-of-io-blocking-non/" data-id="cm49fdrl9002xr8vaf8x29652" data-title="[翻译]各个类型的IO -  阻塞, 非阻塞,多路复用和异步" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/02/13/Microservices-Patterns-ch2-notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          微服务模式笔记:服务分解策略
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/05/jvm-crash-troubleshoot/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">[翻译]Java排错指南 - 5 确定崩溃何地发生</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

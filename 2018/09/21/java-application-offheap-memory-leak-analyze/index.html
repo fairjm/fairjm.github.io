@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>记一次尴尬的Java应用内存泄露排查 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="这星期被线上JVM内存占用不断增大的问题所困扰,自己提出了一些假设,然后去实施验证都一一失败了,有一些经验和教训在这里分享下.之所以是尴尬,是最后因为修复了另一个看似不相关的问题导致内存不再上升,但这之间的关系还未明了,还需要继续追踪.这里讲述一下这次排查的过程.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次尴尬的Java应用内存泄露排查">
+<meta property="og:url" content="https://bingowith.me/2018/09/21/java-application-offheap-memory-leak-analyze/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="这星期被线上JVM内存占用不断增大的问题所困扰,自己提出了一些假设,然后去实施验证都一一失败了,有一些经验和教训在这里分享下.之所以是尴尬,是最后因为修复了另一个看似不相关的问题导致内存不再上升,但这之间的关系还未明了,还需要继续追踪.这里讲述一下这次排查的过程.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921225245348-1616182920.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921230143974-1129789118.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921230450727-543896772.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921230615858-2043303086.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921230953366-1591448704.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921231556902-865599480.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180925095006464-1897340578.png">
+<meta property="og:image" content="https://bingowith.me/images/1244488-20180921233424486-892720676.png">
+<meta property="article:published_time" content="2018-09-21T15:36:00.000Z">
+<meta property="article:modified_time" content="2018-09-21T15:36:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/1244488-20180921225245348-1616182920.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-java-application-offheap-memory-leak-analyze" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/09/21/java-application-offheap-memory-leak-analyze/" class="article-date">
+  <time class="dt-published" datetime="2018-09-21T15:36:00.000Z" itemprop="datePublished">2018-09-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      记一次尴尬的Java应用内存泄露排查
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这星期被线上JVM内存占用不断增大的问题所困扰,自己提出了一些假设,然后去实施验证都一一失败了,有一些经验和教训在这里分享下.<br>之所以是尴尬,是最后因为修复了另一个看似不相关的问题导致内存不再上升,但这之间的关系还未明了,还需要继续追踪.<br>这里讲述一下这次排查的过程.  </p>
+<hr>
+<span id="more"></span>
+<h1 id="直接内存的错误判断"><a href="#直接内存的错误判断" class="headerlink" title="直接内存的错误判断"></a>直接内存的错误判断</h1><p>服务器的JVM配置为<code>Xmx3g</code>,使用G1,没有设置<code>Xms</code>考虑自然收缩和fgc之后的空间回拢.<br>没有发生过fgc,且堆内存的增长正常,排除掉堆内存的问题.<br>使用NMT查看各个区域的内存正常,committed内存不足4G,但实际情况内存占用不断增大,甚至出现了OOM killer杀掉java进程.   </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">Total: reserved=5037MB, committed=3926MB</span><br><span class="line">-                 Java Heap (reserved=3072MB, committed=3072MB)</span><br><span class="line">                            (mmap: reserved=3072MB, committed=3072MB)</span><br><span class="line"></span><br><span class="line">-                     Class (reserved=1196MB, committed=192MB)</span><br><span class="line">                            (classes #29793)</span><br><span class="line">                            (malloc=6MB #86203)</span><br><span class="line">                            (mmap: reserved=1190MB, committed=186MB)</span><br><span class="line"></span><br><span class="line">-                    Thread (reserved=186MB, committed=186MB)</span><br><span class="line">                            (thread #184)</span><br><span class="line">                            (stack: reserved=184MB, committed=184MB)</span><br><span class="line">                            (malloc=1MB #922)</span><br><span class="line">                            (arena=1MB #366)</span><br><span class="line"></span><br><span class="line">-                      Code (reserved=273MB, committed=171MB)</span><br><span class="line">                            (malloc=29MB #39947)</span><br><span class="line">                            (mmap: reserved=244MB, committed=142MB)</span><br><span class="line"></span><br><span class="line">-                        GC (reserved=176MB, committed=176MB)</span><br><span class="line">                            (malloc=30MB #114115)</span><br><span class="line">                            (mmap: reserved=146MB, committed=146MB)</span><br><span class="line"></span><br><span class="line">-                  Compiler (reserved=1MB, committed=1MB)</span><br><span class="line"></span><br><span class="line">-                  Internal (reserved=88MB, committed=88MB)</span><br><span class="line">                            (malloc=88MB #83467)</span><br><span class="line"></span><br><span class="line">-                    Symbol (reserved=31MB, committed=31MB)</span><br><span class="line">                            (malloc=27MB #312661)</span><br><span class="line">                            (arena=4MB #1)</span><br><span class="line"></span><br><span class="line">-    Native Memory Tracking (reserved=10MB, committed=10MB)</span><br><span class="line">                            (tracking overhead=10MB)</span><br><span class="line"></span><br><span class="line">-                   Unknown (reserved=6MB, committed=0MB)</span><br><span class="line">                            (mmap: reserved=6MB, committed=0MB)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/1244488-20180921225245348-1616182920.png"><br>内存增长情况(中间下降是进行fgc或重启服务)  </p>
+<p>最开始考虑是直接内存的问题,观察GC行为发现没有发生过一次fgc,想当然觉得应该是直接内存无法回收,并且在手动执行gc之后内存占用的确是下降的.<br>于是调整了一波JVM参数,将堆大小设置为2500M,并配置MaxDirectMemory用来触发fgc.<br>但最后发现内存依旧增长,且还是没有fgc.<br>再观察了下heap(jmap -heap)的情况,发现手工触发fgc后,heap释放的大小和内存下降几乎一致.<br>在使用JMX查看了direct pool(java.nio.BufferPool)后惊奇地发现..直接内存并没有多少使用(我们底层用了netty,下意识认为出了问题):</p>
+<p><img src="/images/1244488-20180921230143974-1129789118.png"><br>图中所示最大只用了4M左右.  </p>
+<p>最后设置了<code>Xms</code>之后发现fgc已经没有作用,内存的使用量不会再下降,排除掉了这个因素.<br>这个错误的判断最主要的原因还是先入为主,没有收集支撑的直接证据.  </p>
+<h1 id="stack中的间隙"><a href="#stack中的间隙" class="headerlink" title="stack中的间隙"></a>stack中的间隙</h1><p>接下去只能使用<code>pmap</code>(pamp -X pid)看下具体的内存信息.<br><img src="/images/1244488-20180921230450727-543896772.png">  </p>
+<p>发现了一些有趣的东西,大量的64M块.<br>直觉告诉我,快找出问题了.<br>搜索了下发现类似的问题:  </p>
+<p><img src="/images/1244488-20180921230615858-2043303086.png"></p>
+<p>解决方法也很直接换一个分配内存的库.<br>可选的也只有tcmalloc和jemalloc.  </p>
+<p>选择了前者,配置之后效果出众.<br>已经没有上图中那么多的64M块了.<br>并且启动后的内存使用是掉了下来,但是好景不长.  </p>
+<p><img src="/images/1244488-20180921230953366-1591448704.png"><br>(蓝线是使用了tcmalloc,红线是对比方)<br>刚开始的确蓝线内存使用好一点(红线在20:00的时候重启 内存降低了).<br>但随后还是增长了,比较迷的一点是在8点后内存陡降(但JVM没有重启,PID也没有变化),恢复到了最初的水平.  </p>
+<p>看来问题不在这里.  </p>
+<h1 id="看似没有关联的问题"><a href="#看似没有关联的问题" class="headerlink" title="看似没有关联的问题"></a>看似没有关联的问题</h1><p>周常部署的时候出现一个问题导致CPU飙升,跟了下发现一个处理图片的接口被频繁调用并且在处理较大尺寸的图片,看似和这个堆外内存引起的问题没有关联就没怎么在意.  </p>
+<p>第二天同事修复了这个问题,迁移走了这个接口到另一个服务.<br>tcmalloc的heap profiling无法使用,一开启<code>libunwind</code>就<code>segment fault</code>退出,换成jemalloc后开启.<br>还在想是不是常见的那个zip溢出的问题,但是搜索了代码库没有发现忘记关闭的情况,等着看下增长和dump验证下.<br>观察了一会儿,突然发现内存不再增长了.   </p>
+<p><img src="/images/1244488-20180921231556902-865599480.png"><br>(蓝线是之前一直留着的机器,中间降低是进行了重启)<br>非常平稳地度过了一天.  </p>
+<p>那坨profiling也失去了意义… …  </p>
+<p>这就感觉非常尴尬了…</p>
+<h1 id="继续追踪"><a href="#继续追踪" class="headerlink" title="继续追踪"></a>继续追踪</h1><p>更尴尬的是另一个服务炸了… …<br>继续跟进,先把jemalloc配置过去,等下一次增长看下dump.  </p>
+<p>update 2018&#x2F;09&#x2F;25<br><img src="/images/1244488-20180925095006464-1897340578.png"><br>继续观察了一段时间… 发现在内存在突然增大的时候这个部分增加比较多<br>java2d相关,代码里确实有图片处理.<br>但放着不管(之前都重启了或者被OOM killer干掉了..)接下去会被回收掉…    </p>
+<p>update 2018&#x2F;09&#x2F;27<br>之后做了一个实验,读取图片(jpeg),的确是会申请很多native内存.<br>在爆栈提了个问题:<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/52519253/why-the-code-using-image-io-mallocs-so-much-memory">https://stackoverflow.com/questions/52519253/why-the-code-using-image-io-mallocs-so-much-memory</a><br>多线程同时读取内存会升高明显.  </p>
+<p>大体确定是业务原因,读取处理图片是同步进行,会导致堆外内存占用升高.<br>fix应该是用任务队列的方式去修改业务实现.<br>再看看之后会不会有问题.  </p>
+<hr>
+<p>随着时间的推移遇见了各种各样的问题.<br>这次排查除了对之前积累的知识的运用,更多像是一次对搜索引擎熟练度的提升 :( .  </p>
+<p>但过程还是很不错的,也看到了一些自己以前没有接触过的知识.<br>深深感受到自己知识的匮乏,就像深渊(??)一样,逐渐深入才会发现不一样的风景.<br>生活中还是要多(xie)些bug才会更精彩的啊… …  </p>
+<p><img src="/images/1244488-20180921233424486-892720676.png"></p>
+<hr>
+<p>参考资料:</p>
+<p><a target="_blank" rel="noopener" href="http://lovestblog.cn/blog/2015/05/12/direct-buffer/">http://lovestblog.cn/blog/2015/05/12/direct-buffer/</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/227924">https://yq.aliyun.com/articles/227924</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/jeffgriffith/native-jvm-leaks">https://github.com/jeffgriffith/native-jvm-leaks</a></p>
+<p>glibc issue原问题:<br><a target="_blank" rel="noopener" href="https://serverfault.com/questions/341579/what-consumes-memory-in-java-process?newreg=394e0ea40e55493d8149010909011719">https://serverfault.com/questions/341579/what-consumes-memory-in-java-process?newreg=394e0ea40e55493d8149010909011719</a>   </p>
+<p>关于NMT的internal 包含了直接内存 不包含DirectMemory:<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd">https://stackoverflow.com/questions/47309859/what-is-contained-in-code-internal-sections-of-jcmd</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/09/21/java-application-offheap-memory-leak-analyze/" data-id="cm49fdrki0017r8va2191g12e" data-title="记一次尴尬的Java应用内存泄露排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/14/optimizing-java-ch7-note/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Optimizing Java笔记:高级垃圾回收
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/15/jvm-memory-note/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">JVM内存知识备忘</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

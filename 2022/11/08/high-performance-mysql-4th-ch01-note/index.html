@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>高性能MySQL(第4版) 第一章 MySQL架构 读书笔记 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="这本书去年11月出的,今年中文版也出了,并且直接上了微信读书,之后有空就读一读,分享下读书笔记~     原文内容比较充实,建议有时间可以读一下原文.第一章主要是个概览. MySQL的逻辑架构默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.线程池 优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高性能MySQL(第4版) 第一章 MySQL架构 读书笔记">
+<meta property="og:url" content="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="这本书去年11月出的,今年中文版也出了,并且直接上了微信读书,之后有空就读一读,分享下读书笔记~     原文内容比较充实,建议有时间可以读一下原文.第一章主要是个概览. MySQL的逻辑架构默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.线程池 优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/hpm4_ch01_01.png">
+<meta property="og:image" content="https://bingowith.me/images/hpm4_ch01_02.png">
+<meta property="article:published_time" content="2022-11-08T06:20:01.000Z">
+<meta property="article:modified_time" content="2022-11-08T06:20:01.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/hpm4_ch01_01.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-high-performance-mysql-4th-ch01-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/11/08/high-performance-mysql-4th-ch01-note/" class="article-date">
+  <time class="dt-published" datetime="2022-11-08T06:20:01.000Z" itemprop="datePublished">2022-11-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      高性能MySQL(第4版) 第一章 MySQL架构 读书笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这本书去年11月出的,今年中文版也出了,并且直接上了<a target="_blank" rel="noopener" href="https://weread.qq.com/web/bookDetail/00a32b70813ab746fg018ec7">微信读书</a>,之后有空就读一读,分享下读书笔记~    </p>
+<p>原文内容比较充实,建议有时间可以读一下原文.<br>第一章主要是个概览.</p>
+<h1 id="MySQL的逻辑架构"><a href="#MySQL的逻辑架构" class="headerlink" title="MySQL的逻辑架构"></a>MySQL的逻辑架构</h1><p><img src="/images/hpm4_ch01_01.png"><br>默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.<br>线程池</p>
+<p>优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的统计信息.</p>
+<p>query cache 5.7.20弃用 8.0移除<br>考虑应用自己在redis中缓存</p>
+<span id="more"></span>
+
+<h1 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h1><p>只要有多个查询需要同时修改数据,就会产生并发控制问题</p>
+<h2 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h2><p>处理并发读&#x2F;写访问的系统通常实现一个由两种锁类型组成的锁系统<br>这两种锁通常被称为共享锁(shared lock)和排他锁(exclusive lock),也叫读锁(read lock)和写锁(write lock)</p>
+<h2 id="锁的粒度"><a href="#锁的粒度" class="headerlink" title="锁的粒度"></a>锁的粒度</h2><p>通过降低锁的粒度提高共享资源并发性<br>只锁定包含需要修改的部分数据</p>
+<h3 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h3><p>table lock<br>最基本 开销最小的锁策略(锁本身的开销 不是指查询&#x2F;修改性能)  </p>
+<h3 id="行级锁"><a href="#行级锁" class="headerlink" title="行级锁"></a>行级锁</h3><p>row lock<br>最大程度支持并发处理 最大的锁开销<br>行级锁是在存储引擎中实现  </p>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><p>事务就是一组SQL语句,作为一个工作单元以原子方式进行处理<br>要么全部执行成功 要么全部执行失败</p>
+<p>ACID</p>
+<h2 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h2><p>这里谈的是ANSI SQL中的定义</p>
+<ul>
+<li><p>READ UNCOMMITTED: 未提交读<br>在事务中可以查看其他事务中还没有提交的修改<br>脏读(dirty read): 读取未提交的数据</p>
+</li>
+<li><p>READ COMMITTED: 已提交读<br>大多数数据库系统的默认级别<br>但MySQL不是<br>一个事务可以看到其他事务在它开始之后提交的修改,但在该事务提交之前,其所做的任何修改对其他事务都是不可见的.<br>允许不可重复读(nonrepeatable read) 同一个事务中两次执行相同语句 可能看到不同结果  </p>
+</li>
+<li><p>REPEATABLE READ: 可重复读<br>解决了不可重复读<br>无法解决幻读(phantom read) 读取范围数据时 如果另一个事务在该范围插入了新的 再次读取会产生换行(phantom row)<br>InnoDB和XtraDB通过MVCC解决<br>这也是MySQL默认的隔离级别  </p>
+</li>
+<li><p>SERIALIZABLE: 可串行化<br>该级别通过强制事务按序执行,使不同事务之间不可能产生冲突,从而解决了前面说的幻读问题.<br>会在读取的每一行数据上都加锁,所以可能导致大量的超时和锁争用的问题.<br>使用场景较少 除非需要严格确保数据安全 并且接收并发性能下降</p>
+</li>
+</ul>
+<p><img src="/images/hpm4_ch01_02.png"></p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>两个或多个事务相互持有和请求相同资源上的锁,产生了循环依赖.<br>当多个事务试图以不同的顺序锁定资源时会导致死锁.</p>
+<p>数据库系统实现了各种是说检测和锁超时机制<br>InnoDB目前处理死锁的方式是将持有最少行级排他锁的事务回滚<br>锁的行为和顺序和存储引擎相关</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">console1:</span><br><span class="line"><span class="keyword">start</span> transaction ;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> user_name<span class="operator">=</span><span class="string">&#x27;cc11&#x27;</span> <span class="keyword">where</span> user_id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> user_name<span class="operator">=</span><span class="string">&#x27;cc22&#x27;</span> <span class="keyword">where</span> user_id<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line"><span class="keyword">commit</span> ;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">console2:</span><br><span class="line"><span class="keyword">start</span> transaction ;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> user_name<span class="operator">=</span><span class="string">&#x27;cc222&#x27;</span> <span class="keyword">where</span> user_id<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> user_name<span class="operator">=</span><span class="string">&#x27;cc111&#x27;</span> <span class="keyword">where</span> user_id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">commit</span> ;</span><br></pre></td></tr></table></figure>
+
+<p>单步执行 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[40001][1213] Deadlock found when trying to get lock; try restarting transaction</span><br></pre></td></tr></table></figure>
+<h2 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h2><p>事务日志有助于提高事务的效率.存储引擎只需要更改内存中的数据副本,而不用每次修改磁盘中的表,这会非常快.  </p>
+<p>事务日志只追加 顺序I&#x2F;O<br>WAL write-ahead logging 预写日志 修改数据最终要两次磁盘写入  </p>
+<h2 id="MySQL中的事务"><a href="#MySQL中的事务" class="headerlink" title="MySQL中的事务"></a>MySQL中的事务</h2><p>描述的是InnoDB引擎中的事务</p>
+<h3 id="理解AUTOCOMMIT"><a href="#理解AUTOCOMMIT" class="headerlink" title="理解AUTOCOMMIT"></a>理解AUTOCOMMIT</h3><p>默认开启 单个语句也是包裹在事务中 自动提交<br>可以通过set autocommit&#x3D;0&#x2F;1进行开关<br>用begin或者start transaction来开启事务<br>用commit提交 rollback回滚</p>
+<p>有一些命令,当在活动的事务中发出时,会导致MySQL在事务的所有语句执行完毕前提交当前事务<br>比如一些DDL命令 alter table等  </p>
+<p>可以通过SET TRANSACTION ISOLATION LEVEL改变隔离级别 下一个事务开始时生效  </p>
+<h3 id="在事务中混合使用存储引擎"><a href="#在事务中混合使用存储引擎" class="headerlink" title="在事务中混合使用存储引擎"></a>在事务中混合使用存储引擎</h3><p>MySQL的事务由下层存储引擎实现<br>在同一个事务中,混合使用多种存储引擎是不可靠的.</p>
+<h3 id="隐式锁定和显式锁定"><a href="#隐式锁定和显式锁定" class="headerlink" title="隐式锁定和显式锁定"></a>隐式锁定和显式锁定</h3><p>InnoDB使用两阶段锁定协议(two-phase locking protocol).<br>事务执行期间,随时都可以获取锁,但锁只有在提交或回滚后才会释放,并且所有的锁会同时释放.<br>前面描述的锁定机制都是隐式的.InnoDB会根据隔离级别自动处理锁.  </p>
+<p>显式的(不属于SQL规范)  </p>
+<pre><code class="sql">SELECT … FOR SHARE
+SELECT … FOR UPDATE
+```			
+
+MySQL还支持LOCK TABLES和UNLOCK TABLES  
+这两个命令在服务器级别实现  
+因为InnoDB支持行级锁 没必要使用
+            
+建议: 除了在禁用AUTOCOMMIT的事务中可以使用之外,其他任何时候都不要显式地执行LOCK TABLES,不管使用的是什么存储引擎.  
+            
+# 多版本并发控制
+MySQL的大多数事务型存储引擎使用的都不是简单的行级锁机制.它们会将行级锁和可以提高并发性能的多版本并发控制(MVCC)技术结合使用.
+    
+不同数据库的实现细节不一样
+    
+可以认为MVCC是行级锁的一种变种 它在很多情况下避免加锁 因此开销更低
+    
+通过数据快照实现
+    
+- InnoDB为每个事务启动时分配一个事务ID
+- 该事务修改记录时 向Undo log写入一条如何恢复回去的undo记录 事务回滚指针指向该记录
+- 当不同会话读取聚簇主键索引记录时 InnoDB会把记录的事务ID和该会话的读取视图比较 如果更改他的事务未提交 则跟踪undo log直到一个符合可见条件的事务ID
+    
+大多数读取通过这种方式不需要获取锁(通过读取快照) 缺点是存储引擎会对每一行存储更多数据 做更多工作
+    
+MVCC仅适用于REPEATABLE READ和READ COMMITTED隔离级别.  
+(可以想象对于可重复读 读取的事务id固定为事务进行中第一次读的可见事务id 对于读已提交 读最新的可见事务id
+另外两个因为不需要事务版本(一个是脏读 一个是串行化的) 和MVCC不是很适配(当然要看不同引擎的实现)  
+    
+# 复制
+Replication  
+一主多从
+
+# 数据文件结构
+在8.0版本中,MySQL将表的元数据重新设计为一种数据字典,包含在表的.ibd文件中  
+使得表结构上的信息支持事务和原子级数据定义更改
+    
+除了以来information_schema检索表定义和元数据  
+引入了字典对象缓存 LRU的内存缓存  
+使得服务器访问表的元数据减少了I/O  
+每个表的.ibd和.frm文件被替换为已经被序列化的字典信息(.sdi).
+
+# InnoDB引擎
+为处理大量短期事务而设计 这些事务预期通常是正常提交 很少会被回滚
+    
+默认情况下,InnoDB将数据存储在一系列的数据文件中,这些文件统被称为表空间(tablespace)
+    
+InnoDB使用MVCC来实现高并发性,并实现了所有4个SQL标准隔离级别.
+默认为REPEATABLE READ隔离级别,并且通过间隙锁(next-key locking)策略来防止在这个隔离级别上的幻读：  
+InnoDB不只锁定在查询中涉及的行,还会对索引结构中的间隙进行锁定,以防止幻行被插入
+    
+基于聚簇索引构建
+但是,因为二级索引（secondary index,非主键索引）需要包含主键列,如果主键较大,则其他索引也会很大.如果表中的索引较多,主键应当尽量小.
+    
+</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/" data-id="cm49fdrkf000zr8vabkup93xu" data-title="高性能MySQL(第4版) 第一章 MySQL架构 读书笔记" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/02/22/translation-there-is-no-thread/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          [翻译]没有线程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/11/05/shardingsphere-jdbc-learn-note/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">shardingsphere-jdbc 水平分表学习记录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

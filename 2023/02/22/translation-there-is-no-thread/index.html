@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>[翻译]没有线程 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原文来自:https:&#x2F;&#x2F;blog.stephencleary.com&#x2F;2013&#x2F;11&#x2F;there-is-no-thread.html作者:Stephen Cleary翻译 by abaabaqua 这是最纯粹形式的异步的一个基本事实：没有线程。 反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]没有线程">
+<meta property="og:url" content="https://bingowith.me/2023/02/22/translation-there-is-no-thread/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原文来自:https:&#x2F;&#x2F;blog.stephencleary.com&#x2F;2013&#x2F;11&#x2F;there-is-no-thread.html作者:Stephen Cleary翻译 by abaabaqua 这是最纯粹形式的异步的一个基本事实：没有线程。 反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/images/tint01.png">
+<meta property="og:image" content="https://bingowith.me/images/tint02.png">
+<meta property="article:published_time" content="2023-02-22T06:48:00.000Z">
+<meta property="article:modified_time" content="2023-02-22T06:48:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/images/tint01.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-translation-there-is-no-thread" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/02/22/translation-there-is-no-thread/" class="article-date">
+  <time class="dt-published" datetime="2023-02-22T06:48:00.000Z" itemprop="datePublished">2023-02-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      [翻译]没有线程
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原文来自:<a target="_blank" rel="noopener" href="https://blog.stephencleary.com/2013/11/there-is-no-thread.html">https://blog.stephencleary.com/2013/11/there-is-no-thread.html</a><br>作者:<a target="_blank" rel="noopener" href="https://blog.stephencleary.com/">Stephen Cleary</a><br>翻译 by <a href="https://bingowith.me/">abaabaqua</a></p>
+<p>这是最纯粹形式的异步的一个基本事实：没有线程。</p>
+<p>反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西……”</p>
+<p>不要理会那些哭声。如果异步操作是纯粹的，那么就没有线程。</p>
+<span id="more"></span>
+<p>这是最纯粹形式的异步的一个基本事实：没有线程。</p>
+<p>反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西……”</p>
+<p>不要理会那些哭声。如果异步操作是纯粹的，那么就没有线程。</p>
+<p>持怀疑态度的人并不相信。让我们迁就他们一下。</p>
+<p>我们将跟踪异步操作一直到硬件，特别注意 .NET 部分和设备驱动程序部分。我们必须通过省略一些中间层细节来简化这种描述，但我们不会偏离事实。</p>
+<p>考虑一个通用的“写入”操作（写入到文件、网络流、USB 烤面包机等）。我们的代码很简单：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">Button_Click</span>(<span class="params"><span class="built_in">object</span> sender, RoutedEventArgs e</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">byte</span>[] data = ...</span><br><span class="line">  <span class="keyword">await</span> myDevice.WriteAsync(data, <span class="number">0</span>, data.Length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们已经知道UI线程在<code>await</code>期间不会被阻塞。问题是是否会有另一个线程必须在阻塞的祭坛上牺牲自己，以便UI线程可以存活？</p>
+<p>抓住我的手。我们将深入研究。</p>
+<p>第一站：库（例如，进入BCL的代码）。让我们假设<code>WriteAsync</code>是使用<a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/system.threading.overlapped.aspx?WT.mc_id=DT-MVP-5000058">.NET中的标准P&#x2F;Invoke 异步I&#x2F;O系统</a>，该系统基于overlapped I&#x2F;O。所以这个操作会在设备底层的<code>HANDLE</code>上启动一个Win32的overlapped I&#x2F;O。</p>
+<p>然后操作系统转向设备驱动程序并要求它开始进行写操作。这个操作会首先构造一个表示写请求的对象；这被称为I&#x2F;O请求数据包(I&#x2F;O Request Packet，IRP)。</p>
+<p>设备驱动程序接收到IRP并向设备发出写数据的命令。如果设备支持直接内存访问 (DMA)，这就像将缓冲区地址写入设备寄存器一样简单。这就是设备驱动程序所能做的；它将IRP标记为”pending”并返回到操作系统那层。</p>
+<p><img src="/images/tint01.png"></p>
+<p>事实的核心在这里找到：设备驱动程序在处理IRP时不允许阻塞。这意味着如果IRP不能被立即完成，那么它<strong>必须</strong>被异步处理。即使对于同步API也是如此！在设备驱动程序级别，所有（重要的）请求都是异步的。</p>
+<blockquote>
+<p>引用 Tomes of Knowledge的话，”不管是什么类型的I&#x2F;O请求，向驱动程序发出的代表应用程序的内部I&#x2F;O操作都是异步执行的”。</p>
+</blockquote>
+<p>随着IRP”pending”，操作系统返回到库，库将未完成的任务返回给按钮单击事件handler，该handler挂起异步方法，UI线程继续执行。</p>
+<p>我们已经按照请求深入到系统的深渊，一直到物理设备。</p>
+<p>写操作现在”进行中”。那有多少线程正在处理它？  </p>
+<p>答案是没有。</p>
+<p>没有设备驱动程序线程、OS线程、BCL线程或线程池线程处理该写操作。没有线程。</p>
+<p>现在，让我们随着内核恶魔之地的回应回到凡人世界。</p>
+<p>在写入请求开始后的某个时间，设备完成了写入并通过中断通知CPU。</p>
+<p>设备驱动程序的中断服务例程(Interrupt Service Routine，ISR)响应中断。中断是CPU级别的事件，会暂时从正在运行的线程中夺走对CPU的控制。您可以将ISR视为”借用”当前运行的线程，但我更倾向于将ISR理解为在如此低的级别上执行，以至于”线程”的概念不存在——因此可以说它们是位于所有线程的”下方”的线程。</p>
+<p>ISR所做的只是告诉设备”谢谢你的中断”并将延迟过程调用(Deferred Procedure Call,DPC)放入队列。</p>
+<p>当CPU不被中断打扰时，它将一一处理DPC。DPC的也在很低的层次上被执行，以至于说”线程”并不完全正确；与ISR一样，DPC直接在线程系统”之下”的CPU上执行。</p>
+<p>DPC获取代表写入请求的IRP并将其标记为”完成”。然而，”完成”状态仅存在于操作系统级别；进程有着自己的内存空间，必须被通知操作已经完成。因此，操作系统将一个特殊内核模式异步过程调用 (Asynchronous Procedure Call, APC) 放入到拥有<code>HANDLE</code>的线程的队列。</p>
+<p>由于BCL库使用标准的P&#x2F;Invoke overlapped I&#x2F;O系统，它已经通过I&#x2F;O完成端口(I&#x2F;O Completion Port, IOCP)注册了handler，IOCP是线程池的一部分。因此，一个I&#x2F;O线程池线程被短暂借用来执行APC，APC会通知任务已完成。</p>
+<p>该任务已经捕获了UI上下文，因此它不会直接在线程池的线程上继续<code>async</code>方法。相反，它将该方法的continuation放入UI上下文的队列中，并且UI线程将在之后恢复执行该方法。</p>
+<p>因此，我们看到在写请求运行期间没有线程参与。只有当请求完成时，各种线程被”借用”或暂时将工作放入队列。这项工作通常在毫秒左右（例如，线程池上运行的APC）到微秒左右（例如，ISR）。但是没有线程被阻塞，只是在等待该请求完成。</p>
+<p><img src="/images/tint02.png"></p>
+<p>现在，我们遵循的是”标准化”的路径并进行了一些简化。有无数的变种，但核心事实是一样的。 </p>
+<p>“在某处必须有一个线程在处理异步操作”的想法是不正确的。</p>
+<p>解放你的思想。不要试图找到这个”异步线程”——这是不可能的。相反，只需尝试了解一下真相：</p>
+<p><strong>没有线程</strong></p>
+<p>原文来自:<a target="_blank" rel="noopener" href="https://blog.stephencleary.com/2013/11/there-is-no-thread.html">https://blog.stephencleary.com/2013/11/there-is-no-thread.html</a><br>作者:<a target="_blank" rel="noopener" href="https://blog.stephencleary.com/">Stephen Cleary</a><br>翻译 by <a href="https://bingowith.me/">abaabaqua</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2023/02/22/translation-there-is-no-thread/" data-id="cm49fdrld0034r8vacyddbinu" data-title="[翻译]没有线程" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/04/08/leptos-tailwindcss/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          leptos手工集成tailwindcss
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/11/08/high-performance-mysql-4th-ch01-note/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">高性能MySQL(第4版) 第一章 MySQL架构 读书笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>jetty8 text/plain默认字符编码的坑 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="今天在测试一个content-type为text&#x2F;plain的API时发现后端requestBody乱码了，而线上正常。自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jetty8 text&#x2F;plain默认字符编码的坑">
+<meta property="og:url" content="https://bingowith.me/2018/03/28/jetty-8-default-character-encoding/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="今天在测试一个content-type为text&#x2F;plain的API时发现后端requestBody乱码了，而线上正常。自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-28T13:48:00.000Z">
+<meta property="article:modified_time" content="2018-03-28T13:48:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-jetty-8-default-character-encoding" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/03/28/jetty-8-default-character-encoding/" class="article-date">
+  <time class="dt-published" datetime="2018-03-28T13:48:00.000Z" itemprop="datePublished">2018-03-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      jetty8 text/plain默认字符编码的坑
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>今天在测试一个content-type为<code>text/plain</code>的API时发现后端requestBody乱码了，而线上正常。<br>自己本地使用jetty8版本，插件自带版本，而线上使用jetty9。<br>最开始没有特别注意版本的差异，毕竟这个插件也用了很久了一直没问题，就先从请求分析起。    </p>
+<span id="more"></span>
+<p>检查了下发送的请求中没有设置charset，但项目里是设置了spring的编码过滤器，CharacterEncodingFilter中的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">encoding</span> <span class="operator">=</span> getEncoding();</span><br><span class="line"><span class="keyword">if</span> (encoding != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isForceRequestEncoding() || request.getCharacterEncoding() == <span class="literal">null</span>) &#123;</span><br><span class="line">        request.setCharacterEncoding(encoding);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isForceResponseEncoding()) &#123;</span><br><span class="line">        response.setCharacterEncoding(encoding);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>encoding配置里设置为<code>UTF-8</code>，强制设置没有开启，所以在request没有设置字符编码时会进行设置。<br>但奇怪的是乱码的请求里是先被设置成了<code>ISO-8859-1</code>，在想会不会是gateway转发影响，进行抓包分析但还是没有看见charset。<br>远程debug了正常的测试环境发现字符编码没有被预先设置。<br>这就非常尴尬了，虽然测试环境没有问题，但本地这个问题的确是存在的，万一上了预发环境也有问题就麻烦了，看了一会儿diff没发现有配置上的变更。<br>在同事的提醒下，也只有jetty版本的原因了。   </p>
+<p>拉取了下jetty8的源码（jetty-8.8.0-SNAPSHOT），查看了一下，发现的确有个坑。</p>
+<p><code>AbstractHttpConnection</code>中的<code>parsedHeader</code>负责解析header，其中对应charset的解析代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> HttpHeaders.CONTENT_TYPE_ORDINAL:</span><br><span class="line">    value = MimeTypes.CACHE.lookup(value);</span><br><span class="line">    _charset=MimeTypes.getCharsetFromContentType(value);</span><br><span class="line">    <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
+
+<p>解析出来的_charset会在<code>headerComplete</code>中设置进request内:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(_charset!=<span class="literal">null</span>)</span><br><span class="line">    _request.setCharacterEncodingUnchecked(_charset);</span><br></pre></td></tr></table></figure>
+
+<p>主要的判断代码在<code>MimeTypes</code>中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getCharsetFromContentType</span><span class="params">(Buffer value)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (value <span class="keyword">instanceof</span> CachedBuffer)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">switch</span>(((CachedBuffer)value).getOrdinal())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> TEXT_HTML_8859_1_ORDINAL:</span><br><span class="line">            <span class="keyword">case</span> TEXT_PLAIN_8859_1_ORDINAL:</span><br><span class="line">            <span class="keyword">case</span> TEXT_XML_8859_1_ORDINAL:</span><br><span class="line">                <span class="keyword">return</span> StringUtil.__ISO_8859_1;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> TEXT_HTML_UTF_8_ORDINAL:</span><br><span class="line">            <span class="keyword">case</span> TEXT_PLAIN_UTF_8_ORDINAL:</span><br><span class="line">            <span class="keyword">case</span> TEXT_XML_UTF_8_ORDINAL:</span><br><span class="line">            <span class="keyword">case</span> TEXT_JSON_UTF_8_ORDINAL:</span><br><span class="line">                <span class="keyword">return</span> StringUtil.__UTF8;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//下面是用来解析charset的</span></span><br><span class="line">    <span class="type">int</span> i=value.getIndex();</span><br><span class="line">    <span class="keyword">final</span> <span class="type">int</span> end=value.putIndex();</span><br><span class="line">    <span class="type">int</span> state=<span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> start=<span class="number">0</span>;</span><br><span class="line">    <span class="type">boolean</span> quote=<span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (;i&lt;end;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">byte</span> <span class="variable">b</span> <span class="operator">=</span> value.peek(i);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (quote &amp;&amp; state!=<span class="number">10</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="string">&#x27;&quot;&#x27;</span>==b)</span><br><span class="line">                quote=<span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span>(state)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">if</span> (<span class="string">&#x27;&quot;&#x27;</span>==b)</span><br><span class="line">                &#123;</span><br><span class="line">                    quote=<span class="literal">true</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (<span class="string">&#x27;;&#x27;</span>==b)</span><br><span class="line">                    state=<span class="number">1</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">if</span> (<span class="string">&#x27;c&#x27;</span>==b) state=<span class="number">2</span>; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&#x27; &#x27;</span>!=b) state=<span class="number">0</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">if</span> (<span class="string">&#x27;h&#x27;</span>==b) state=<span class="number">3</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>: <span class="keyword">if</span> (<span class="string">&#x27;a&#x27;</span>==b) state=<span class="number">4</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>: <span class="keyword">if</span> (<span class="string">&#x27;r&#x27;</span>==b) state=<span class="number">5</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>: <span class="keyword">if</span> (<span class="string">&#x27;s&#x27;</span>==b) state=<span class="number">6</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>: <span class="keyword">if</span> (<span class="string">&#x27;e&#x27;</span>==b) state=<span class="number">7</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">7</span>: <span class="keyword">if</span> (<span class="string">&#x27;t&#x27;</span>==b) state=<span class="number">8</span>; <span class="keyword">else</span> state=<span class="number">0</span>;<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> <span class="number">8</span>: <span class="keyword">if</span> (<span class="string">&#x27;=&#x27;</span>==b) state=<span class="number">9</span>; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&#x27; &#x27;</span>!=b) state=<span class="number">0</span>; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> <span class="number">9</span>:</span><br><span class="line">                <span class="keyword">if</span> (<span class="string">&#x27; &#x27;</span>==b)</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">if</span> (<span class="string">&#x27;&quot;&#x27;</span>==b)</span><br><span class="line">                &#123;</span><br><span class="line">                    quote=<span class="literal">true</span>;</span><br><span class="line">                    start=i+<span class="number">1</span>;</span><br><span class="line">                    state=<span class="number">10</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                start=i;</span><br><span class="line">                state=<span class="number">10</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> <span class="number">10</span>:</span><br><span class="line">                <span class="keyword">if</span> (!quote &amp;&amp; (<span class="string">&#x27;;&#x27;</span>==b || <span class="string">&#x27; &#x27;</span>==b )||</span><br><span class="line">                    (quote &amp;&amp; <span class="string">&#x27;&quot;&#x27;</span>==b ))</span><br><span class="line">                    <span class="keyword">return</span> CACHE.lookup(value.peek(start,i-start)).toString(StringUtil.__UTF8);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (state==<span class="number">10</span>)</span><br><span class="line">        <span class="keyword">return</span> CACHE.lookup(value.peek(start,i-start)).toString(StringUtil.__UTF8);</span><br><span class="line">    <span class="comment">//默认路径</span></span><br><span class="line">    <span class="keyword">return</span> (String)__encodings.get(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 简单来看首先检查是否是预设的一些content-type，如果是的话直接返回。<br> 而传入的<code>text/plain</code>不在默认的范围内，接下里的代码是寻找charset或者”charset”，而传入的内容里并没有。<br> 最后走到了<code>return (String)__encodings.get(value);</code>，通过上面的代码可以找到这个属性的设置:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">ResourceBundle</span> <span class="variable">encoding</span> <span class="operator">=</span> ResourceBundle.getBundle(<span class="string">&quot;org/eclipse/jetty/http/encoding&quot;</span>);</span><br><span class="line"><span class="keyword">final</span> <span class="type">Enumeration</span> <span class="variable">i</span> <span class="operator">=</span> encoding.getKeys();</span><br><span class="line"><span class="keyword">while</span>(i.hasMoreElements())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">Buffer</span> <span class="variable">type</span> <span class="operator">=</span> normalizeMimeType((String)i.nextElement());</span><br><span class="line">    __encodings.put(type,encoding.getString(type.toString()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用了ResourceBundle，对应的资源文件内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">text/html	= ISO-8859-1</span><br><span class="line">text/plain	= ISO-8859-1</span><br><span class="line">text/xml	= UTF-8</span><br><span class="line">text/json   = UTF-8</span><br></pre></td></tr></table></figure>
+<p>… …默认值为ISO-8859-1。<br>而jetty9呢，切回master分支，jetty9设置的代码直接在<code>Request</code>类中了，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">getCharacterEncoding</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (_characterEncoding==<span class="literal">null</span>)</span><br><span class="line">        getContentType();</span><br><span class="line">    <span class="keyword">return</span> _characterEncoding;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">getContentType</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    MetaData.<span class="type">Request</span> <span class="variable">metadata</span> <span class="operator">=</span> _metaData;</span><br><span class="line">    <span class="type">String</span> <span class="variable">content_type</span> <span class="operator">=</span> metadata==<span class="literal">null</span>?<span class="literal">null</span>:metadata.getFields().get(HttpHeader.CONTENT_TYPE);</span><br><span class="line">    <span class="keyword">if</span> (_characterEncoding==<span class="literal">null</span> &amp;&amp; content_type!=<span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        MimeTypes.<span class="type">Type</span> <span class="variable">mime</span> <span class="operator">=</span> MimeTypes.CACHE.get(content_type);</span><br><span class="line">        <span class="type">String</span> <span class="variable">charset</span> <span class="operator">=</span> (mime == <span class="literal">null</span> || mime.getCharset() == <span class="literal">null</span>) ? MimeTypes.getCharsetFromContentType(content_type) : mime.getCharset().toString();</span><br><span class="line">        <span class="keyword">if</span> (charset != <span class="literal">null</span>)</span><br><span class="line">            _characterEncoding=charset;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> content_type;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>   类似的逻辑还是继续走<code>MimeTypes</code>的方法，但最后发生了变化:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (state==<span class="number">10</span>)</span><br><span class="line">        <span class="keyword">return</span> StringUtil.normalizeCharset(value,start,i-start);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>已经没有那个默认逻辑，直接返回null了。<br>这个改动已经非常久远了。<br>避免踩这种坑，勤升版本很重要啊… …<br>感觉又荒废了时光…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2018/03/28/jetty-8-default-character-encoding/" data-id="cm49fdrkj001cr8vahqricjue" data-title="jetty8 text/plain默认字符编码的坑" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/04/19/8886406/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          编码之痛:操作系统迁移后redis缓存无法命中
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/21/ddia-note-chapter1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">设计数据密集型应用笔记1:可靠 可扩展可维护的应用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/">使用Azure openai java SDK序列化/反序列化message</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
