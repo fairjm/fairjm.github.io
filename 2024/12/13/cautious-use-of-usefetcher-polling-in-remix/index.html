@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>在remix中谨慎使用useFetcher进行poll | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="问题概述今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：  第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新） 第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）  结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在remix中谨慎使用useFetcher进行poll">
+<meta property="og:url" content="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="问题概述今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：  第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新） 第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）  结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/init.png">
+<meta property="og:image" content="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/two.png">
+<meta property="og:image" content="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/bug.png">
+<meta property="article:published_time" content="2024-12-12T18:18:00.000Z">
+<meta property="article:modified_time" content="2024-12-12T18:18:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="react">
+<meta property="article:tag" content="remix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/init.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-cautious-use-of-usefetcher-polling-in-remix" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" class="article-date">
+  <time class="dt-published" datetime="2024-12-12T18:18:00.000Z" itemprop="datePublished">2024-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      在remix中谨慎使用useFetcher进行poll
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="问题概述"><a href="#问题概述" class="headerlink" title="问题概述"></a>问题概述</h2><p>今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：</p>
+<ul>
+<li>第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新）</li>
+<li>第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）</li>
+</ul>
+<p>结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的却始终是第一个任务的数据, 后面也是返回的永远是第一个任务的结果.</p>
+<span id="more"></span>
+
+<p>后面发现这个问题其实是和 fetcher 的加载有关, 在 remix 某个版本之后, fetcher 的 load 也会随着 submit 之后的页面数据更新而更新.</p>
+<h2 id="useFetcher-简介"><a href="#useFetcher-简介" class="headerlink" title="useFetcher 简介"></a>useFetcher 简介</h2><p>useFetcher 是 Remix 提供的一个强大的 Hook，用于处理非导航场景下的数据获取和提交。它的主要特点是：</p>
+<ul>
+<li>可以在不触发完整页面导航的情况下进行数据操作</li>
+<li>提供了 Form 组件用于数据提交</li>
+<li>支持 load 和 submit 两种数据操作方式</li>
+<li>可以使用 state 获得当前 fetcher 状态 方便实现 Pending UI 和 Optimistic UI</li>
+</ul>
+<h2 id="问题复现"><a href="#问题复现" class="headerlink" title="问题复现"></a>问题复现</h2><p>我简化了我的代码, 假设有这两个代码文件:</p>
+<p><code>test.tsx</code>:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">ActionFunctionArgs</span>, <span class="title class_">LoaderFunctionArgs</span> &#125; <span class="keyword">from</span> <span class="string">&quot;@remix-run/node&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; data, useFetcher &#125; <span class="keyword">from</span> <span class="string">&quot;@remix-run/react&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; useEffect, useState &#125; <span class="keyword">from</span> <span class="string">&quot;react&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">loader</span> = <span class="keyword">async</span> (<span class="params">&#123; request &#125;: <span class="title class_">LoaderFunctionArgs</span></span>) =&gt; &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;call test loader&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="title class_">Response</span>.<span class="title function_">json</span>(&#123; <span class="attr">hello</span>: <span class="number">1</span> &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">action</span> = <span class="keyword">async</span> (<span class="params">&#123; request &#125;: <span class="title class_">ActionFunctionArgs</span></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">data</span>(&#123; <span class="attr">taskId</span>: crypto.<span class="title function_">randomUUID</span>() &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">Test</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> submitFetcher = useFetcher&lt;<span class="keyword">typeof</span> action&gt;();</span><br><span class="line">  <span class="keyword">const</span> pollFetcher = useFetcher&lt;&#123; <span class="attr">taskId</span>: <span class="built_in">string</span> &#125;&gt;();</span><br><span class="line">  <span class="keyword">const</span> [taskId, setTaskId] = useState&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!submitFetcher.<span class="property">data</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">setTaskId</span>(submitFetcher.<span class="property">data</span>.<span class="property">taskId</span>);</span><br><span class="line">  &#125;, [submitFetcher.<span class="property">data</span>]);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!taskId) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;call useEffect&quot;</span>);</span><br><span class="line">    pollFetcher.<span class="title function_">load</span>(<span class="string">`/test/status?taskId=<span class="subst">$&#123;taskId&#125;</span>`</span>);</span><br><span class="line">    <span class="comment">// const id = taskId;</span></span><br><span class="line">    <span class="comment">// const interval = setInterval(() =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//   console.log(&quot;interval called&quot;);</span></span><br><span class="line">    <span class="comment">//   pollFetcher.load(`/test/status?taskId=$&#123;id&#125;`);</span></span><br><span class="line">    <span class="comment">// &#125;, 1000);</span></span><br><span class="line">    <span class="comment">// return () =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//   console.log(&quot;clean interval&quot;);</span></span><br><span class="line">    <span class="comment">//   clearInterval(interval);</span></span><br><span class="line">    <span class="comment">// &#125;;</span></span><br><span class="line">  &#125;, [taskId]);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!pollFetcher.<span class="property">data</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// stop interval</span></span><br><span class="line">    <span class="title function_">setTaskId</span>(<span class="string">&quot;&quot;</span>);</span><br><span class="line">  &#125;, [pollFetcher.<span class="property">data</span>]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;flex flex-col gap-6 p-10&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">submitFetcher.Form</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">className</span>=<span class="string">&quot;bg-green-200 p-2 rounded-xl border-b border-red-300 shadow-md&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">        &gt;</span></span></span><br><span class="line"><span class="language-xml">          generate task</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">submitFetcher.Form</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;flex gap-2&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        taskId : &#123;submitFetcher.data?.taskId ?? &quot;&quot;&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>poll result : &#123;pollFetcher.data?.taskId ?? &quot;&quot;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>test.status.tsx</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">LoaderFunctionArgs</span> &#125; <span class="keyword">from</span> <span class="string">&quot;@remix-run/node&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">loader</span>(<span class="params">&#123; request &#125;: <span class="title class_">LoaderFunctionArgs</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(request.<span class="property">url</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;call status. url:&quot;</span>, url);</span><br><span class="line">  <span class="keyword">return</span> &#123; <span class="attr">taskId</span>: url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;taskId&quot;</span>) &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里就是简化了我的实际场景,假设每次提交都会返回一个不同的 taskId,返回之后进行 poll, poll 到结果之后设置 taskId 为空字符串去清理掉 interval,完成一个任务的<code>提交-poll-获得结果结束</code>,这里把 poll 注释掉了,先看看这个情况下会怎么样.</p>
+<img src="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/init.png" class="" title="初始状态">
+
+<p>然后点击两次让他模拟两个任务  </p>
+<img src="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/two.png" class="" title="点击两次之后">
+
+<ul>
+<li>第一次任务 id: 141f56eb-a7ac-41b4-99bd-9a6bbfafedfe</li>
+<li>第二次任务 id: 708e98f1-84e3-4b1f-9fbe-0db82498147c</li>
+</ul>
+<p>第二次任务 id poll 的时候返回没有问题. 但是我们在这里又看到了一个被取消的请求,这个就是 poll fetcher 发出的,他的任务 id 还是第一个.</p>
+<p>所以在第二次任务 submit 之后,poll fetcher 立即更新自己的状态,此时他的路径是第一次的,所以他又用第一次的任务发了请求,只不过<code>useEffect</code>立即触发,导致并发请求取消了第一次的请求.</p>
+<p>而我的代码里用了 interval,初始会慢几秒,把注释的逻辑打开,让 interval 生效.</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (!taskId) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;call useEffect&quot;</span>);</span><br><span class="line">  <span class="comment">// pollFetcher.load(`/test/status?taskId=$&#123;taskId&#125;`);</span></span><br><span class="line">  <span class="keyword">const</span> id = taskId;</span><br><span class="line">  <span class="keyword">const</span> interval = <span class="built_in">setInterval</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;interval called&quot;</span>);</span><br><span class="line">    pollFetcher.<span class="title function_">load</span>(<span class="string">`/test/status?taskId=<span class="subst">$&#123;id&#125;</span>`</span>);</span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;clean interval&quot;</span>);</span><br><span class="line">    <span class="built_in">clearInterval</span>(interval);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;, [taskId]);</span><br></pre></td></tr></table></figure>
+
+<p>再次运行, 点击两次:</p>
+<img src="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/bug.png" class="" title="出现问题">
+
+<p>复现了… … 他只会去请求第一次任务的 id.</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>这个问题的核心在于 Remix 的 revalidate 机制。在较新版本的 Remix 中，当进行 submit 操作后(不管是 fetcher.submit 还是 Form&#x2F; fetcher.Form 的 submit) 执行后，所有的 fetcher 都会进行 revalidate。这个机制本意是保持数据一致性，但在轮询场景下会导致问题</p>
+<ol>
+<li>第一个任务提交后，pollFetcher 开始轮询</li>
+<li>第二个任务提交时，触发了页面更新</li>
+<li>pollFetcher 被强制更新，但仍然保持着第一个任务的 URL, 此时因为是用了 interval 导致第二个任务的查询请求会延后执行</li>
+<li>pollFetcher 更新后的结果返回了 taskId 被置为空数组 interval 被清理</li>
+<li>由于 interval 被清理，新的轮询请求无法发出</li>
+<li>结果就是永远只能看到第一个任务的数据</li>
+</ol>
+<p>比较幽默了.</p>
+<h2 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h2><p>要 fix 的话需要在 poll 结束之后就立即把 poll fetcher 的状态重置为 init(这个 api 没提供), 或者禁止这个 poll fetcher 的 revalidate 行为(这个只能在 route 层面禁用掉整个&#x2F;test&#x2F;status 的 api 调用,没法针对一个 fetcher).</p>
+<p>当我还在思考单独禁用某个 fetcher 的 revalidation 似乎比较常用但官方为什么不提供的时候, 找到了这个: <a target="_blank" rel="noopener" href="https://github.com/remix-run/remix/discussions/2775">fetcher revalidation after actions</a>, 原来早就有大佬想到了, 只不过当时 fetcher 是不会被 revalidate 的, 后面 remix 改成了会自动 revalidate, 不过大佬说的加个参数… …是一直没加</p>
+<p>那我最后是怎么修的呢… 很简单, 把 poll fetcher 换成个 fetch 调用就行 😂😂😂</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://remix.run/docs/ja/main/hooks/use-fetcher">useFetcher</a></p>
+<p><a target="_blank" rel="noopener" href="https://remix.run/docs/ja/main/route/should-revalidate">shouldRevalidate</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cm4lppxev000gwwvaduhl46lv" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/remix/" rel="tag">remix</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Spring Boot Docker优雅关机总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 10px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/">在remix中谨慎使用useFetcher进行poll</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/05/aws_cloudwatch_agent_no_metric/">AWS安装cloudwatch agent后没有指标出现解决</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

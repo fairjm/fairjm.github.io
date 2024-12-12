@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2024-12-04T04:50:00.000Z</updated>
+  <updated>2024-12-12T18:18:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在remix中谨慎使用useFetcher进行poll</title>
+    <link href="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/"/>
+    <id>https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/</id>
+    <published>2024-12-12T18:18:00.000Z</published>
+    <updated>2024-12-12T18:18:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;问题概述&quot;&gt;&lt;a href=&quot;#问题概述&quot; class=&quot;headerlink&quot; title=&quot;问题概述&quot;&gt;&lt;/a&gt;问题概述&lt;/h2&gt;&lt;p&gt;今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新）&lt;/li&gt;
+&lt;li&gt;第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的却始终是第一个任务的数据, 后面也是返回的永远是第一个任务的结果.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="react" scheme="https://bingowith.me/tags/react/"/>
+    
+    <category term="remix" scheme="https://bingowith.me/tags/remix/"/>
+    
+  </entry>
   
   <entry>
     <title>Spring Boot Docker优雅关机总结</title>
@@ -252,9 +276,9 @@
     
     
     
-    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
-    
     <category term="troubleshooting" scheme="https://bingowith.me/tags/troubleshooting/"/>
+    
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
     
   </entry>
   
@@ -426,32 +450,6 @@
     
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>spring boot应用 从mysql迁移h2</title>
-    <link href="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/"/>
-    <id>https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/</id>
-    <published>2022-03-20T10:21:00.000Z</published>
-    <updated>2022-03-20T10:21:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;此前有个应用用了&lt;code&gt;mysql&lt;/code&gt;做数据存储，但实际存储的数据很少就几张表加起来一共几千行，并且一直没有修改的需求，应用内也只是进行查询。&lt;br&gt;实际上是静态的数据。  &lt;/p&gt;
-&lt;p&gt;因为使用的是云服务商的产品，想着之后就不续费了需要将数据迁移。  &lt;/p&gt;
-&lt;p&gt;有几个选项：  &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;改用文件存储，读取到内存后处理；&lt;/li&gt;
-&lt;li&gt;换成嵌入式数据库。</summary>
-    
-    
-    
-    
-    <category term="MySQL" scheme="https://bingowith.me/tags/MySQL/"/>
-    
-    <category term="spring boot" scheme="https://bingowith.me/tags/spring-boot/"/>
-    
-    <category term="H2" scheme="https://bingowith.me/tags/H2/"/>
     
   </entry>
   
