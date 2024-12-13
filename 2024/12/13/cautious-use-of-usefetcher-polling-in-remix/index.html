@@ -117,7 +117,10 @@
 <p>结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的却始终是第一个任务的数据, 后面也是返回的永远是第一个任务的结果.</p>
 <span id="more"></span>
 
-<p>后面发现这个问题其实是和 fetcher 的加载有关, 在 remix 某个版本之后, fetcher 的 load 也会随着 submit 之后的页面数据更新而更新.</p>
+<p>后面发现这个问题其实是和 fetcher 的加载有关, 在 remix 某个版本之后, fetcher 的 load 也会随着 submit 之后的页面数据更新而更新. <a target="_blank" rel="noopener" href="https://remix.run/docs/en/main/hooks/use-fetcher#fetcherloadhref-options">参考</a></p>
+<blockquote>
+<p>fetcher.load’s revalidate by default after action submissions and explicit revalidation requests via useRevalidator. Because fetcher.load loads a specific URL they don’t revalidate on changes to route param or URL search param. You can use shouldRevalidate to optimize which data should be reloaded.</p>
+</blockquote>
 <h2 id="useFetcher-简介"><a href="#useFetcher-简介" class="headerlink" title="useFetcher 简介"></a>useFetcher 简介</h2><p>useFetcher 是 Remix 提供的一个强大的 Hook，用于处理非导航场景下的数据获取和提交。它的主要特点是：</p>
 <ul>
 <li>可以在不触发完整页面导航的情况下进行数据操作</li>
@@ -151,10 +154,10 @@
 <img src="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/bug.png" class="" title="出现问题">
 
 <p>复现了… … 他只会去请求第一次任务的 id.</p>
-<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>这个问题的核心在于 Remix 的 revalidate 机制。在较新版本的 Remix 中，当进行 submit 操作后(不管是 fetcher.submit 还是 Form&#x2F; fetcher.Form 的 submit) 执行后，所有的 fetcher 都会进行 revalidate。这个机制本意是保持数据一致性，但在轮询场景下会导致问题</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>这个问题的核心在于 Remix 的 revalidate 机制。在较新版本的 Remix 中，当进行 submit 操作后(不管是 fetcher.submit 还是 Form&#x2F; fetcher.Form 的 submit) 执行后，所有的 fetcher 的 load 操作 都会进行 revalidate。这个机制本意是保持数据一致性，但在轮询场景下会导致问题</p>
 <ol>
 <li>第一个任务提交后，pollFetcher 开始轮询, 正常完成 此时 pollFetcher 内部状态里记录了第一次任务的查询 url(<code>/status/test?taskId=第一次任务</code>)</li>
-<li>第二个任务提交时，submitFetcher 的提交触发了页面更新, load 的请求会被默认重新加载</li>
+<li>第二个任务提交时，submitFetcher 的提交触发了页面更新, pollFetcher 的 load 的请求会被默认重新加载</li>
 <li>pollFetcher 被重新更新，但此时内部仍然保持着第一个任务的 URL, 而此时 useEffect 里用了 interval 导致第二个任务的查询请求会延后执行</li>
 <li>pollFetcher 更新后的结果返回了 taskId 被置为空数组 interval 被清理</li>
 <li>由于 interval 被清理，新的轮询请求无法发出</li>
@@ -173,7 +176,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cm4m7ooyg000gv4va7fwg9q33" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cm4m873uc000gpovadnlta1xu" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       

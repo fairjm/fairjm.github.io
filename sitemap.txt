@@ -65,10 +65,10 @@ https://bingowith.me/2017/09/28/kafka-note-producer/
 https://bingowith.me/2017/09/24/kafka-note-install/
 https://bingowith.me/
 https://bingowith.me/tags/life/
+https://bingowith.me/tags/aws/
 https://bingowith.me/tags/openai/
 https://bingowith.me/tags/azure/
 https://bingowith.me/tags/java/
-https://bingowith.me/tags/aws/
 https://bingowith.me/tags/SSE/
 https://bingowith.me/tags/maui/
 https://bingowith.me/tags/blazor/

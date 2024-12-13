@@ -603,6 +603,13 @@
   </url>
   
   <url>
+    <loc>https://bingowith.me/tags/aws/</loc>
+    <lastmod>2024-12-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://bingowith.me/tags/openai/</loc>
     <lastmod>2024-12-13</lastmod>
     <changefreq>weekly</changefreq>
@@ -618,13 +625,6 @@
   
   <url>
     <loc>https://bingowith.me/tags/java/</loc>
-    <lastmod>2024-12-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://bingowith.me/tags/aws/</loc>
     <lastmod>2024-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
