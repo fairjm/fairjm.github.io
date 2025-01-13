@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>聊一聊AWS Route 53的托管区 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="AWS 坑爹啊最近查看 AWS 的账单才发现，在 route53 买的每个域名每个月都会额外收 0.5 刀，并且还有解析费，一看是因为用了托管区（hosted zone）,这个收费是托管区的。 这个托管区的作用其实就是 DNS 管理，emmmmm….那可不得不迁移到赛博大善人 Cloudflare 了。 这里记录一些遇到的问题吧，并把一些概念阐述下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊一聊AWS Route 53的托管区">
+<meta property="og:url" content="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="AWS 坑爹啊最近查看 AWS 的账单才发现，在 route53 买的每个域名每个月都会额外收 0.5 刀，并且还有解析费，一看是因为用了托管区（hosted zone）,这个收费是托管区的。 这个托管区的作用其实就是 DNS 管理，emmmmm….那可不得不迁移到赛博大善人 Cloudflare 了。 这里记录一些遇到的问题吧，并把一些概念阐述下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/image.png">
+<meta property="article:published_time" content="2025-01-13T17:50:00.000Z">
+<meta property="article:modified_time" content="2025-01-14T03:52:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="aws">
+<meta property="article:tag" content="cloudflare">
+<meta property="article:tag" content="route53">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/image.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-aws-route-53-hosted-zones-features-pitfalls-migration-tips" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" class="article-date">
+  <time class="dt-published" datetime="2025-01-13T17:50:00.000Z" itemprop="datePublished">2025-01-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      聊一聊AWS Route 53的托管区
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="AWS-坑爹啊"><a href="#AWS-坑爹啊" class="headerlink" title="AWS 坑爹啊"></a>AWS 坑爹啊</h2><p>最近查看 AWS 的账单才发现，在 route53 买的每个域名每个月都会额外收 0.5 刀，并且还有解析费，一看是因为用了托管区（hosted zone）,这个收费是托管区的。</p>
+<p>这个托管区的作用其实就是 DNS 管理，emmmmm….那可不得不迁移到赛博大善人 Cloudflare 了。</p>
+<p>这里记录一些遇到的问题吧，并把一些概念阐述下。</p>
+<span id="more"></span>
+
+<h2 id="托管区是个啥"><a href="#托管区是个啥" class="headerlink" title="托管区是个啥"></a>托管区是个啥</h2><p>AWS 的托管区（Hosted Zone）是 Amazon Route 53 服务中的一个概念，用于管理域名系统（DNS）记录。Route 53 是 AWS 提供的可扩展的域名系统（DNS）Web 服务，旨在为开发者和企业提供一种可靠且经济高效的方式，将用户请求路由到互联网应用程序。</p>
+<p>托管区本质上是一个容器，用于保存特定域名的 DNS 记录。这些记录定义了如何将域名解析为 IP 地址或其他资源。托管区分为两种类型：</p>
+<ol>
+<li><p><strong>公共托管区（Public Hosted Zone）</strong>：用于管理公共域名的 DNS 记录，这些域名可以通过互联网访问。例如，如果你有一个网站 example.com，你可以创建一个公共托管区来管理该域名的 DNS 记录，如 A 记录、CNAME 记录等。</p>
+</li>
+<li><p><strong>私有托管区（Private Hosted Zone）</strong>：用于管理私有域名的 DNS 记录，这些域名只能在特定的 VPC（虚拟私有云）内部访问。私有托管区通常用于内部应用程序或服务，这些服务不需要暴露在公共互联网上。</p>
+</li>
+</ol>
+<h3 id="托管区的主要功能"><a href="#托管区的主要功能" class="headerlink" title="托管区的主要功能"></a>托管区的主要功能</h3><ul>
+<li><strong>DNS 记录管理</strong>：托管区允许你添加、编辑和删除 DNS 记录，如 A 记录、CNAME 记录、MX 记录等。</li>
+<li><strong>域名解析</strong>：托管区中的 DNS 记录用于将域名解析为相应的 IP 地址或其他资源。</li>
+<li><strong>流量路由</strong>：通过 Route 53 的高级路由策略（如加权路由、延迟路由、地理位置路由等），你可以控制流量如何路由到不同的资源。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li><strong>网站托管</strong>：如果你在 AWS 上托管网站，可以使用公共托管区来管理你的域名的 DNS 记录。</li>
+<li><strong>内部服务管理</strong>：如果你有内部服务或应用程序，可以使用私有托管区来管理这些服务的 DNS 记录，确保它们只能在特定的 VPC 内部访问。</li>
+<li><strong>负载均衡和故障转移</strong>：通过 Route 53 的高级路由策略，你可以实现负载均衡和故障转移，确保应用程序的高可用性。</li>
+</ul>
+<p>上面的是主要概念，简单来说就是管理 DNS 的地方。</p>
+<h2 id="托管区和我注册的域名是什么关系"><a href="#托管区和我注册的域名是什么关系" class="headerlink" title="托管区和我注册的域名是什么关系"></a>托管区和我注册的域名是什么关系</h2><p>AWS Route 53 提供了两种主要功能：</p>
+<ul>
+<li>域名注册：你可以通过 Route 53 注册新的域名（如 example.com）。</li>
+<li>DNS 托管：你可以使用 Route 53 的托管区来管理域名的 DNS 记录。</li>
+</ul>
+<p>这两者是独立的服务，但可以结合使用。</p>
+<p>注意这里的<strong>独立</strong>，这个很重要，这两个功能不是捆绑的，可以不一起用！！！</p>
+<h3 id="可以只买域名不用-Route-53-托管吗？"><a href="#可以只买域名不用-Route-53-托管吗？" class="headerlink" title="可以只买域名不用 Route 53 托管吗？"></a>可以只买域名不用 Route 53 托管吗？</h3><p>你可以买域名但是不在 Route 53 上托管，可以把域名的 NS 指向 Cloudflare，谷歌 DNS 或者其他提供免费托管的 DNS 服务商，这样就不需要额外的费用了。</p>
+<h3 id="为什么托管区可以随便写域名？我没有的域名也能写？"><a href="#为什么托管区可以随便写域名？我没有的域名也能写？" class="headerlink" title="为什么托管区可以随便写域名？我没有的域名也能写？"></a>为什么托管区可以随便写域名？我没有的域名也能写？</h3><p>托管区本身并不验证你是否拥有该域名，因此你可以为任何域名创建托管区，即使你没有注册该域名。</p>
+<p>这是为什么，那是因为这样搞，AWS 才容易骗到小白的钱（不是</p>
+<p>有这么几点原因：</p>
+<ul>
+<li>灵活性：AWS 允许你提前配置 DNS 记录，即使域名尚未注册或迁移到 Route 53。例如，你可能计划注册一个新域名，但希望提前设置好 DNS 记录。</li>
+<li>测试环境：你可以为不存在的域名创建托管区，用于测试 DNS 配置或开发环境。</li>
+<li>域名迁移：如果你计划将域名从其他注册商迁移到 Route 53，可以提前创建托管区并配置 DNS 记录。</li>
+</ul>
+<p>总之把域名和托管区联系在一起的就是域名的<code>Name Servers</code>的配置！！！</p>
+<p>你可以在已注册域名(registered domain)的详情页看到这个<code>Name Servers</code>，并进行修改</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------+</span><br><span class="line">|       域名注册 (Domain Registration) |</span><br><span class="line">|  (可以在 Route 53 或其他注册商注册)    |</span><br><span class="line">+-------------------------------------+</span><br><span class="line">            |</span><br><span class="line">            | 注册域名后，设置 Name Servers</span><br><span class="line">            v</span><br><span class="line">+-------------------------------+</span><br><span class="line">|       托管区 (Hosted Zone)     |</span><br><span class="line">|  (管理 DNS 记录，如 A、CNAME 等) |</span><br><span class="line">+-------------------------------+</span><br><span class="line">            |</span><br><span class="line">            | DNS 记录指向</span><br><span class="line">            v</span><br><span class="line">+------------------------------------+</span><br><span class="line">|       目标资源 (Target Resources)   |</span><br><span class="line">|  (如 EC2 实例、S3 存储桶、负载均衡器等)|</span><br><span class="line">+------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="Route-53-的托管区坑爹的点"><a href="#Route-53-的托管区坑爹的点" class="headerlink" title="Route 53 的托管区坑爹的点"></a>Route 53 的托管区坑爹的点</h2><p>AWS 对每个托管区按月收费（公共托管区和私有托管区都收费），每个 0.5 刀。如果不小心创建了多个托管区，费用可能会迅速增加。</p>
+<p>其次，如果你域名不想要了没有续费，但是忘记主动删除托管区，托管区会一直存在扣你的钱，所以一定要记得记得删除！！！！</p>
+<h2 id="如何迁移托管区到其他服务"><a href="#如何迁移托管区到其他服务" class="headerlink" title="如何迁移托管区到其他服务"></a>如何迁移托管区到其他服务</h2><p>上面提到了注册的域名和托管区是相互独立的，删除托管区不会影响你已购期间的域名归属，同理，域名过期&#x2F;更换 NS 也不影响托管区的存在。</p>
+<p>但毕竟托管区是按月收费，换一家免费且更安全，功能更强大的 DNS 服务商还是很有必要的，比如赛博大善人 Cloudflare。</p>
+<p>按照 Cloudflare 的文档先设置好域名，接着按给的配置项在 Route 53 的已注册域的详情里修改即可</p>
+<p>这里要注意的是，不要去修改托管区里的 NS，改托管区里的 NS 配置是没用的，要修改注册域里的名称服务器！！！  </p>
+<img src="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/image.png" class="" title="修改名称服务器">
+
+<p>配置之后等 Cloudflare 上网站状态变为 active&#x2F;活跃即可，注意这时候访问可能会有短暂的<code>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</code>，过一会儿即可，如果遇到了重定向循环需要修改一下加密模式，在 Cloudflare 的<a target="_blank" rel="noopener" href="https://developers.cloudflare.com/ssl/troubleshooting/">Troubleshooting</a>里都有提到。</p>
+<p>等一切测试完成，没有问题之后，记得一定要删除托管区里的记录！！！不然等于白干，干了一堆钱还照扣。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>不得不吐槽一下 AWS 的坑爹。</p>
+<h3 id="1-文档过多且复杂"><a href="#1-文档过多且复杂" class="headerlink" title="1. 文档过多且复杂"></a>1. <strong>文档过多且复杂</strong></h3><ul>
+<li>AWS 的文档虽然全面，但内容过于冗长，新手用户很容易迷失在大量的技术细节中。</li>
+<li>比如，光是 Route 53 的文档就有几十页，想要快速找到某个功能的配置方法，简直像在迷宫里找出口。</li>
+</ul>
+<h3 id="2-收费点太多"><a href="#2-收费点太多" class="headerlink" title="2. 收费点太多"></a>2. <strong>收费点太多</strong></h3><ul>
+<li>AWS 的收费点无处不在，托管区按月收费、DNS 查询按次数收费、健康检查也要收费……一不小心就会产生额外费用。</li>
+<li>比如，托管区即使域名过期了，它还会继续收费，简直是“隐形收费”的典范。</li>
+</ul>
+<h3 id="3-一不小心就扣费"><a href="#3-一不小心就扣费" class="headerlink" title="3. 一不小心就扣费"></a>3. <strong>一不小心就扣费</strong></h3><ul>
+<li>AWS 的默认设置往往是“开箱即用”，但这也意味着你可能在不知不觉中开启了收费服务。</li>
+<li>比如，创建托管区时，AWS 不会提醒你“这玩意儿是按月收费的”，等你发现账单时，已经晚了。</li>
+</ul>
+<h3 id="4-Name-Servers-配置容易搞错"><a href="#4-Name-Servers-配置容易搞错" class="headerlink" title="4. Name Servers 配置容易搞错"></a>4. <strong>Name Servers 配置容易搞错</strong></h3><ul>
+<li>修改 Name Servers 时，新手用户很容易搞错地方。比如，修改托管区里的 NS 记录是没用的，必须修改注册域里的 Name Servers。</li>
+<li>AWS 的界面设计也没有明显的提示，导致很多人踩坑。</li>
+</ul>
+<p>希望这篇总结和吐槽对你有帮助！</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/Route53/latest/DeveloperGuide/domain-register-other-dns-service.html">更新名称服务器以使用其他注册商</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/Route53/latest/DeveloperGuide/DeleteHostedZone.html">删除公有托管区域</a></p>
+<p><a target="_blank" rel="noopener" href="https://developers.cloudflare.com/ssl/troubleshooting/">Cloudflare SSL&#x2F;TLS Troubleshooting</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" data-id="cm5vhdn50000bf4va5thneror" data-title="聊一聊AWS Route 53的托管区" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/route53/" rel="tag">route53</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">在remix中谨慎使用useFetcher进行poll</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/">聊一聊AWS Route 53的托管区</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/">在remix中谨慎使用useFetcher进行poll</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 在 .article-title 后面插入一个 div，class 为 toc
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+      articleTitle.insertAdjacentElement('afterend', tocDiv);
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc', // 将目录插入到刚刚创建的 .toc 中
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>

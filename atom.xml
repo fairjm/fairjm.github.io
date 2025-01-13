@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2024-12-13T03:52:00.000Z</updated>
+  <updated>2025-01-14T03:52:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>聊一聊AWS Route 53的托管区</title>
+    <link href="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/"/>
+    <id>https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/</id>
+    <published>2025-01-13T17:50:00.000Z</published>
+    <updated>2025-01-14T03:52:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;AWS-坑爹啊&quot;&gt;&lt;a href=&quot;#AWS-坑爹啊&quot; class=&quot;headerlink&quot; title=&quot;AWS 坑爹啊&quot;&gt;&lt;/a&gt;AWS 坑爹啊&lt;/h2&gt;&lt;p&gt;最近查看 AWS 的账单才发现，在 route53 买的每个域名每个月都会额外收 0.5 刀，并且还有解析费，一看是因为用了托管区（hosted zone）,这个收费是托管区的。&lt;/p&gt;
+&lt;p&gt;这个托管区的作用其实就是 DNS 管理，emmmmm….那可不得不迁移到赛博大善人 Cloudflare 了。&lt;/p&gt;
+&lt;p&gt;这里记录一些遇到的问题吧，并把一些概念阐述下。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="aws" scheme="https://bingowith.me/tags/aws/"/>
+    
+    <category term="cloudflare" scheme="https://bingowith.me/tags/cloudflare/"/>
+    
+    <category term="route53" scheme="https://bingowith.me/tags/route53/"/>
+    
+  </entry>
   
   <entry>
     <title>在remix中谨慎使用useFetcher进行poll</title>
@@ -431,22 +454,6 @@
     <summary type="html">&lt;p&gt;对接了一个&lt;code&gt;kafka&lt;/code&gt;,里面的topic使用&lt;code&gt;avro&lt;/code&gt;编码,且每个topic的&lt;code&gt;schema&lt;/code&gt;都不相同使用schema registry管理。&lt;br&gt;现在要反序列化&lt;code&gt;key&lt;/code&gt;和&lt;code&gt;message&lt;/code&gt;,查看了现有的:&lt;/p&gt;
 &lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;org.apache.flink&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;flink-avro-confluent-registry&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;内的&lt;code&gt;ConfluentRegistryAvroDeserializationSchema&lt;/code&gt;.&lt;br&gt;发现无论是&lt;code&gt;forSpecific&lt;/code&gt;返回一个特定的类,还是&lt;code&gt;forGeneric&lt;/code&gt;返回&lt;code&gt;GenericRecord&lt;/code&gt;都需要指定&lt;code&gt;read schame&lt;/code&gt;,而registry仅作为&lt;code&gt;write schema&lt;/code&gt;使用, 也就是虽然返回的是&lt;code&gt;GenericRecord&lt;/code&gt;, 但实际上都是同一个&lt;code&gt;Schema&lt;/code&gt;反序列化的, 每个record的格式是一致的.&lt;/p&gt;</summary>
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>windwos下运行hadoop相关代码(hdfs,mr)</title>
-    <link href="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/"/>
-    <id>https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/</id>
-    <published>2022-04-16T18:28:14.000Z</published>
-    <updated>2022-04-16T18:28:14.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近在学习一些&lt;code&gt;hadoop&lt;/code&gt;相关的知识,需要在本地运行&lt;code&gt;hdfs&lt;/code&gt;和&lt;code&gt;mr&lt;/code&gt;相关的代码.&lt;br&gt;因为开发机使用的是windows,所以会有一些不太方便.  &lt;/p&gt;
-&lt;p&gt;可以在windows下解压&lt;code&gt;hadoop&lt;/code&gt;,然后在应用的&lt;code&gt;env&lt;/code&gt;中指定&lt;code&gt;HADOOP_HOME&lt;/code&gt;为解压路径.&lt;br&gt;在windows中需要&lt;code&gt;winutils.exe&lt;/code&gt;工具,当前网上好心人预编译好的只到&lt;code&gt;3.3.0&lt;/code&gt;.&lt;br&gt;见: &lt;a href=&quot;https://kontext.tech/article/446/hadoop-330-winutils&quot;&gt;https://kontext.tech/article/446/hadoop-330-winutils&lt;/a&gt;  &lt;/p&gt;</summary>
     
     
     

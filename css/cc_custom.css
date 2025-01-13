@@ -1,31 +1,76 @@
 header#header {
-    height: 320px;
-    backdrop-filter: blur(15px);
+  height: 320px;
+  backdrop-filter: blur(15px);
 }
 
 div#banner {
-    background: unset;
+  background: unset;
 }
 
 #wrap {
-    height: unset;
-    backdrop-filter: blur(15px);
-    background: url('/images/index.jpg') fixed center #000;
+  height: unset;
+  backdrop-filter: blur(15px);
+  background: url("/images/index.jpg") fixed center #000;
 }
 
 time.dt-published {
-    color: #000000;
-    text-shadow: 0 1px #764aec;
+  color: #000000;
+  text-shadow: 0 1px #764aec;
 }
 
 .article-inner,
 .archive-article-inner {
-    background: #ffffffed;
-    backdrop-filter: blur(5px);
+  background: #ffffffed;
+  backdrop-filter: blur(5px);
 }
 
 @media (max-width: 600px) {
-    header#header {
-        height: 200px;
-    }
+  header#header {
+    height: 200px;
+  }
+}
+
+.toc {
+  margin-top: 10px;
+  margin-left: 10px;
+  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.toc a {
+  text-decoration: none;
+}
+
+.toc a:hover {
+  color: #ec4a96;
+}
+
+#back-to-top {
+  visibility: none; /* 默认隐藏 */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  background-color: #764aec;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 1000;
+  opacity: 0; /* 初始透明度为0 */
+  transform: translateX(100px); /* 初始位置向下偏移20px */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#back-to-top.show {
+  display: block; /* 显示按钮 */
+  opacity: 1; /* 完全显示 */
+  transform: translateX(0); /* 回到原始位置 */
+  visibility: visible;
+}
+#back-to-top:hover {
+  background-color: #ec4a96;
 }
