@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-01-14T03:52:00.000Z</updated>
+  <updated>2025-01-16T03:33:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Jina ReaderLM v2 测试记录</title>
+    <link href="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/"/>
+    <id>https://bingowith.me/2025/01/16/jina-readerlm-v2-test/</id>
+    <published>2025-01-16T03:33:00.000Z</published>
+    <updated>2025-01-16T03:33:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。&lt;br&gt;之前简单测试了下 v1, 结论是:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;幻觉严重, 尤其特别喜欢造 url&lt;/li&gt;
+&lt;li&gt;很容易触发无限生成 比如 example1 example2…. 一直生成下去&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第一眼就是不可用就没继续了。&lt;br&gt;这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 markdown 的工具还是不够稳定。&lt;br&gt;这里的稳定性主要是指，与传统的基于语法树解析的工具相比，它在处理速度和结构识别的准确性上还有差距。他的确能生成不错的 markdown，但是很容易被正确结构但是内容文本里有特殊构造的&amp;#x2F;或者有一些语法错误的 html 页面所影响。&lt;/p&gt;
+&lt;p&gt;注意：这个博客里的测试只是为了列出 v2 的一些问题，针对问题进行特殊构造的测试，实际网页可能也遇不到文中提到的问题，具体以实际场景为准了。&lt;br&gt;顺道一提，这个模型是以 CC 协议发布的，所以商用场景需要遵守相关协议。&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>聊一聊AWS Route 53的托管区</title>
@@ -440,23 +461,6 @@
     <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
     
     <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>flink kafka source的avro反序列化问题</title>
-    <link href="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/"/>
-    <id>https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/</id>
-    <published>2022-05-11T05:00:00.000Z</published>
-    <updated>2022-05-11T05:00:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;对接了一个&lt;code&gt;kafka&lt;/code&gt;,里面的topic使用&lt;code&gt;avro&lt;/code&gt;编码,且每个topic的&lt;code&gt;schema&lt;/code&gt;都不相同使用schema registry管理。&lt;br&gt;现在要反序列化&lt;code&gt;key&lt;/code&gt;和&lt;code&gt;message&lt;/code&gt;,查看了现有的:&lt;/p&gt;
-&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;org.apache.flink&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;flink-avro-confluent-registry&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;内的&lt;code&gt;ConfluentRegistryAvroDeserializationSchema&lt;/code&gt;.&lt;br&gt;发现无论是&lt;code&gt;forSpecific&lt;/code&gt;返回一个特定的类,还是&lt;code&gt;forGeneric&lt;/code&gt;返回&lt;code&gt;GenericRecord&lt;/code&gt;都需要指定&lt;code&gt;read schame&lt;/code&gt;,而registry仅作为&lt;code&gt;write schema&lt;/code&gt;使用, 也就是虽然返回的是&lt;code&gt;GenericRecord&lt;/code&gt;, 但实际上都是同一个&lt;code&gt;Schema&lt;/code&gt;反序列化的, 每个record的格式是一致的.&lt;/p&gt;</summary>
-    
-    
-    
     
   </entry>
   

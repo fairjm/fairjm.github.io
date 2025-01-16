@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Jina ReaderLM v2 测试记录 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。之前简单测试了下 v1, 结论是:  幻觉严重, 尤其特别喜欢造 url 很容易触发无限生成 比如 example1 example2…. 一直生成下去  第一眼就是不可用就没继续了。这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 mar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jina ReaderLM v2 测试记录">
+<meta property="og:url" content="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。之前简单测试了下 v1, 结论是:  幻觉严重, 尤其特别喜欢造 url 很容易触发无限生成 比如 example1 example2…. 一直生成下去  第一眼就是不可用就没继续了。这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 mar">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/image.png">
+<meta property="article:published_time" content="2025-01-16T03:33:00.000Z">
+<meta property="article:modified_time" content="2025-01-16T03:33:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="博客,java,rust,blog,C#,shopify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/image.png">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-jina-readerlm-v2-test" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/01/16/jina-readerlm-v2-test/" class="article-date">
+  <time class="dt-published" datetime="2025-01-16T03:33:00.000Z" itemprop="datePublished">2025-01-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Jina ReaderLM v2 测试记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。<br>之前简单测试了下 v1, 结论是:</p>
+<ul>
+<li>幻觉严重, 尤其特别喜欢造 url</li>
+<li>很容易触发无限生成 比如 example1 example2…. 一直生成下去</li>
+</ul>
+<p>第一眼就是不可用就没继续了。<br>这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 markdown 的工具还是不够稳定。<br>这里的稳定性主要是指，与传统的基于语法树解析的工具相比，它在处理速度和结构识别的准确性上还有差距。他的确能生成不错的 markdown，但是很容易被正确结构但是内容文本里有特殊构造的&#x2F;或者有一些语法错误的 html 页面所影响。</p>
+<p>注意：这个博客里的测试只是为了列出 v2 的一些问题，针对问题进行特殊构造的测试，实际网页可能也遇不到文中提到的问题，具体以实际场景为准了。<br>顺道一提，这个模型是以 CC 协议发布的，所以商用场景需要遵守相关协议。</p>
+<span id="more"></span>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试直接使用 hf 页面上的<a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1FfPjZwkMSocOLsEYH45B3B4NxDryKLGI?usp=sharing">colab</a>环境，改一下 html 就行，用我们自己构造的 html。</p>
+<h3 id="结构丢失-错乱"><a href="#结构丢失-错乱" class="headerlink" title="结构丢失&#x2F;错乱"></a>结构丢失&#x2F;错乱</h3><p>构造了一个嵌套比较多的 html 结构 查看最后结果<br>测试 html:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;zh-CN&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1.0&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>嵌套层级示例<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">header</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>嵌套层级示例<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">header</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;main-content&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;section&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2</span>&gt;</span>第一部分<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;subsection&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个段落，嵌套在第一部分的子部分中。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;nested-div&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个更深层级的段落，嵌套在子部分的 div 中。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;deeply-nested&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个更深层级的段落，嵌套在更深层级的 div 中。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;very-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个非常深层级的段落，嵌套在非常深层级的 div 中。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;section&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2</span>&gt;</span>第二部分<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;subsection&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是第二部分的第一个段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;nested-div&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是嵌套在第二部分的 div 中的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;deeply-nested&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是更深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;very-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是非常深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;extremely-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是极其深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;subsection&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是第二部分的第二个子部分。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;nested-div&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是另一个嵌套的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;deeply-nested&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是更深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;section&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2</span>&gt;</span>第三部分<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;subsection&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是第三部分的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;nested-div&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是嵌套在第三部分的 div 中的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;deeply-nested&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是更深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;very-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是非常深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;extremely-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是极其深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;ultra-deeply-nested&quot;</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是超深层级的段落。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">footer</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="symbol">&amp;copy;</span> 2023 示例公司. 保留所有权利.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">footer</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>结果:</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 嵌套层级示例</span></span><br><span class="line"></span><br><span class="line"><span class="section">## 第一部分</span></span><br><span class="line"></span><br><span class="line">这是一个段落，嵌套在第一部分的子部分中。</span><br><span class="line"></span><br><span class="line"><span class="section">### 第一个子部分</span></span><br><span class="line"></span><br><span class="line">这是一个更深层级的段落，嵌套在子部分的 div 中。</span><br><span class="line"></span><br><span class="line"><span class="section">#### 第二个子部分</span></span><br><span class="line"></span><br><span class="line">这是一个更深层级的段落，嵌套在更深层级的 div 中。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是一个非常深层级的段落，嵌套在非常深层级的 div 中。</span><br><span class="line"></span><br><span class="line"><span class="section">## 第二部分</span></span><br><span class="line"></span><br><span class="line"><span class="section">### 第二部分的第一个段落</span></span><br><span class="line"></span><br><span class="line">这是第二部分的第一个段落。</span><br><span class="line"></span><br><span class="line"><span class="section">#### 第二部分的 div 中的段落</span></span><br><span class="line"></span><br><span class="line">这是一个嵌套在第二部分的 div 中的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是一个更深层级的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">###### 第三部分的段落</span></span><br><span class="line"></span><br><span class="line">这是第三部分的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">#### 第二部分的 div 中的段落</span></span><br><span class="line"></span><br><span class="line">这是嵌套在第三部分的 div 中的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是更深层级的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">###### 第二部分的子部分</span></span><br><span class="line"></span><br><span class="line">这是另一个嵌套的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是更深层级的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">## 第三部分</span></span><br><span class="line"></span><br><span class="line"><span class="section">### 第三部分的段落</span></span><br><span class="line"></span><br><span class="line">这是第三部分的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">#### 第二部分的 div 中的段落</span></span><br><span class="line"></span><br><span class="line">这是嵌套在第三部分的 div 中的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是更深层级的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">###### 第二部分的子部分</span></span><br><span class="line"></span><br><span class="line">这是另一个嵌套的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是第二部分的子部分。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 第三部分的段落</span></span><br><span class="line"></span><br><span class="line">这是嵌套在第三部分的 div 中的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是更深层级的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">###### 第二部分的子部分</span></span><br><span class="line"></span><br><span class="line">这是另一个嵌套的段落。</span><br><span class="line"></span><br><span class="line"><span class="section">##### 更深层级的段落</span></span><br><span class="line"></span><br><span class="line">这是第二部分的子部分。</span><br></pre></td></tr></table></figure>
+
+<p>在这个测试中，我构造了一个多层嵌套的 HTML 结构，目的是验证 ReaderLM v2 在处理复杂嵌套时的表现。<br>结果显示，模型在转换过程中丢失了部分内容，并且层级结构出现了错乱。例如，原本的“第一部分”、“第二部分”和“第三部分”在 Markdown 中被错误地合并或拆分，导致语义不连贯。这表明模型在处理深度嵌套的 HTML 结构时，可能无法准确识别和保留原有的层级关系，从而影响输出结果的可读性和准确性。</p>
+<h3 id="被符号干扰-产生幻觉"><a href="#被符号干扰-产生幻觉" class="headerlink" title="被符号干扰 产生幻觉"></a>被符号干扰 产生幻觉</h3><p>测试:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  测试1+1=</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#x27;&quot;这是一句带各种标点,.。的话<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>返回:</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">测试 1+1=</span><br><span class="line"></span><br><span class="line">&quot;这是一句带各种标点,.。的话&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这个测试旨在验证模型对特殊符号（如引号、标点符号等）的处理能力。我们构造了一个包含多种符号的 HTML 片段，结果显示模型在转换过程中对符号的处理不一致，甚至产生了“幻觉”（即输出与输入不符）。例如，输入中的单引号和双引号在输出中被错误地调整或省略，导致语义发生变化。这表明模型在处理符号时可能存在一定的局限性，尤其是在符号与上下文结合紧密的情况下，容易产生错误。</p>
+<h3 id="注释干扰"><a href="#注释干扰" class="headerlink" title="注释干扰"></a>注释干扰</h3><p>测试:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>测试1+1=&#x27;<span class="comment">&lt;!-- 这句话不应该出现 --&gt;</span>2<span class="comment">&lt;!-- 连续注释 --&gt;</span>&#x27;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>返回:</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">测试 1+1=&#x27;&lt;!-- 这句话不应该出现 --&gt;2&lt;!-- 连续注释 --&gt;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>在这个测试中，我们构造了一个包含 HTML 注释的片段，目的是验证模型是否能正确处理注释内容。结果显示，模型在注释前后存在单引号的情况下，未能正确忽略注释内容，导致注释被保留在输出中。这表明模型在处理注释时，可能会受到周围符号（如引号）的干扰，从而无法完全过滤掉注释内容。这种问题在实际应用中可能会导致不必要的噪音，影响输出结果的纯净度。</p>
+<h3 id="转义问题"><a href="#转义问题" class="headerlink" title="转义问题"></a>转义问题</h3><p>测试:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>转义字符测试<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个包含各种转义字符的段落：<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>小于号：<span class="symbol">&amp;lt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>大于号：<span class="symbol">&amp;gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>和号：<span class="symbol">&amp;amp;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>双引号：<span class="symbol">&amp;quot;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>单引号：<span class="symbol">&amp;apos;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>版权符号：<span class="symbol">&amp;copy;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>注册商标符号：<span class="symbol">&amp;reg;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>商标符号：<span class="symbol">&amp;trade;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>欧元符号：<span class="symbol">&amp;euro;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>英镑符号：<span class="symbol">&amp;pound;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>日元符号：<span class="symbol">&amp;yen;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>分符号：<span class="symbol">&amp;cent;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>章节符号：<span class="symbol">&amp;sect;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>段落符号：<span class="symbol">&amp;para;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>中间点：<span class="symbol">&amp;middot;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>短破折号：<span class="symbol">&amp;ndash;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>长破折号：<span class="symbol">&amp;mdash;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>这是一个包含特殊字符的代码块：<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pre</span>&gt;</span><span class="tag">&lt;<span class="name">code</span>&gt;</span></span><br><span class="line">def escape_example():</span><br><span class="line">    print(&quot;<span class="symbol">&amp;lt;</span> <span class="symbol">&amp;gt;</span> <span class="symbol">&amp;amp;</span> <span class="symbol">&amp;quot;</span> <span class="symbol">&amp;apos;</span> <span class="symbol">&amp;copy;</span> <span class="symbol">&amp;reg;</span> <span class="symbol">&amp;trade;</span> <span class="symbol">&amp;euro;</span> <span class="symbol">&amp;pound;</span> <span class="symbol">&amp;yen;</span> <span class="symbol">&amp;cent;</span> <span class="symbol">&amp;sect;</span> <span class="symbol">&amp;para;</span> <span class="symbol">&amp;middot;</span> <span class="symbol">&amp;ndash;</span> <span class="symbol">&amp;mdash;</span>&quot;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">code</span>&gt;</span><span class="tag">&lt;/<span class="name">pre</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">  这是一个包含转义字符的链接：<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://example.com?q=test<span class="symbol">&amp;amp;</span>lang=en&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span>点击这里&lt;/a</span><br><span class="line">  &gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>结果:</p>
+<pre>
+转义字符测试
+------------
+
+这是一个包含各种转义字符的段落：
+
+- 小于号：< 
+- 大于号：> 
+- 和号：& 
+- 双引号：" 
+- 单引号：' 
+- 版权符号：copy 
+- 注册商标符号：reg 
+- 商标符号：trade 
+- 欧元符号：euro 
+- 英镑符号：pound 
+- 日元符号：yen 
+- 分符号：cent 
+- 章节符号：sect 
+- 段落符号：para 
+- 中间点：middot 
+- 短破折号：– 
+- 长破折号：–
+
+这是一个包含特殊字符的代码块：
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">escape_example</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&lt; &gt; &amp; \&quot; &#x27; copy reg trade euro pound yen cent sect para middot -- —&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+这是一个包含转义字符的链接：[点击这里](https://example.com?q=test&lang=en)
+```
+</pre>
+
+<p>emmm 博客显示原文有点问题 这里截个图:</p>
+<img src="/2025/01/16/jina-readerlm-v2-test/image.png" class="" title="结果">
+
+<p>这个测试重点验证模型对 HTML 转义字符的处理能力。我们构造了一个包含多种转义字符（如 <code>&amp;lt;</code>、<code>&amp;gt;</code>、<code>&amp;amp;</code> 等）的 HTML 片段，结果显示模型在转换过程中未能正确还原所有转义字符，甚至出现了错误转换（如将 <code>&amp;copy;</code> 转换为 copy）。此外，模型还错误地处理了 <code>&lt;pre&gt;</code> 标签内的内容，导致代码块中的转义字符也被错误地转换。这表明模型在处理转义字符时存在明显的不足，尤其是在需要保留原始格式的场景下，可能会严重影响输出结果的质量。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>LLM 在处理许多语言相关任务时表现出色，尤其是在自然语言生成、翻译、摘要等领域，效果往往优于传统方法。</p>
+<p>然而，当涉及到 HTML 转 Markdown 这种任务时，当前的 Jina ReaderLM v2 仍然存在不少问题。这些问题不仅体现在结构丢失、符号干扰、注释处理等方面，还表现在对 HTML 和 Markdown 这种相对宽松、自由的结构转换上。</p>
+<p>相比于 JSON 等严格结构化的数据转换，HTML 和 Markdown 的灵活性使得转换过程更加复杂，容易受到各种特殊符号、嵌套结构、注释等干扰，导致输出结果不稳定。因此，尽管 ReaderLM v2 在幻觉问题和无限生成问题上有所改进，但在实际应用中，尤其是对结构要求较高的场景下，仍需进一步优化和提升。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://huggingface.co/jinaai/ReaderLM-v2">jinaai&#x2F;ReaderLM-v2</a></p>
+<p><a target="_blank" rel="noopener" href="https://jina.ai/news/readerlm-v2-frontier-small-language-model-for-html-to-markdown-and-json/">ReaderLM v2：用于 HTML 转 Markdown 和 JSON 的前沿小型语言模型</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/" data-id="cm5yuyock001igcvady7w9w2x" data-title="Jina ReaderLM v2 测试记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">聊一聊AWS Route 53的托管区</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/01/16/jina-readerlm-v2-test/">Jina ReaderLM v2 测试记录</a>
+          </li>
+        
+          <li>
+            <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/">聊一聊AWS Route 53的托管区</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/">在remix中谨慎使用useFetcher进行poll</a>
+          </li>
+        
+          <li>
+            <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/">Spring Boot Docker优雅关机总结</a>
+          </li>
+        
+          <li>
+            <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 在 .article-title 后面插入一个 div，class 为 toc
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+      articleTitle.insertAdjacentElement('afterend', tocDiv);
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc', // 将目录插入到刚刚创建的 .toc 中
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>

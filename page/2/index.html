@@ -82,6 +82,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-docker-container-log-too-large" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/01/27/docker-container-log-too-large/" class="article-date">
+  <time class="dt-published" datetime="2024-01-26T16:16:00.000Z" itemprop="datePublished">2024-01-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/01/27/docker-container-log-too-large/">docker container目录下log过大解决</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>现在和朋友一起搞点东西,部署都很简单,服务器上装个<code>docker</code>,服务丢上去,写个docker compose配置就跑着.<br>有个服务最近流量涨的比较多,再加上有段时间没有部署,看服务器上的磁盘使用越来越多.  </p>
+<p>起初以为是应用的日志太多了,应用日志每天归档为gzip,保留60天,看了下并没有多少,用lsof检查也确认没有roll掉的被持有,再去容器内部看了下发现体积远没有这么大.  </p>
+<p>于是开始用<code>du --max-depth=1</code> 检查发现是<code>/var/lib/docker/containers/</code>目录, 再一看容器id就是这个服务, 再定位是<code>&lt;container-id&gt;-json.log </code>文件.</p>
+        
+          <p class="article-more-link">
+            <a href="/2024/01/27/docker-container-log-too-large/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2024/01/27/docker-container-log-too-large/" data-id="cm5yuyocb000ngcvaa92gciub" data-title="docker container目录下log过大解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-blazor-maui-hybrid-app-display-local-image" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/12/25/blazor-maui-hybrid-app-display-local-image/" class="article-date">
@@ -115,7 +162,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/" data-id="cm5vhdn53000gf4vaas2hfz4m" data-title="blazor maui hybrid app显示本地图片" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/" data-id="cm5yuyoc6000cgcva3l9va5o0" data-title="blazor maui hybrid app显示本地图片" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -160,7 +207,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/" data-id="cm5vhdn54000jf4vahbl6d9gf" data-title="使用Azure openai java SDK在流式输出时处理functioncall" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/" data-id="cm5yuyoc7000egcva1ef8ei4s" data-title="使用Azure openai java SDK在流式输出时处理functioncall" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -205,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/08/19/shopify-plugin-development-issue-tracking/" data-id="cm5vhdn5q002nf4va8genf7zv" data-title="shopify插件开发的问题记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/08/19/shopify-plugin-development-issue-tracking/" data-id="cm5yuyocw002pgcva214719wb" data-title="shopify插件开发的问题记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -258,7 +305,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/" data-id="cm5vhdn52000ff4va0mrecjp7" data-title="ChatGPT Plugin开发setup - Java(Spring Boot) Python(fastapi)" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/" data-id="cm5yuyoca000kgcva966zbisf" data-title="ChatGPT Plugin开发setup - Java(Spring Boot) Python(fastapi)" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -303,7 +350,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/04/08/leptos-tailwindcss/" data-id="cm5vhdn5h001sf4va0lo76zhu" data-title="leptos手工集成tailwindcss" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/04/08/leptos-tailwindcss/" data-id="cm5yuyoco001vgcvag46i3y1j" data-title="leptos手工集成tailwindcss" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -351,7 +398,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/02/22/translation-there-is-no-thread/" data-id="cm5vhdn66004jf4vabfnmf6bj" data-title="[翻译]没有线程" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/02/22/translation-there-is-no-thread/" data-id="cm5yuyod2003bgcva1eyi1b5z" data-title="[翻译]没有线程" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -400,7 +447,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/" data-id="cm5vhdn5c001cf4vaawwz9k7n" data-title="高性能MySQL(第4版) 第一章 MySQL架构 读书笔记" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/" data-id="cm5yuyocf0014gcva8po5an6p" data-title="高性能MySQL(第4版) 第一章 MySQL架构 读书笔记" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -490,7 +537,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/" data-id="cm5vhdn5o002gf4vafxdv8p9h" data-title="shardingsphere-jdbc 水平分表学习记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/" data-id="cm5yuyocv002jgcvahx57hxh3" data-title="shardingsphere-jdbc 水平分表学习记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -542,57 +589,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/" data-id="cm5vhdn64004ef4vacerv8q2d" data-title="[翻译]单线程共享可变性的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/" data-id="cm5yuyod00034gcvaarc25j9d" data-title="[翻译]单线程共享可变性的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-flink_kafka_avro_genericrecord" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2022/05/11/flink_kafka_avro_genericrecord/" class="article-date">
-  <time class="dt-published" datetime="2022-05-11T05:00:00.000Z" itemprop="datePublished">2022-05-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2022/05/11/flink_kafka_avro_genericrecord/">flink kafka source的avro反序列化问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>对接了一个<code>kafka</code>,里面的topic使用<code>avro</code>编码,且每个topic的<code>schema</code>都不相同使用schema registry管理。<br>现在要反序列化<code>key</code>和<code>message</code>,查看了现有的:</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-avro-confluent-registry<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>内的<code>ConfluentRegistryAvroDeserializationSchema</code>.<br>发现无论是<code>forSpecific</code>返回一个特定的类,还是<code>forGeneric</code>返回<code>GenericRecord</code>都需要指定<code>read schame</code>,而registry仅作为<code>write schema</code>使用, 也就是虽然返回的是<code>GenericRecord</code>, 但实际上都是同一个<code>Schema</code>反序列化的, 每个record的格式是一致的.</p>
-        
-          <p class="article-more-link">
-            <a href="/2022/05/11/flink_kafka_avro_genericrecord/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/" data-id="cm5vhdn57000wf4vahqr0a8m2" data-title="flink kafka source的avro反序列化问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
     </footer>
   </div>
   
@@ -654,6 +656,10 @@
       <ul>
         
           <li>
+            <a href="/2025/01/16/jina-readerlm-v2-test/">Jina ReaderLM v2 测试记录</a>
+          </li>
+        
+          <li>
             <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/">聊一聊AWS Route 53的托管区</a>
           </li>
         
@@ -667,10 +673,6 @@
         
           <li>
             <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
-          </li>
-        
-          <li>
-            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
           </li>
         
       </ul>

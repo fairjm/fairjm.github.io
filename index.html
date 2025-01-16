@@ -82,6 +82,55 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-jina-readerlm-v2-test" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/01/16/jina-readerlm-v2-test/" class="article-date">
+  <time class="dt-published" datetime="2025-01-16T03:33:00.000Z" itemprop="datePublished">2025-01-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/01/16/jina-readerlm-v2-test/">Jina ReaderLM v2 测试记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。<br>之前简单测试了下 v1, 结论是:</p>
+<ul>
+<li>幻觉严重, 尤其特别喜欢造 url</li>
+<li>很容易触发无限生成 比如 example1 example2…. 一直生成下去</li>
+</ul>
+<p>第一眼就是不可用就没继续了。<br>这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 markdown 的工具还是不够稳定。<br>这里的稳定性主要是指，与传统的基于语法树解析的工具相比，它在处理速度和结构识别的准确性上还有差距。他的确能生成不错的 markdown，但是很容易被正确结构但是内容文本里有特殊构造的&#x2F;或者有一些语法错误的 html 页面所影响。</p>
+<p>注意：这个博客里的测试只是为了列出 v2 的一些问题，针对问题进行特殊构造的测试，实际网页可能也遇不到文中提到的问题，具体以实际场景为准了。<br>顺道一提，这个模型是以 CC 协议发布的，所以商用场景需要遵守相关协议。</p>
+        
+          <p class="article-more-link">
+            <a href="/2025/01/16/jina-readerlm-v2-test/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/" data-id="cm5yuyock001igcvady7w9w2x" data-title="Jina ReaderLM v2 测试记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-aws-route-53-hosted-zones-features-pitfalls-migration-tips" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" class="article-date">
@@ -115,7 +164,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" data-id="cm5vhdn50000bf4va5thneror" data-title="聊一聊AWS Route 53的托管区" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/" data-id="cm5yuyoc6000bgcva4ccggxk6" data-title="聊一聊AWS Route 53的托管区" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -165,7 +214,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cm5vhdn55000mf4va81yi146m" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cm5yuyoc9000igcva7d0rhx9a" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -219,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" data-id="cm5vhdn5v002wf4va6k9l04ip" data-title="Spring Boot Docker优雅关机总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" data-id="cm5yuyocy002wgcva1cc3a9o4" data-title="Spring Boot Docker优雅关机总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -270,7 +319,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/" data-id="cm5vhdn5q002lf4vaa7cp7t7j" data-title="shopify CLI国内开发配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/" data-id="cm5yuyocw002ngcva59kxca6n" data-title="shopify CLI国内开发配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -315,7 +364,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/" data-id="cm5vhdn5n002af4va942v0eeo" data-title="react native的expo router安卓下modal不生效的解法" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/" data-id="cm5yuyocs002agcva2vcuh198" data-title="react native的expo router安卓下modal不生效的解法" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -360,7 +409,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/" data-id="cm5vhdn51000ef4va8oaecf83" data-title="AWS安装cloudwatch agent后没有指标出现解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/" data-id="cm5yuyoc9000ggcvac7mo2hfl" data-title="AWS安装cloudwatch agent后没有指标出现解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -405,7 +454,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/" data-id="cm5vhdn50000cf4vaab4y26vs" data-title="使用Azure openai java SDK序列化/反序列化message" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/" data-id="cm5yuyoc8000fgcva60m56eg3" data-title="使用Azure openai java SDK序列化/反序列化message" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -451,7 +500,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/" data-id="cm5vhdn5p002if4vaf4ni9ram" data-title="Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/" data-id="cm5yuyocv002lgcvagzc43rht" data-title="Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -499,58 +548,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/" data-id="cm5vhdn5m0028f4vac300hmka" data-title="playwright 一些方法解决被cloudflare block的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/" data-id="cm5yuyoct002fgcvah5m4f0z4" data-title="playwright 一些方法解决被cloudflare block的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-docker-container-log-too-large" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/01/27/docker-container-log-too-large/" class="article-date">
-  <time class="dt-published" datetime="2024-01-26T16:16:00.000Z" itemprop="datePublished">2024-01-27</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/01/27/docker-container-log-too-large/">docker container目录下log过大解决</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>现在和朋友一起搞点东西,部署都很简单,服务器上装个<code>docker</code>,服务丢上去,写个docker compose配置就跑着.<br>有个服务最近流量涨的比较多,再加上有段时间没有部署,看服务器上的磁盘使用越来越多.  </p>
-<p>起初以为是应用的日志太多了,应用日志每天归档为gzip,保留60天,看了下并没有多少,用lsof检查也确认没有roll掉的被持有,再去容器内部看了下发现体积远没有这么大.  </p>
-<p>于是开始用<code>du --max-depth=1</code> 检查发现是<code>/var/lib/docker/containers/</code>目录, 再一看容器id就是这个服务, 再定位是<code>&lt;container-id&gt;-json.log </code>文件.</p>
-        
-          <p class="article-more-link">
-            <a href="/2024/01/27/docker-container-log-too-large/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/01/27/docker-container-log-too-large/" data-id="cm5vhdn54000lf4vaec0yap91" data-title="docker container目录下log过大解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li></ul>
 
     </footer>
   </div>
@@ -613,6 +615,10 @@
       <ul>
         
           <li>
+            <a href="/2025/01/16/jina-readerlm-v2-test/">Jina ReaderLM v2 测试记录</a>
+          </li>
+        
+          <li>
             <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/">聊一聊AWS Route 53的托管区</a>
           </li>
         
@@ -626,10 +632,6 @@
         
           <li>
             <a href="/2024/09/22/shopify-cli-china-development-setup/">shopify CLI国内开发配置</a>
-          </li>
-        
-          <li>
-            <a href="/2024/06/19/react-native-expo-router-android-modal-not-working-solution/">react native的expo router安卓下modal不生效的解法</a>
           </li>
         
       </ul>
