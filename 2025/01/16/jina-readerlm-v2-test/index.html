@@ -180,13 +180,14 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>LLM 在处理许多语言相关任务时表现出色，尤其是在自然语言生成、翻译、摘要等领域，效果往往优于传统方法。</p>
 <p>然而，当涉及到 HTML 转 Markdown 这种任务时，当前的 Jina ReaderLM v2 仍然存在不少问题。这些问题不仅体现在结构丢失、符号干扰、注释处理等方面，还表现在对 HTML 和 Markdown 这种相对宽松、自由的结构转换上。</p>
 <p>相比于 JSON 等严格结构化的数据转换，HTML 和 Markdown 的灵活性使得转换过程更加复杂，容易受到各种特殊符号、嵌套结构、注释等干扰，导致输出结果不稳定。因此，尽管 ReaderLM v2 在幻觉问题和无限生成问题上有所改进，但在实际应用中，尤其是对结构要求较高的场景下，仍需进一步优化和提升。</p>
+<p>还测试了一些正常的页面，比如他例子里给的 yc 官网。对这些页面进行转换后，结果都比较正常，但是这速度是有点慢了，yc 官网不管用 colab(免费版)还是 jina 的 api(也是免费版)都需要将近 1 分钟才能返回，可能是免费版在排队吧，不过如果速度就是这么慢的话，可能只适合小量处理，这个等大佬做了量化之后再看看效果吧。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://huggingface.co/jinaai/ReaderLM-v2">jinaai&#x2F;ReaderLM-v2</a></p>
 <p><a target="_blank" rel="noopener" href="https://jina.ai/news/readerlm-v2-frontier-small-language-model-for-html-to-markdown-and-json/">ReaderLM v2：用于 HTML 转 Markdown 和 JSON 的前沿小型语言模型</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/" data-id="cm5yuyock001igcvady7w9w2x" data-title="Jina ReaderLM v2 测试记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/" data-id="cm5yvb49f001j0ova5rcdft9w" data-title="Jina ReaderLM v2 测试记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
