@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-01-16T03:33:00.000Z</updated>
+  <updated>2025-01-19T08:16:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,125 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>显卡的TOPS AI算力比较</title>
+    <link href="https://bingowith.me/2025/01/19/gpu-ai-tops-tables/"/>
+    <id>https://bingowith.me/2025/01/19/gpu-ai-tops-tables/</id>
+    <published>2025-01-19T08:16:00.000Z</published>
+    <updated>2025-01-19T08:16:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;虽然自己没设备但喜欢聊 😀，和别人讨论的时候经常要反复查，查询一下汇总，有可能填错了。。。到时候发现错误再订正吧。&lt;/p&gt;
+&lt;p&gt;AMD 的没找到哪个表&amp;#x2F;文档里有算 TOPS 的…就不列了&lt;/p&gt;
+&lt;h2 id=&quot;N-卡&quot;&gt;&lt;a href=&quot;#N-卡&quot; class=&quot;headerlink&quot; title=&quot;N 卡&quot;&gt;&lt;/a&gt;N 卡&lt;/h2&gt;&lt;p&gt;20 系到 40 系&lt;/p&gt;
+&lt;h3 id=&quot;GeForce-RTX-20-系列&quot;&gt;&lt;a href=&quot;#GeForce-RTX-20-系列&quot; class=&quot;headerlink&quot; title=&quot;GeForce RTX 20 系列&quot;&gt;&lt;/a&gt;GeForce RTX 20 系列&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;型号&lt;/th&gt;
+&lt;th&gt;架构&lt;/th&gt;
+&lt;th&gt;制程 (nm)&lt;/th&gt;
+&lt;th&gt;显存大小&lt;/th&gt;
+&lt;th&gt;显存类型&lt;/th&gt;
+&lt;th&gt;显存位宽&lt;/th&gt;
+&lt;th&gt;显存带宽 (GB&amp;#x2F;s)&lt;/th&gt;
+&lt;th&gt;峰值单精度 (FP32)&lt;/th&gt;
+&lt;th&gt;TOPS (AI)&lt;/th&gt;
+&lt;th&gt;TDP (W)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;td&gt;RTX 2080 Ti&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;11GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;352-bit&lt;/td&gt;
+&lt;td&gt;616&lt;/td&gt;
+&lt;td&gt;13.45 TFLOPS&lt;/td&gt;
+&lt;td&gt;114 TOPS&lt;/td&gt;
+&lt;td&gt;260&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2080 Super&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;8GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;256-bit&lt;/td&gt;
+&lt;td&gt;496&lt;/td&gt;
+&lt;td&gt;11.15 TFLOPS&lt;/td&gt;
+&lt;td&gt;89 TOPS&lt;/td&gt;
+&lt;td&gt;250&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2080&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;8GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;256-bit&lt;/td&gt;
+&lt;td&gt;448&lt;/td&gt;
+&lt;td&gt;10.07 TFLOPS&lt;/td&gt;
+&lt;td&gt;81 TOPS&lt;/td&gt;
+&lt;td&gt;225&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2070 Super&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;8GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;256-bit&lt;/td&gt;
+&lt;td&gt;448&lt;/td&gt;
+&lt;td&gt;9.06 TFLOPS&lt;/td&gt;
+&lt;td&gt;72 TOPS&lt;/td&gt;
+&lt;td&gt;215&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2070&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;8GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;256-bit&lt;/td&gt;
+&lt;td&gt;448&lt;/td&gt;
+&lt;td&gt;7.47 TFLOPS&lt;/td&gt;
+&lt;td&gt;65 TOPS&lt;/td&gt;
+&lt;td&gt;175&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2060 Super&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;8GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;256-bit&lt;/td&gt;
+&lt;td&gt;448&lt;/td&gt;
+&lt;td&gt;7.19 TFLOPS&lt;/td&gt;
+&lt;td&gt;57 TOPS&lt;/td&gt;
+&lt;td&gt;175&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RTX 2060&lt;/td&gt;
+&lt;td&gt;Turing&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;6GB&lt;/td&gt;
+&lt;td&gt;GDDR6&lt;/td&gt;
+&lt;td&gt;192-bit&lt;/td&gt;
+&lt;td&gt;336&lt;/td&gt;
+&lt;td&gt;6.45 TFLOPS&lt;/td&gt;
+&lt;td&gt;52 TOPS&lt;/td&gt;
+&lt;td&gt;160&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;</summary>
+    
+    
+    
+    
+    <category term="GPU" scheme="https://bingowith.me/tags/GPU/"/>
+    
+  </entry>
   
   <entry>
     <title>Jina ReaderLM v2 测试记录</title>
@@ -435,32 +554,6 @@
     
     
     <category term="java" scheme="https://bingowith.me/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[翻译]单线程共享可变性的问题</title>
-    <link href="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/"/>
-    <id>https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/</id>
-    <published>2022-10-26T04:12:00.000Z</published>
-    <updated>2022-10-26T04:12:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;原文链接: &lt;a href=&quot;https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/&quot;&gt;https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/&lt;/a&gt;&lt;br&gt;作者: &lt;a href=&quot;https://manishearth.github.io/&quot;&gt;Manish Goregaokar&lt;/a&gt;&lt;br&gt;翻译 by &lt;a href=&quot;https://bingowith.me/&quot;&gt;abaabaqua&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;注&lt;/strong&gt;: 这篇文章写的比较早,早期的Rust编译器有很多不友善的地方,代码示例中部分当时无法编译的现在已经可以了,译者会增改一些代码导致和原文不同.&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;Edit(2017年1月):我重新发现了&lt;a href=&quot;http://smallcultfollowing.com/babysteps/blog/2013/06/11/on-the-connection-between-memory-management-and-data-race-freedom/&quot;&gt;Niko的文章&lt;/a&gt;,文章也提到了这一点并达到了同样的认识.我怀疑我下意识地从这篇文章中得到了这个想法,至少是部分的想法.&lt;/p&gt;
-&lt;p&gt;这是我一直想写的一篇文章;Rust 1.0的发布给了我继续接下去的完美动力.&lt;/p&gt;
-&lt;p&gt;虽然这篇文章是讨论Rust设计中的一个选择,并且例子都是用Rust写的,但这里讨论的原则在很大程度上适用于其它语言.我还将尝试让那些没有Rust背景的人更容易理解这篇文章;如果需要解释一些代码或术语,请告诉我.&lt;/p&gt;
-&lt;p&gt;我将在这里讨论的是Rust做的一个选择,不允许同一数据有多个可变别名(或者当有active的不可变别名时只能有一个可变别名) ，即使是在同一个线程.本质上讲,它不允许做这样的事情:&lt;/p&gt;
-&lt;figure class=&quot;highlight rust&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;mut &lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;x&lt;/span&gt; = &lt;span class=&quot;type&quot;&gt;Vec&lt;/span&gt;::&lt;span class=&quot;title function_ invoke__&quot;&gt;new&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;ptr&lt;/span&gt; = &amp;amp;&lt;span class=&quot;keyword&quot;&gt;mut&lt;/span&gt; x; &lt;span class=&quot;comment&quot;&gt;// 获取队`x`的可变引用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ptr.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = x[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 不允许 (无法编译): 只要`ptr`是active的,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                  &lt;span class=&quot;comment&quot;&gt;// x不能读取 ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;);    &lt;span class=&quot;comment&quot;&gt;// .. 也不能写入&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;println!&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&amp;quot;&amp;#123;:?&amp;#125;&amp;quot;&lt;/span&gt;, ptr); &lt;span class=&quot;comment&quot;&gt;// 这段是译者新加 现在的编译器限制判断是否active更加智能 不是看整个作用域了&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 另外一种,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;mut &lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;x&lt;/span&gt; = &lt;span class=&quot;type&quot;&gt;Vec&lt;/span&gt;::&lt;span class=&quot;title function_ invoke__&quot;&gt;new&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;ptr&lt;/span&gt; = &amp;amp;x; &lt;span class=&quot;comment&quot;&gt;// 创建一个不可变引用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = ptr[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 允许, 不改变值&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;y&lt;/span&gt; = x[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]; &lt;span class=&quot;comment&quot;&gt;// 同样允许&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    x.&lt;span class=&quot;title function_ invoke__&quot;&gt;push&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// 不允许 (无法编译): 只要`ptr`是active,&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               &lt;span class=&quot;comment&quot;&gt;// `x`被冻结了可变性&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;println!&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&amp;quot;&amp;#123;:?&amp;#125;&amp;quot;&lt;/span&gt;, ptr); &lt;span class=&quot;comment&quot;&gt;// 译者新加 原因一样&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    
-    <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
-    
-    <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
     
   </entry>
   
