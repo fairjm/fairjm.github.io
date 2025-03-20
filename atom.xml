@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-01-19T08:16:00.000Z</updated>
+  <updated>2025-03-20T02:23:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next.js使用auth.js+dirzzle+postgresql报错分析</title>
+    <link href="https://bingowith.me/2025/03/20/nextjs-auth-dirzzle-postgresql-error/"/>
+    <id>https://bingowith.me/2025/03/20/nextjs-auth-dirzzle-postgresql-error/</id>
+    <published>2025-03-20T02:23:00.000Z</published>
+    <updated>2025-03-20T02:23:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在自己的测试项目里想着做登录功能，看到&lt;code&gt;authjs&lt;/code&gt;就接到项目里去，本身就使用的&lt;code&gt;drizzle&lt;/code&gt;，在不配置 db adapter 的情况下运行正常，但只要配置就会报错:&lt;/p&gt;
+&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;⨯ Error [TypeError]: Cannot read properties of undefined (reading &amp;#x27;reduce&amp;#x27;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at &amp;lt;unknown&amp;gt; (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:709:27)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at runModuleExecutionHooks (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:755:9)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at instantiateModule (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:707:9)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at getOrInstantiateModuleFromParent (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:640:12)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at esmImport (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:143:20)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at [project]/src/db/db.ts [middleware-edge] (ecmascript) (.next&#92;server&#92;edge&#92;chunks&#92;[root of the server]__a687996d._.js:28:218)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   at &amp;lt;unknown&amp;gt; (.next&#92;server&#92;edge&#92;chunks&#92;edge-wrapper_c7ecd8c0.js:709:27)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;无法启动&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="nextjs" scheme="https://bingowith.me/tags/nextjs/"/>
+    
+    <category term="js" scheme="https://bingowith.me/tags/js/"/>
+    
+    <category term="drizzle" scheme="https://bingowith.me/tags/drizzle/"/>
+    
+    <category term="auth.js" scheme="https://bingowith.me/tags/auth-js/"/>
+    
+  </entry>
   
   <entry>
     <title>显卡的TOPS AI算力比较</title>
@@ -529,31 +555,6 @@
     
     
     <category term="MySQL" scheme="https://bingowith.me/tags/MySQL/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>shardingsphere-jdbc 水平分表学习记录</title>
-    <link href="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/"/>
-    <id>https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/</id>
-    <published>2022-11-05T07:43:10.000Z</published>
-    <updated>2022-11-05T07:51:22.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;前司使用的是自己魔改的&lt;code&gt;TDDL&lt;/code&gt;,在家时间比较多就尝试学一些业内比较常用的中间件.  &lt;/p&gt;
-&lt;p&gt;这里记录一下学习中遇到的一些问题.  &lt;/p&gt;
-&lt;h1 id=&quot;环境&quot;&gt;&lt;a href=&quot;#环境&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="java" scheme="https://bingowith.me/tags/java/"/>
     
   </entry>
   
