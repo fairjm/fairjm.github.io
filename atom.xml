@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-03-20T02:23:00.000Z</updated>
+  <updated>2025-05-18T09:44:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next.js使用filerobot-image-editor</title>
+    <link href="https://bingowith.me/2025/05/18/nextjs-filerobot-image-editor/"/>
+    <id>https://bingowith.me/2025/05/18/nextjs-filerobot-image-editor/</id>
+    <published>2025-05-18T09:44:00.000Z</published>
+    <updated>2025-05-18T09:44:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;想在工具站里集成一下图片编辑工具，找了一圈发现&lt;a href=&quot;https://github.com/scaleflex/filerobot-image-editor&quot;&gt;filerobot-image-editor&lt;/a&gt;相当不错。&lt;/p&gt;
+&lt;p&gt;按照&lt;code&gt;nextjs&lt;/code&gt;的官方文档来的，什么 lazy, dymanic 都用上了，还是嗝屁了，最后还是直接用 cdn js+浏览器端 js 解决不把模块引入了, 记录一下解法。&lt;/p&gt;
+&lt;p&gt;最后的效果见: &lt;a href=&quot;https://merchmindai.net/tools/image-editor?from=dev-blog&quot;&gt;Image Editor | merchmindai&lt;/a&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="nextjs" scheme="https://bingowith.me/tags/nextjs/"/>
+    
+    <category term="filerobot-image-editor" scheme="https://bingowith.me/tags/filerobot-image-editor/"/>
+    
+    <category term="CSR" scheme="https://bingowith.me/tags/CSR/"/>
+    
+  </entry>
   
   <entry>
     <title>Next.js使用auth.js+dirzzle+postgresql报错分析</title>
@@ -264,16 +287,21 @@
     <link href="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/"/>
     <id>https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/</id>
     <published>2024-09-22T06:01:00.000Z</published>
-    <updated>2024-09-22T06:01:00.000Z</updated>
+    <updated>2025-05-18T09:38:00.000Z</updated>
     
     
-    <summary type="html">&lt;p&gt;Shopify CLI是开发Shopify应用和主题的重要工具,但在中国等网络受限地区使用时常遇到困难。&lt;br&gt;官方仓库有一些issue都提到了这些问题, 但是官方一直没有加对应的配置。&lt;br&gt;比如: &lt;a href=&quot;https://github.com/Shopify/cli/issues/3225&quot;&gt;[Bug]: Execute Shopify theme dev with error message: request to xxx.theme.json?xxx processing failed, reason: read ETIMEDOUT&lt;/a&gt;&lt;br&gt;本文将指导你如何正确配置Shopify CLI,以便在中国顺利进行Shopify开发。&lt;/p&gt;
+    <summary type="html">&lt;p&gt;Shopify CLI 是开发 Shopify 应用和主题的重要工具,但在中国等网络受限地区使用时常遇到困难。&lt;br&gt;官方仓库有一些 issue 都提到了这些问题, 但是官方一直没有加对应的配置。&lt;br&gt;比如: &lt;a href=&quot;https://github.com/Shopify/cli/issues/3225&quot;&gt;[Bug]: Execute Shopify theme dev with error message: request to xxx.theme.json?xxx processing failed, reason: read ETIMEDOUT&lt;/a&gt;&lt;br&gt;本文将指导你如何正确配置 Shopify CLI,以便在中国顺利进行 Shopify 开发。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;2025&amp;#x2F;05&amp;#x2F;18 更新 官方已经加入了 proxy 参数&lt;br&gt;参考: &lt;a href=&quot;https://github.com/Shopify/cli/blob/d0bbf05c28e22ad8b4ba17767bf7aff28ac71ddc/RELEASE_NOTES/3.78.md?plain=1#L2&quot;&gt;Release Note 3.78&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Add HTTP proxy support with the environment variables &lt;code&gt;SHOPIFY_HTTP_PROXY&lt;/code&gt; and &lt;code&gt;SHOPIFY_HTTPS_PROXY&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h2 id=&quot;主要问题&quot;&gt;&lt;a href=&quot;#主要问题&quot; class=&quot;headerlink&quot; title=&quot;主要问题&quot;&gt;&lt;/a&gt;主要问题&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;Shopify CLI默认不支持配置代理&lt;/li&gt;
+&lt;li&gt;Shopify CLI 默认不支持配置代理&lt;/li&gt;
 &lt;li&gt;不读取系统环境变量&lt;/li&gt;
-&lt;li&gt;内置的Cloudflare tunneling在中国连接不稳定&lt;/li&gt;
+&lt;li&gt;内置的 Cloudflare tunneling 在中国连接不稳定&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;本指南基于Shopify CLI 3.67.1版本。&lt;/p&gt;</summary>
+&lt;p&gt;本指南基于 Shopify CLI 3.67.1 版本。&lt;/p&gt;</summary>
     
     
     
@@ -534,27 +562,6 @@
     
     
     <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>高性能MySQL(第4版) 第一章 MySQL架构 读书笔记</title>
-    <link href="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/"/>
-    <id>https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/</id>
-    <published>2022-11-08T06:20:01.000Z</published>
-    <updated>2022-11-08T06:20:01.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;这本书去年11月出的,今年中文版也出了,并且直接上了&lt;a href=&quot;https://weread.qq.com/web/bookDetail/00a32b70813ab746fg018ec7&quot;&gt;微信读书&lt;/a&gt;,之后有空就读一读,分享下读书笔记~    &lt;/p&gt;
-&lt;p&gt;原文内容比较充实,建议有时间可以读一下原文.&lt;br&gt;第一章主要是个概览.&lt;/p&gt;
-&lt;h1 id=&quot;MySQL的逻辑架构&quot;&gt;&lt;a href=&quot;#MySQL的逻辑架构&quot; class=&quot;headerlink&quot; title=&quot;MySQL的逻辑架构&quot;&gt;&lt;/a&gt;MySQL的逻辑架构&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;/images/hpm4_ch01_01.png&quot;&gt;&lt;br&gt;默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.&lt;br&gt;线程池&lt;/p&gt;
-&lt;p&gt;优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的统计信息.&lt;/p&gt;
-&lt;p&gt;query cache 5.7.20弃用 8.0移除&lt;br&gt;考虑应用自己在redis中缓存&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="MySQL" scheme="https://bingowith.me/tags/MySQL/"/>
     
   </entry>
   

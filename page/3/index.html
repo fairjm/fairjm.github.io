@@ -82,6 +82,55 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-high-performance-mysql-4th-ch01-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/11/08/high-performance-mysql-4th-ch01-note/" class="article-date">
+  <time class="dt-published" datetime="2022-11-08T06:20:01.000Z" itemprop="datePublished">2022-11-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/11/08/high-performance-mysql-4th-ch01-note/">高性能MySQL(第4版) 第一章 MySQL架构 读书笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这本书去年11月出的,今年中文版也出了,并且直接上了<a target="_blank" rel="noopener" href="https://weread.qq.com/web/bookDetail/00a32b70813ab746fg018ec7">微信读书</a>,之后有空就读一读,分享下读书笔记~    </p>
+<p>原文内容比较充实,建议有时间可以读一下原文.<br>第一章主要是个概览.</p>
+<h1 id="MySQL的逻辑架构"><a href="#MySQL的逻辑架构" class="headerlink" title="MySQL的逻辑架构"></a>MySQL的逻辑架构</h1><p><img src="/images/hpm4_ch01_01.png"><br>默认情况下,每个客户端连接都会在服务器进程中拥有一个线程,该连接的查询只会在这个单独的线程中执行,该线程驻留在一个内核或者CPU上.<br>线程池</p>
+<p>优化器会向存储引擎询问它的一些功能、某个具体操作的成本,以及表数据的统计信息.</p>
+<p>query cache 5.7.20弃用 8.0移除<br>考虑应用自己在redis中缓存</p>
+        
+          <p class="article-more-link">
+            <a href="/2022/11/08/high-performance-mysql-4th-ch01-note/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2022/11/08/high-performance-mysql-4th-ch01-note/" data-id="cmatmsz19001708vag8pzank5" data-title="高性能MySQL(第4版) 第一章 MySQL架构 读书笔记" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-shardingsphere-jdbc-learn-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2022/11/05/shardingsphere-jdbc-learn-note/" class="article-date">
@@ -158,7 +207,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/" data-id="cm8gseuqc002mi4vaat4y5iuu" data-title="shardingsphere-jdbc 水平分表学习记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/11/05/shardingsphere-jdbc-learn-note/" data-id="cmatmsz1r002p08va8rjh0rnb" data-title="shardingsphere-jdbc 水平分表学习记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -210,7 +259,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/" data-id="cm8gseuqi003bi4vagjg3fqj3" data-title="[翻译]单线程共享可变性的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/" data-id="cmatmsz1x003e08va9eby5gsc" data-title="[翻译]单线程共享可变性的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -257,7 +306,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/" data-id="cm8gseupu000wi4va0mjuhjdf" data-title="flink kafka source的avro反序列化问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/" data-id="cmatmsz17000y08va0fzjfolz" data-title="flink kafka source的avro反序列化问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -301,7 +350,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/" data-id="cm8gseuqa002hi4vadil9chxu" data-title="windwos下运行hadoop相关代码(hdfs,mr)" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/" data-id="cmatmsz1q002l08va9p7m9929" data-title="windwos下运行hadoop相关代码(hdfs,mr)" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -349,7 +398,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/" data-id="cm8gseuqf0030i4va04jn0yjk" data-title="spring boot应用 从mysql迁移h2" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/" data-id="cmatmsz1u003308vagkkn1zgw" data-title="spring boot应用 从mysql迁移h2" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -394,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" data-id="cm8gseuqa002ei4vag4wr9p0z" data-title="prestosql(trino) hive时间戳显示不正确排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" data-id="cmatmsz1p002i08vacfzg31ce" data-title="prestosql(trino) hive时间戳显示不正确排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -438,7 +487,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/01/08/hexo-github-action/" data-id="cm8gseupw0011i4vadjo7feml" data-title="Hexo github action注意事项" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/01/08/hexo-github-action/" data-id="cmatmsz19001508va98yj6jn4" data-title="Hexo github action注意事项" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -484,7 +533,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/" data-id="cm8gseuqi0039i4vad8618ekq" data-title="[翻译]async: 什么是blocking" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/" data-id="cmatmsz1x003d08vae0xf97me" data-title="[翻译]async: 什么是blocking" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -529,56 +578,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2021/05/05/hello-world/" data-id="cm8gseupx0013i4va2u8c4tt3" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2021/05/05/hello-world/" data-id="cmatmsz17001108va1z6a0krg" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-et-lt-intro" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2019/10/03/et-lt-intro/" class="article-date">
-  <time class="dt-published" datetime="2019-10-03T14:46:52.000Z" itemprop="datePublished">2019-10-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2019/10/03/et-lt-intro/">理一理Edge-triggered和Level-triggered</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>最近群里又在讨论java的NIO,提到了NIO使用的lt而netty使用JNI在linux和MacOS&#x2F;BSD中封装了et.<br>之前对这两个概念笼统了解了下,并没有去查阅额外资料,仅限知道lt在缓冲区还有数据的情况下就会被poll出来,而et则需要有新的请求&#x2F;事件发生.<br>这次查阅了点资料,汇总一些数据来简单(毕竟也没有那么深入..)谈谈这两个概念.  </p>
-        
-          <p class="article-more-link">
-            <a href="/2019/10/03/et-lt-intro/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2019/10/03/et-lt-intro/" data-id="cm8gseupt000ti4va1antdzlb" data-title="理一理Edge-triggered和Level-triggered" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li></ul>
 
     </footer>
   </div>
@@ -609,7 +613,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
     </div>
   </div>
 
@@ -619,7 +623,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 10px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nextjs/" style="font-size: 10px;">nextjs</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CSR/" style="font-size: 10px;">CSR</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 10px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nextjs/" style="font-size: 12px;">nextjs</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
     </div>
   </div>
 
@@ -628,7 +632,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
     </div>
   </div>
 
@@ -639,6 +643,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2025/05/18/nextjs-filerobot-image-editor/">Next.js使用filerobot-image-editor</a>
+          </li>
         
           <li>
             <a href="/2025/03/20/nextjs-auth-dirzzle-postgresql-error/">Next.js使用auth.js+dirzzle+postgresql报错分析</a>
@@ -654,10 +662,6 @@
         
           <li>
             <a href="/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/">聊一聊AWS Route 53的托管区</a>
-          </li>
-        
-          <li>
-            <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/">在remix中谨慎使用useFetcher进行poll</a>
           </li>
         
       </ul>
