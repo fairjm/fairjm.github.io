@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-05-18T09:44:00.000Z</updated>
+  <updated>2025-06-16T16:54:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>[翻译]我如何使用 Claude Code</title>
+    <link href="https://bingowith.me/2025/06/17/how-i-use-claude-code/"/>
+    <id>https://bingowith.me/2025/06/17/how-i-use-claude-code/</id>
+    <published>2025-06-16T16:54:00.000Z</published>
+    <updated>2025-06-16T16:54:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;strong&gt;原文出处:&lt;/strong&gt; &lt;a href=&quot;https://spiess.dev/blog/how-i-use-claude-code&quot;&gt;https://spiess.dev/blog/how-i-use-claude-code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一个月前，我订阅了 Claude Max。在此之前，我已经使用包括 Claude Code 在内的 AI 代理一段时间了，但随着统一价格的推出，我的使用量猛增，它已成为我许多任务的日常驱动力。我发现自己现在去 VS Code 的次数少了很多。&lt;/p&gt;
+&lt;p&gt;由于 AI 代理目前对每个人来说都是新事物，我想分享一些我最近注意到模式可能会很有趣。以下是我如何使用 Claude code。&lt;/p&gt;
+&lt;h2 id=&quot;开始新对话-Start-New-Threads&quot;&gt;&lt;a href=&quot;#开始新对话-Start-New-Threads&quot; class=&quot;headerlink&quot; title=&quot;开始新对话 (Start New Threads)&quot;&gt;&lt;/a&gt;开始新对话 (Start New Threads)&lt;/h2&gt;&lt;p&gt;如果说我希望你从这篇文章中学到一件事，那就是你应该更频繁地调用 &lt;code&gt;/clear&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;AI 代理往往随着对话时间的延长而变得更不可预测。当你提出不同问题时尤其如此。我发现即使这意味着重复一些指令，创建一个新的提示通常会更有效。&lt;/p&gt;
+&lt;p&gt;一旦我开始更积极地这样做，我的结果就显著改善了。而且我绝对不是唯一一个提出这个建议的人。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="llm" scheme="https://bingowith.me/tags/llm/"/>
+    
+    <category term="claude" scheme="https://bingowith.me/tags/claude/"/>
+    
+  </entry>
   
   <entry>
     <title>Next.js使用filerobot-image-editor</title>
@@ -542,26 +566,6 @@
     
     
     <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[翻译]没有线程</title>
-    <link href="https://bingowith.me/2023/02/22/translation-there-is-no-thread/"/>
-    <id>https://bingowith.me/2023/02/22/translation-there-is-no-thread/</id>
-    <published>2023-02-22T06:48:00.000Z</published>
-    <updated>2023-02-22T06:48:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;原文来自:&lt;a href=&quot;https://blog.stephencleary.com/2013/11/there-is-no-thread.html&quot;&gt;https://blog.stephencleary.com/2013/11/there-is-no-thread.html&lt;/a&gt;&lt;br&gt;作者:&lt;a href=&quot;https://blog.stephencleary.com/&quot;&gt;Stephen Cleary&lt;/a&gt;&lt;br&gt;翻译 by &lt;a href=&quot;https://bingowith.me/&quot;&gt;abaabaqua&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;这是最纯粹形式的异步的一个基本事实：没有线程。&lt;/p&gt;
-&lt;p&gt;反对这一事实的人很多。”不”,他们喊道,”如果我正在等待手术，一定有一个线程在等待！它可能是一个线程池线程。或者操作系统线程！或者带有设备驱动程序的东西……”&lt;/p&gt;
-&lt;p&gt;不要理会那些哭声。如果异步操作是纯粹的，那么就没有线程。&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="翻译" scheme="https://bingowith.me/tags/%E7%BF%BB%E8%AF%91/"/>
     
   </entry>
   

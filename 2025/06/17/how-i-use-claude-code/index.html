@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>[翻译]我如何使用 Claude Code | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原文出处: https:&#x2F;&#x2F;spiess.dev&#x2F;blog&#x2F;how-i-use-claude-code 一个月前，我订阅了 Claude Max。在此之前，我已经使用包括 Claude Code 在内的 AI 代理一段时间了，但随着统一价格的推出，我的使用量猛增，它已成为我许多任务的日常驱动力。我发现自己现在去 VS Code 的次数少了很多。 由于 AI 代理目前对每个人来说都是新事物，我想分享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]我如何使用 Claude Code">
+<meta property="og:url" content="https://bingowith.me/2025/06/17/how-i-use-claude-code/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="原文出处: https:&#x2F;&#x2F;spiess.dev&#x2F;blog&#x2F;how-i-use-claude-code 一个月前，我订阅了 Claude Max。在此之前，我已经使用包括 Claude Code 在内的 AI 代理一段时间了，但随着统一价格的推出，我的使用量猛增，它已成为我许多任务的日常驱动力。我发现自己现在去 VS Code 的次数少了很多。 由于 AI 代理目前对每个人来说都是新事物，我想分享">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-16T16:54:00.000Z">
+<meta property="article:modified_time" content="2025-06-16T16:54:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="llm">
+<meta property="article:tag" content="claude">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-how-i-use-claude-code" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/06/17/how-i-use-claude-code/" class="article-date">
+  <time class="dt-published" datetime="2025-06-16T16:54:00.000Z" itemprop="datePublished">2025-06-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      [翻译]我如何使用 Claude Code
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><strong>原文出处:</strong> <a target="_blank" rel="noopener" href="https://spiess.dev/blog/how-i-use-claude-code">https://spiess.dev/blog/how-i-use-claude-code</a></p>
+<p>一个月前，我订阅了 Claude Max。在此之前，我已经使用包括 Claude Code 在内的 AI 代理一段时间了，但随着统一价格的推出，我的使用量猛增，它已成为我许多任务的日常驱动力。我发现自己现在去 VS Code 的次数少了很多。</p>
+<p>由于 AI 代理目前对每个人来说都是新事物，我想分享一些我最近注意到模式可能会很有趣。以下是我如何使用 Claude code。</p>
+<h2 id="开始新对话-Start-New-Threads"><a href="#开始新对话-Start-New-Threads" class="headerlink" title="开始新对话 (Start New Threads)"></a>开始新对话 (Start New Threads)</h2><p>如果说我希望你从这篇文章中学到一件事，那就是你应该更频繁地调用 <code>/clear</code>。</p>
+<p>AI 代理往往随着对话时间的延长而变得更不可预测。当你提出不同问题时尤其如此。我发现即使这意味着重复一些指令，创建一个新的提示通常会更有效。</p>
+<p>一旦我开始更积极地这样做，我的结果就显著改善了。而且我绝对不是唯一一个提出这个建议的人。</p>
+<span id="more"></span>
+
+<h2 id="创建精确的提示-Create-Precise-Prompts"><a href="#创建精确的提示-Create-Precise-Prompts" class="headerlink" title="创建精确的提示 (Create Precise Prompts)"></a>创建精确的提示 (Create Precise Prompts)</h2><p>我觉得这不言而喻，但是当你与一个患有失忆症的新毕业生（我喜欢这样想 Claude）一起工作时，写下你脑海中所有的上下文是很重要的。这很难，坦率地说，我自己在这方面也做得不太好，但是你能给 Claude 提供的上下文越多，它就会越有效。如果你正在考虑一些边缘情况，一定要向 Claude 提及。如果你记得“过去在这个代码库中，我们曾针对这类问题使用过类似的模式”，把它写下来！提示越精确，Claude 的表现就越好。读心术技术目前还没有实现。</p>
+<p>尝试思考任何隐含的上下文。例如，如果你要求 Claude 创建一个现代设计，它可能不知道你所说的现代是什么意思。提供示例可能会更好（例如，创建一个类似 Linear 的应用程序 UI 设计）。</p>
+<h2 id="让-Claude-Code-使用-Claude-Code"><a href="#让-Claude-Code-使用-Claude-Code" class="headerlink" title="让 Claude Code 使用 Claude Code"></a>让 Claude Code 使用 Claude Code</h2><p>你知道你可以将 Claude Code 的工具用作 MCP 服务器 (<code>claude mcp serve</code>) 吗？当我发现这一点时，我研究了它公开了哪些工具，并注意到一个名为 <code>Task</code> 的工具。这个工具的前提是启动一个子代理，该子代理将拥有与主代理相同的工具访问权限（除了它不能生成另一个子任务），并报告结果。</p>
+<p>知道这个功能可用在你遇到需要监督者处理更复杂问题时非常方便。以下是我最近如何使用此功能以四种不同角色对同一问题进行深入研究的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; 阅读当前目录中的文件，以推断构建 Tailwind Plus 组件的模式。你应该生成4个具有略微不同优先级的子任务（例如，设计颜色导出、可访问性导出、移动/响应式专家、整体风格专家）并比较它们的结果。</span><br><span class="line"> ✻ 思考中…</span><br><span class="line"> 现在我将生成4个具有不同优先级的专业子任务，以分析组件的各个方面。</span><br><span class="line"> ⏺ Task(设计颜色专家分析)</span><br><span class="line"> ⎿ 完成 (24 次工具使用 · 41.5k tokens · 3分 4.4秒)</span><br><span class="line"> ⏺ Task(可访问性专家分析)</span><br><span class="line"> ⎿ 完成 (15 次工具使用 · 38.0k tokens · 2分 0.0秒)</span><br><span class="line"> ⏺ Task(移动/响应式专家分析)</span><br><span class="line"> ⎿ 完成 (14 次工具使用 · 45.5k tokens · 2分 1.2秒)</span><br><span class="line"> ⏺ Task(整体风格专家分析)</span><br><span class="line"> ⎿ 完成 (23 次工具使用 · 58.7k tokens · 2分 22.0秒)</span><br></pre></td></tr></table></figure>
+
+<p>这太棒了，而且可以并行完成。这是一种保持主任务上下文窗口有序并让 Claude 保持专注的好方法。</p>
+<h2 id="告诉-Claude-去思考"><a href="#告诉-Claude-去思考" class="headerlink" title="告诉 Claude 去思考"></a>告诉 Claude 去思考</h2><p>就像我们这些血肉之躯的老人类一样，Claude 默认是懒惰的。例如，当你告诉 Claude 做某事时，它会选择阻力最小的路径。如果你告诉它至少做三件事，我敢打赌它一件多余的事都不会做。</p>
+<p>对于使用<a target="_blank" rel="noopener" href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/extended-thinking-tips">扩展思维能力</a>也是如此。为了获得更好的结果，尤其是在规划过程中，我建议告诉 Claude <code>ultrathink</code>。</p>
+<h2 id="编辑之前的消息"><a href="#编辑之前的消息" class="headerlink" title="编辑之前的消息"></a>编辑之前的消息</h2><p>每当你过于急切地点击发送，或者只是觉得之前的消息可以更精确以获得更好的结果时，你可以按两次 <code>Escape</code>键跳转到之前的消息并分叉对话。我一直用这个方法来优化提示，或者只是让 Claude 再试一次。</p>
+<p>哦，如果你想回到之前的状态，可以用 <code>--resume</code> 标志启动 Claude，以列出所有先前的对话线程。</p>
+<h2 id="Yolo-模式"><a href="#Yolo-模式" class="headerlink" title="Yolo 模式"></a>Yolo 模式</h2><p>这可能是我极不负责任的行为，但我现在大多使用 <code>--dangerously-skip-permissions</code> 运行 Claude（感谢 <a target="_blank" rel="noopener" href="https://steipete.me/posts/2025/claude-code-is-my-computer">Peter</a> 带坏了我）。并非所有事情都需要这样做，但是如果我让 Claude 处理一些长时间运行的任务，我真的不想每分钟都因为它使用了一个新的终端命令而不得不切换回它。</p>
+<p>我在我的 zsh 配置文件中这样设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> yolo=<span class="string">&quot;claude --dangerously-skip-permissions&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>有趣的是，既然 Claude 可以为所欲为，我也更频繁地遇到速率限制配额警告了。</p>
+<h2 id="MCP-服务器"><a href="#MCP-服务器" class="headerlink" title="MCP 服务器"></a>MCP 服务器</h2><p>我个人对 MCP 服务器并不特别兴奋，因为它们没有真正给我带来任何价值。在大多数情况下，我发现它们只是用我大部分时间都不需要的东西消耗宝贵的 token。Claude Code 内置的工具对我来说已经足够了（尤其是在按照我这里概述的方式使用时）。</p>
+<p>过去，我使用过 Playwright MCP。虽然看到 Claude 启动浏览器、点击按钮和截屏非常引人入胜，但我发现它只是快速填满上下文窗口，而并没有真正带来更好的结果。</p>
+<h2 id="Claude-SDK"><a href="#Claude-SDK" class="headerlink" title="Claude SDK"></a>Claude SDK</h2><p>Claude 有一个 SDK。它非常强大，特别是如果你乐于处理 stream-json 输出格式的话。但即使对于小事情，能够直接将提示传递给 <code>claude</code> 并让它打印回回复也带来了极大的便利。</p>
+<p>例如，我的路径中有一个 <code>gcauto</code> 可执行文件，它执行以下操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">git commit -m <span class="string">&quot;<span class="subst">$(claude -p <span class="string">&quot;查看暂存的 git 更改并创建一个总结性的 git 提交标题。只回复标题，不要确认。&quot;</span>)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>所以现在每当我提交东西时，我只需将它们暂存然后运行 <code>gcauto</code>。</p>
+<h2 id="规划模式-Planning-Mode"><a href="#规划模式-Planning-Mode" class="headerlink" title="规划模式 (Planning Mode)"></a>规划模式 (Planning Mode)</h2><p>Claude Code 有一个内置的规划模式，当你按两次 <code>Shift+Tab</code> 时会触发。在这种模式下，Claude 不会写入你的文件系统。</p>
+<p>不过，我个人喜欢用另一个模型进行规划，只是为了增加一点趣味性。在过去的几周里，我一直在 Google AI Studio 中直接使用 Gemini 2.5 Pro。我真的不知道这怎么可能，但我好像甚至不需要为此付费？</p>
+<h2 id="让-Claude-阅读文档-Let-Claude-RTFM"><a href="#让-Claude-阅读文档-Let-Claude-RTFM" class="headerlink" title="让 Claude 阅读文档 (Let Claude RTFM)"></a>让 Claude 阅读文档 (Let Claude RTFM)</h2><p>我一开始犯的一个菜鸟错误是告诉 Claude 用框架 x 建立一个新项目。当然，这行得通，但我注意到 Claude 经常使用过时的设置和项目结构，尤其是对于快速发展的前端框架！</p>
+<p>我现在做的是让 Claude 先阅读手册。这可以通过不同的方式完成：</p>
+<ul>
+<li>粘贴文档链接，让 Claude 先阅读。</li>
+<li>让 Claude 找出最先进的技术。</li>
+<li>使用 <code>Task</code> 工具让 Claude 对特定主题进行深入研究。</li>
+</ul>
+<p>深度研究任务的示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; 创建一个深度研究任务，以找出如何将网站从 tailwind 3 迁移到 4，然后向我展示结果的简短摘要。</span><br><span class="line"> ⏺ 我将创建一个研究任务来调查从 Tailwind CSS v3 迁移到 v4 的问题，重点关注你的 Tailwind UI 代码库的特定上下文。</span><br><span class="line"> ⏺ Task(Tailwind v3 到 v4 迁移研究)</span><br><span class="line"> ⎿ 完成 (4 次工具使用 · 29.9k tokens · 5分 47.6秒)</span><br><span class="line"> ⏺ 摘要</span><br><span class="line"> 从 Tailwind CSS v3 迁移到 v4 涉及重大更改，但带来了主要的性能改进（构建速度提高3.5倍）和更好的开发人员体验。关键点：</span><br><span class="line"> - 使用自动升级工具： `npx @tailwindcss/upgrade@next`</span><br><span class="line"> - 配置从 JavaScript 优先转变为 CSS 优先，使用 `@theme` 指令。</span><br><span class="line"> - 重大更改包括放弃了对某些浏览器的支持、新的导入语法以及移除了已弃用的实用程序。</span><br><span class="line"> - 性能提升：构建时间现在以微秒为单位。</span><br><span class="line"> - 容器查询现在是内置的（不需要插件）。</span><br><span class="line"> 升级工具使迁移变得简单直接，但要计划好测试时间，以确保所有组件都能正确呈现。</span><br></pre></td></tr></table></figure>
+
+<h2 id="语音输入-Voice-Input"><a href="#语音输入-Voice-Input" class="headerlink" title="语音输入 (Voice Input)"></a>语音输入 (Voice Input)</h2><p>像 <a target="_blank" rel="noopener" href="https://superwhisper.com/">Superwhisper</a> 这样的应用程序使口述提示变得非常容易。我发现当我想写一个较长的提示时，这非常有效，因为它能更快地将我的想法表达出来。</p>
+<p>这对于任何 LLM 输入字段都非常有效，真的，因为 LLM 通常能够理解你的意思，即使转录质量差且充满错误。</p>
+<h2 id="尽早暂存，经常暂存-Stage-Early-Stage-Often"><a href="#尽早暂存，经常暂存-Stage-Early-Stage-Often" class="headerlink" title="尽早暂存，经常暂存 (Stage Early, Stage Often)"></a>尽早暂存，经常暂存 (Stage Early, Stage Often)</h2><p>我在 Claude Code 中缺少的一个功能是自动创建文件系统快照的能力。我经常遇到 Claude 过于兴奋并开始进行大量更改而我并不希望它这样做的情况。如果在我已经获得一些好的更改之后发生这种情况，这可能会把工作目录搞得一团糟。</p>
+<p>为了避免这种情况，我开始尽早并经常地暂存（即 <code>git add</code>）更改。如果我对一次操作的结果满意，我通常会暂存所有内容，这样我就知道以后可以轻松地恢复到这个状态。</p>
+<h2 id="Git-Worktrees"><a href="#Git-Worktrees" class="headerlink" title="Git Worktrees"></a>Git Worktrees</h2><p>我对 Claude Code 非常着迷，以至于我现在在我的机器上为我从事的每个主要项目至少保留两个工作树。这使我可以在同一个仓库中让 Claude 处理两个不同的问题。</p>
+<p>设置起来也非常简单！就像创建一个分支，但代码会放在不同的目录中。在你的 git 仓库中运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git worktree add ../tailwindcss.com-2 chore/upgrade-next</span><br></pre></td></tr></table></figure>
+
+<p>然后，瞧，你现在就有另一个工作目录让 Claude Code 尽情发挥了。</p>
+<h2 id="尝试一次性工作-Experiment-with-One-Off-Work"><a href="#尝试一次性工作-Experiment-with-One-Off-Work" class="headerlink" title="尝试一次性工作 (Experiment with One-Off Work)"></a>尝试一次性工作 (Experiment with One-Off Work)</h2><p>有了 AI，代码变得非常廉价。这意味着你现在可以构建一些你只使用一次的东西，而不会对此感觉糟糕。任何你希望能够让你当前任务更轻松的东西都可以凭空创造出来。以下是我最近构建的一些东西的示例，这些东西在编码代理出现之前是绝对不值得我花时间的：</p>
+<ul>
+<li>一个可视化我在工作中进行大规模迁移时当前进度的仪表板。</li>
+<li>一个 Chrome 扩展程序，可以显示网站正在使用的 Tailwind CSS 版本（或者，天哪，它是否根本没有使用 Tailwind CSS）。</li>
+<li>一个用于上传 Claude Code 对话记录以供公开共享的 CLI 和后端。</li>
+<li>一个用于汇总我的 Claude Code API 费用以查看我从 Max 计划中获得了多少价值的 CLI（哦，太多了……）。</li>
+<li>一个在 git GUI 中试验 Claude Code 的 Electron 应用程序。</li>
+</ul>
+<h2 id="如果可能，不要试图一次完成-If-Possible-Don’t-Attempt-to-One-Shot"><a href="#如果可能，不要试图一次完成-If-Possible-Don’t-Attempt-to-One-Shot" class="headerlink" title="如果可能，不要试图一次完成 (If Possible, Don’t Attempt to One-Shot)"></a>如果可能，不要试图一次完成 (If Possible, Don’t Attempt to One-Shot)</h2><p>我目前专注于一个大规模的更改，需要在此过程中接触许多 Tailwind Plus 组件。我最初幼稚的想法是创建一个包含大量细节的、经过深思熟虑的完美提示，这样 AI 肯定可以一次性完成所有这些工作……这肯定是可以实现的，对吧？</p>
+<p>嗯，剧透一下，我用这种方法惨败了。它不仅没有按照我的意愿完成任务，而且还使我无法审查更改或进行任何有意义的修改。我不得不重新开始。</p>
+<p>这次我首先向 Claude Code 询问了有关这些问题。在编写任何代码之前，我们讨论了可能的更改。只有当我确信它知道我想要什么时，我才让它更改一个组件。经过一些测试和反馈后，我让它再做两个。然后再做五个，直到最后我才让它扩展开来，完成剩余的工作。</p>
+<p>虽然这显然不如创建一个完美的提示那么引人注目，但它让我更快地达到了最终结果，并且具有更紧密的反馈循环和监督。与手动在数百个不同组件中进行此更改相比，我仍然节省了大量时间。</p>
+<p>这很可能是我操作不当的问题。我看到很多人声称他们成功地完成了一次性的大型任务（其中一些人说 Claude 可以连续工作数小时）。然而，根据我自己的经验，错误会迅速累积，LLM 经常会在上下文窗口不断增大的情况下失去思路（即使是进行了大量的子代理调用，甚至尝试了 Gemini 2.5 Pro）。如果有人能与我分享他们的秘诀，我会非常高兴！</p>
+<h2 id="自主反馈还是人机回圈？-Autonomous-Feedback-or-Human-in-the-Loop"><a href="#自主反馈还是人机回圈？-Autonomous-Feedback-or-Human-in-the-Loop" class="headerlink" title="自主反馈还是人机回圈？ (Autonomous Feedback or Human in the Loop?)"></a>自主反馈还是人机回圈？ (Autonomous Feedback or Human in the Loop?)</h2><p>与上述问题相关，这也是我仍在努力解决的一个领域。每当我看到人们称赞 AI 代理时，他们都会提到一些自主反馈循环的重要性，以便 LLM 可以自行改进结果。</p>
+<p>然而，我还没有能够有效地做到这一点。当我尝试设置单元测试或 linter 反馈时，Claude 会阅读它，然后表示一切正常，而实际上仍然存在许多问题&#x2F;警告。当我设置它以便它可以导航到页面并截屏时，上下文窗口很快就充满了 token。可以说，我的体验并不好。</p>
+<p>我更喜欢自己运行开发服务器。每当 Claude 回复我时，我会自己查看一下，然后要么按原样复制粘贴任何最终的堆栈跟踪，要么给出一些关于我希望如何更改的提示。我个人认为这种方法更有可能让我得到我想要的结果。</p>
+<h2 id="尽早中断，经常中断-Interrupt-Early-Interrupt-Often"><a href="#尽早中断，经常中断-Interrupt-Early-Interrupt-Often" class="headerlink" title="尽早中断，经常中断 (Interrupt Early, Interrupt Often)"></a>尽早中断，经常中断 (Interrupt Early, Interrupt Often)</h2><p>每当我看到出现问题时，我通常会立即按 <code>Escape</code> 键中断 Claude，让它恢复最新的更改，然后引导它朝着我想要的方向发展。当然，这只有在你一直盯着看的情况下才有效，坦率地说，我经常不这样做。</p>
+<h2 id="配置你的终端-Configure-Your-Terminal"><a href="#配置你的终端-Configure-Your-Terminal" class="headerlink" title="配置你的终端 (Configure Your Terminal)"></a>配置你的终端 (Configure Your Terminal)</h2><p>Claude Code 有一个隐藏的 <code>/terminal-setup</code> 命令，它会查看你当前的终端设置并进行一些更改，例如允许使用 <code>Shift+Enter</code> 添加新行或注册正确的提示音类型。虽然我没能用 Warp 解决换行的问题，但现在每当 Claude 需要人工输入时，我的终端都会发出提示音。</p>
+<h2 id="连接你的-IDE-Connect-Your-IDE"><a href="#连接你的-IDE-Connect-Your-IDE" class="headerlink" title="连接你的 IDE (Connect Your IDE)"></a>连接你的 IDE (Connect Your IDE)</h2><p>另一个相对较新的功能是，你可以连接 Claude 以查看你在 IDE 中打开了哪些文件，并读取 linter 警告等。这可以在你从 IDE 的终端内运行 <code>claude</code> 时设置，或者通过运行 <code>/ide</code> 命令来设置。如果你想告诉 Claude “修复我的 linter 问题”，这会非常方便。</p>
+<h2 id="自定义命令-Custom-Commands"><a href="#自定义命令-Custom-Commands" class="headerlink" title="自定义命令 (Custom Commands)"></a>自定义命令 (Custom Commands)</h2><p>你可以在 Claude Code 中创建<a target="_blank" rel="noopener" href="https://docs.anthropic.com/en/docs/claude-code/tutorials#create-custom-slash-commands">自定义斜杠命令</a>。如果你发现自己不止一次编写类似的提示，这可能是你节省更多时间的机会。</p>
+<p>我设置了一些东西来清理 Claude 非常急于创建的临时脚本或辅助文件，不管好坏。</p>
+<h2 id="将图片粘贴到-Claude-Paste-Images-into-Claude"><a href="#将图片粘贴到-Claude-Paste-Images-into-Claude" class="headerlink" title="将图片粘贴到 Claude (Paste Images into Claude)"></a>将图片粘贴到 Claude (Paste Images into Claude)</h2><p>你可以将图片粘贴到 Claude Code 中。只需直接复制图片或将文件拖到终端中，它就会作为附件添加到你的下一条消息中。当我想要进行一些小的视觉更改时，我有时会使用这个功能。</p>
+<h2 id="结论-Conclusion"><a href="#结论-Conclusion" class="headerlink" title="结论 (Conclusion)"></a>结论 (Conclusion)</h2><p>Claude Code 从根本上改变了我处理许多编程任务的方式。虽然它并不完美，需要调整你的工作流程，但生产力的提升是实实在在的。关键在于找到自动化和人工监督之间的正确平衡，并愿意尝试不同的方法。</p>
+<p>随着 AI 编码助手的不断发展，我预计这些模式中的许多都会发生变化。但就目前而言，这些技术使我的日常编码生活效率显著提高，而且，恕我直言，也更有趣了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/06/17/how-i-use-claude-code/" data-id="cmbzc65dd0018ygvacuyo0q92" data-title="[翻译]我如何使用 Claude Code" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/llm/" rel="tag">llm</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/05/18/nextjs-filerobot-image-editor/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Next.js使用filerobot-image-editor</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CSR/" style="font-size: 10px;">CSR</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 10px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/nextjs/" style="font-size: 12px;">nextjs</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/06/17/how-i-use-claude-code/">[翻译]我如何使用 Claude Code</a>
+          </li>
+        
+          <li>
+            <a href="/2025/05/18/nextjs-filerobot-image-editor/">Next.js使用filerobot-image-editor</a>
+          </li>
+        
+          <li>
+            <a href="/2025/03/20/nextjs-auth-dirzzle-postgresql-error/">Next.js使用auth.js+dirzzle+postgresql报错分析</a>
+          </li>
+        
+          <li>
+            <a href="/2025/01/19/gpu-ai-tops-tables/">显卡的TOPS AI算力比较</a>
+          </li>
+        
+          <li>
+            <a href="/2025/01/16/jina-readerlm-v2-test/">Jina ReaderLM v2 测试记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 在 .article-title 后面插入一个 div，class 为 toc
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+      articleTitle.insertAdjacentElement('afterend', tocDiv);
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc', // 将目录插入到刚刚创建的 .toc 中
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>
