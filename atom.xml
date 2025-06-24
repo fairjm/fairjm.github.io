@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-06-16T16:54:00.000Z</updated>
+  <updated>2025-06-24T17:35:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,37 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next.js RSC _rsc参数丢失的那些坑以及解决方案</title>
+    <link href="https://bingowith.me/2025/06/25/nextjs-lose-rsc-params-and-head/"/>
+    <id>https://bingowith.me/2025/06/25/nextjs-lose-rsc-params-and-head/</id>
+    <published>2025-06-24T17:35:00.000Z</published>
+    <updated>2025-06-24T17:35:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近在用 Next.js 的 RSC（React Server Component）时遇到了一个比较隐晦的问题，记录一下踩坑过程和应对方案。&lt;/p&gt;
+&lt;p&gt;如果你在项目里既使用了 CDN（并且缓存了 html），又使用了&lt;code&gt;middleware&lt;/code&gt;的重定向（middleware 会处理 rsc 请求），又用了 RSC 特性（开启了 prefetch 等情况），如果你发现部分页面 html 变成了一大串“乱码”（其实是 rsc 请求的返回结果），可以仔细看看。&lt;/p&gt;
+&lt;h2 id=&quot;RSC-请求是怎么工作的？&quot;&gt;&lt;a href=&quot;#RSC-请求是怎么工作的？&quot; class=&quot;headerlink&quot; title=&quot;RSC 请求是怎么工作的？&quot;&gt;&lt;/a&gt;RSC 请求是怎么工作的？&lt;/h2&gt;&lt;p&gt;Next.js 在请求 RSC 和 HTML 页面时，路径和方法其实是一样的，唯一的区别在于它会带上一个 &lt;code&gt;_rsc&lt;/code&gt; 的参数和一些特定 header。&lt;/p&gt;
+&lt;p&gt;比如你访问页面 &lt;code&gt;/about&lt;/code&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;HTML 请求&lt;/strong&gt;：&lt;br&gt;&lt;code&gt;GET /about&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RSC 请求&lt;/strong&gt;：&lt;br&gt;&lt;code&gt;GET /about?_rsc=&amp;lt;随机字符串&amp;gt;&lt;/code&gt; 以及特定的 header&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里的 &lt;code&gt;_rsc&lt;/code&gt; 参数是 Next.js 内部用来标识“这是一次 RSC 请求”，header 里也有类似 &lt;code&gt;Next-Router-State-Tree&lt;/code&gt;, &lt;code&gt;rsc&lt;/code&gt; 等用于数据请求和分割的内容。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="nextjs" scheme="https://bingowith.me/tags/nextjs/"/>
+    
+    <category term="nginx" scheme="https://bingowith.me/tags/nginx/"/>
+    
+    <category term="CDN" scheme="https://bingowith.me/tags/CDN/"/>
+    
+    <category term="RSC" scheme="https://bingowith.me/tags/RSC/"/>
+    
+  </entry>
   
   <entry>
     <title>[翻译]我如何使用 Claude Code</title>
@@ -549,23 +580,6 @@
     <category term="GPT" scheme="https://bingowith.me/tags/GPT/"/>
     
     <category term="python" scheme="https://bingowith.me/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leptos手工集成tailwindcss</title>
-    <link href="https://bingowith.me/2023/04/08/leptos-tailwindcss/"/>
-    <id>https://bingowith.me/2023/04/08/leptos-tailwindcss/</id>
-    <published>2023-04-07T18:22:00.000Z</published>
-    <updated>2023-04-07T18:22:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近在看&lt;code&gt;leptos&lt;/code&gt;,之前使用过&lt;code&gt;bulma&lt;/code&gt;作为css库,感觉样式太少,想结合&lt;code&gt;tailwindcss&lt;/code&gt;.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="rust" scheme="https://bingowith.me/tags/rust/"/>
     
   </entry>
   
