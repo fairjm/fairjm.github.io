@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-06-24T17:35:00.000Z</updated>
+  <updated>2025-07-16T16:00:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next.js 如何在客户端导航时获取上一页(referer)</title>
+    <link href="https://bingowith.me/2025/07/17/nextjs-client-navigation-get-previous-page/"/>
+    <id>https://bingowith.me/2025/07/17/nextjs-client-navigation-get-previous-page/</id>
+    <published>2025-07-16T16:00:00.000Z</published>
+    <updated>2025-07-16T16:00:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;想给之前上线的工具站做个博客数据统计: &lt;a href=&quot;https://merchmindai.net/blog/zh/1&quot;&gt;blogs&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;理所当然用到了&lt;code&gt;document.referer&lt;/code&gt;，最方便的获取上一个页面的方式，结果发现获取到的都是第一次 load 的页面，而不是导航前的那个页面。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;为什么会这样？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Next.js 在生产环境中默认采用前端导航（&lt;code&gt;Client-side Navigation&lt;/code&gt;）的方式。这意味着页面加载完之后，在网站内部点击链接时，浏览器并不会执行一次完整的页面刷新。相反，Next.js 会在客户端通过 JavaScript 异步加载新页面的数据和组件，然后更新 DOM。&lt;/p&gt;
+&lt;p&gt;这种类似 &lt;strong&gt;单页应用（SPA）&lt;/strong&gt; 的行为导致了一个关键问题：&lt;br&gt;&lt;code&gt;document.referrer&lt;/code&gt; 的值在页面首次加载后保持不变。当通过内部链接从&lt;code&gt;blog/zh/1&lt;/code&gt;导航到 &lt;code&gt;blog/zh/post/[slug]&lt;/code&gt; 时，由于没有发生完整的页面重载，&lt;code&gt;document.referrer&lt;/code&gt; 的值仍然会是最初访问网站的那个值，而不是&lt;code&gt;blog/zh/1&lt;/code&gt;。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="nextjs" scheme="https://bingowith.me/tags/nextjs/"/>
+    
+    <category term="SPA" scheme="https://bingowith.me/tags/SPA/"/>
+    
+  </entry>
   
   <entry>
     <title>Next.js RSC _rsc参数丢失的那些坑以及解决方案</title>
@@ -548,38 +571,9 @@
     
     
     
-    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
-    
     <category term="troubleshooting" scheme="https://bingowith.me/tags/troubleshooting/"/>
     
-  </entry>
-  
-  <entry>
-    <title>ChatGPT Plugin开发setup - Java(Spring Boot) Python(fastapi)</title>
-    <link href="https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/"/>
-    <id>https://bingowith.me/2023/05/15/chatgpt-plugin-setup-java-python/</id>
-    <published>2023-05-15T05:40:00.000Z</published>
-    <updated>2023-05-15T05:40:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;记录一下快速模板,整体很简单,如果不接auth,只需要以下:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;提供一个&lt;code&gt;/.well-known/ai-plugin.json&lt;/code&gt;接口,返回openAI所需要的格式&lt;/li&gt;
-&lt;li&gt;提供openAPI规范的文档&lt;/li&gt;
-&lt;li&gt;CORS设置&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;其他的和普通的web开发类似.  &lt;/p&gt;
-&lt;p&gt;本地开发就直接使用localhost即可,前几天官方localhost&lt;a href=&quot;https://community.openai.com/t/localhost-dev-plugins-not-working-any-more/203968&quot;&gt;无法联通&lt;/a&gt;,最近应该修复了.  &lt;/p&gt;
-&lt;p&gt;要让GPT更好理解接口内容,接口需要写详细的文档,在文档内写清楚各个参数作用和可选值以及示例.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="java" scheme="https://bingowith.me/tags/java/"/>
-    
-    <category term="GPT" scheme="https://bingowith.me/tags/GPT/"/>
-    
-    <category term="python" scheme="https://bingowith.me/tags/python/"/>
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
     
   </entry>
   
