@@ -82,6 +82,56 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-cautious-use-of-usefetcher-polling-in-remix" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" class="article-date">
+  <time class="dt-published" datetime="2024-12-12T18:18:00.000Z" itemprop="datePublished">2024-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/">在remix中谨慎使用useFetcher进行poll</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="问题概述"><a href="#问题概述" class="headerlink" title="问题概述"></a>问题概述</h2><p>今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：</p>
+<ul>
+<li>第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新）</li>
+<li>第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）</li>
+</ul>
+<p>结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的却始终是第一个任务的数据, 后面也是返回的永远是第一个任务的结果.</p>
+        
+          <p class="article-more-link">
+            <a href="/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/" data-id="cmeah36w0000i4svaarzkdcdf" data-title="在remix中谨慎使用useFetcher进行poll" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/remix/" rel="tag">remix</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-spring-boot-docker-graceful-shutdown-guide" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" class="article-date">
@@ -122,7 +172,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" data-id="cmdu8ze2m00385kvadh5u7xvk" data-title="Spring Boot Docker优雅关机总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/" data-id="cmeah36wy00394sva9wb7911k" data-title="Spring Boot Docker优雅关机总结" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -178,7 +228,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/" data-id="cmdu8ze2j002y5kva3jtv3nuy" data-title="shopify CLI国内开发配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/" data-id="cmeah36ww00334svaeyzp24yz" data-title="shopify CLI国内开发配置" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -223,7 +273,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/" data-id="cmdu8ze2h002q5kva1l9h6k7d" data-title="react native的expo router安卓下modal不生效的解法" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/" data-id="cmeah36ws002s4svabgq87c59" data-title="react native的expo router安卓下modal不生效的解法" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -268,7 +318,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/" data-id="cmdu8ze1p000e5kvahmn8az0b" data-title="AWS安装cloudwatch agent后没有指标出现解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/" data-id="cmeah36vx000c4svae5n96j22" data-title="AWS安装cloudwatch agent后没有指标出现解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -313,7 +363,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/" data-id="cmdu8ze1o000c5kvaaqh5en25" data-title="使用Azure openai java SDK序列化/反序列化message" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/" data-id="cmeah36vy000e4sva9rywcdxb" data-title="使用Azure openai java SDK序列化/反序列化message" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -359,7 +409,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/" data-id="cmdu8ze2j00305kvaeipfd7vc" data-title="Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/" data-id="cmeah36wv00304sva2m06bnkh" data-title="Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -407,7 +457,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/" data-id="cmdu8ze2f002l5kvacjtqahty" data-title="playwright 一些方法解决被cloudflare block的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/" data-id="cmeah36wp002m4sva37y87q1o" data-title="playwright 一些方法解决被cloudflare block的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -454,7 +504,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2024/01/27/docker-container-log-too-large/" data-id="cmdu8ze1t000o5kva0sbg9ej0" data-title="docker container目录下log过大解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2024/01/27/docker-container-log-too-large/" data-id="cmeah36w1000m4sva2per1uur" data-title="docker container目录下log过大解决" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -501,56 +551,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/" data-id="cmdu8ze1q000g5kvadpdghy3h" data-title="blazor maui hybrid app显示本地图片" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/" data-id="cmeah36vz000f4sva4vkm4icx" data-title="blazor maui hybrid app显示本地图片" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maui/" rel="tag">maui</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-azure-openai-java-sdk-stream-function-handle" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/11/15/azure-openai-java-sdk-stream-function-handle/" class="article-date">
-  <time class="dt-published" datetime="2023-11-14T18:54:00.000Z" itemprop="datePublished">2023-11-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/11/15/azure-openai-java-sdk-stream-function-handle/">使用Azure openai java SDK在流式输出时处理functioncall</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>emmm,新的功能和api都出了,还在写旧格式的感觉有点过时。<br>之前都是用非流式的使用function, 刚好遇到这个处理了下顺便记录一下。</p>
-        
-          <p class="article-more-link">
-            <a href="/2023/11/15/azure-openai-java-sdk-stream-function-handle/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/" data-id="cmdu8ze1q000f5kva2c92hghh" data-title="使用Azure openai java SDK在流式输出时处理functioncall" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openai/" rel="tag">openai</a></li></ul>
 
     </footer>
   </div>
@@ -581,7 +586,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
     </div>
   </div>
 
@@ -591,7 +596,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 10px;">CSR</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/SPA/" style="font-size: 10px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 10px;">CSR</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/SPA/" style="font-size: 10px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 12px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 12px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/timestamp/" style="font-size: 10px;">timestamp</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
     </div>
   </div>
 
@@ -613,6 +618,10 @@
       <ul>
         
           <li>
+            <a href="/2025/08/14/nodejs-mysql-timezone-problem/">timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置</a>
+          </li>
+        
+          <li>
             <a href="/2025/08/02/drizzle-mysql-bit-type/">drizzle如何处理mysql的bit类型</a>
           </li>
         
@@ -626,10 +635,6 @@
         
           <li>
             <a href="/2025/06/17/how-i-use-claude-code/">[翻译]我如何使用 Claude Code</a>
-          </li>
-        
-          <li>
-            <a href="/2025/05/18/nextjs-filerobot-image-editor/">Next.js使用filerobot-image-editor</a>
           </li>
         
       </ul>

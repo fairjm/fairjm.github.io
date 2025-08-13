@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="在 Node.js 应用中使用 MySQL 时，时间戳（TIMESTAMP）字段出现的“8 小时差异”是一个经典难题。这个问题的根源并非单一因素，而是由 MySQL 自身的时区机制、mysql2 驱动的特定行为，以及一个极具迷惑性的默认配置共同造成的。 本文将澄清 MySQL TIMESTAMP 的存储与转换原理，并深入剖析 mysql2 驱动中 timezone 配置项的真正含义及其默认值&amp;#3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置">
+<meta property="og:url" content="https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="在 Node.js 应用中使用 MySQL 时，时间戳（TIMESTAMP）字段出现的“8 小时差异”是一个经典难题。这个问题的根源并非单一因素，而是由 MySQL 自身的时区机制、mysql2 驱动的特定行为，以及一个极具迷惑性的默认配置共同造成的。 本文将澄清 MySQL TIMESTAMP 的存储与转换原理，并深入剖析 mysql2 驱动中 timezone 配置项的真正含义及其默认值&amp;#3">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-13T20:45:00.000Z">
+<meta property="article:modified_time" content="2025-08-13T20:45:00.000Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="nodejs">
+<meta property="article:tag" content="timestamp">
+<meta property="article:tag" content="timezone">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-nodejs-mysql-timezone-problem" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/08/14/nodejs-mysql-timezone-problem/" class="article-date">
+  <time class="dt-published" datetime="2025-08-13T20:45:00.000Z" itemprop="datePublished">2025-08-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>在 Node.js 应用中使用 MySQL 时，时间戳（TIMESTAMP）字段出现的“8 小时差异”是一个经典难题。这个问题的根源并非单一因素，而是由 MySQL 自身的时区机制、mysql2 驱动的特定行为，以及一个极具迷惑性的默认配置共同造成的。</p>
+<p>本文将澄清 MySQL TIMESTAMP 的存储与转换原理，并深入剖析 mysql2 驱动中 timezone 配置项的真正含义及其默认值<code>&#39;local&#39;</code>所带来的陷阱，最终提供两套清晰的最佳实践方案。</p>
+<span id="more"></span>
+
+<h2 id="MySQL-TIMESTAMP-的工作原理：以会话时区为中心的转换"><a href="#MySQL-TIMESTAMP-的工作原理：以会话时区为中心的转换" class="headerlink" title="MySQL TIMESTAMP 的工作原理：以会话时区为中心的转换"></a>MySQL TIMESTAMP 的工作原理：以会话时区为中心的转换</h2><p>理解所有问题的第一步，是掌握 TIMESTAMP 类型的核心机制。它在数据库内部以全球统一的 UTC 格式进行存储，但在存入和读取时，会根据当前连接的会话时区（@@session.time_zone）进行双向转换。</p>
+<ul>
+<li>写入时：驱动输入时间 → (转换到会话时区) → UTC 时间 → (存入数据库)</li>
+<li>读取时：(从数据库读出) → UTC 时间 → (根据会话时区) → 转换后的时间 → (返回给客户端) → 驱动输出时间</li>
+</ul>
+<p>关键点：驱动如果不知道会话的正确时区是什么，就会发生错误的转换。</p>
+<h2 id="mysql2-驱动-timezone-配置项的含义"><a href="#mysql2-驱动-timezone-配置项的含义" class="headerlink" title="mysql2 驱动 timezone 配置项的含义"></a>mysql2 驱动 timezone 配置项的含义</h2><p>现在，我们来看问题的核心——mysql2 驱动的 timezone 配置项。</p>
+<p>这个参数的原始设计意图是：作为客户端（驱动）解释时间字符串的“规则标记”。</p>
+<p>它的作用是告诉驱动：“我假设从 MySQL 服务器收到的所有 timestamp 的时间字符串，都是基于 timezone 所指定的这个时区。然后，我将根据这个假设，把字符串转换为标准的 JavaScript Date 对象（其内部值为 UTC）。”<br>这个设计本身没问题，但灾难始于它的默认值。</p>
+<p>mysql2 驱动的 timezone 配置项，其默认值就是<code>&#39;local&#39;</code>。这个默认值触发了一系列连锁反应，导致了我们所见的“8 小时差异”问题。<br>让我们来完整地重现整个错误过程：</p>
+<p>场景设定:</p>
+<ul>
+<li><p>Node.js 应用：运行在<strong>东八区 +08:00</strong>的服务器上。</p>
+</li>
+<li><p>数据库服务器：其系统时区和默认会话时区均为<strong>UTC</strong>。</p>
+</li>
+<li><p>mysql2 配置：开发者未指定 timezone，因此驱动采用默认值’local’。</p>
+</li>
+<li><p>当前的时间为 2025-08-13 11:40:00（UTC）</p>
+<p>事件经过:</p>
+</li>
+<li><p>MySQL 执行查询:</p>
+<ul>
+<li>数据库执行 <code>SELECT NOW()</code>。由于其会话时区是 UTC，它返回当前的 UTC 时间，’2025-08-13 11:40:00’。</li>
+<li>MySQL 将这个纯字符串’2025-08-13 11:40:00’发送给 Node.js 驱动。</li>
+</ul>
+</li>
+<li><p>mysql2 驱动的客户端转换:</p>
+<ul>
+<li>驱动收到了字符串’2025-08-13 11:40:00’。</li>
+<li>驱动检查自己的配置，发现是默认的’local’。它随即检查自己所在的 Node.js 环境，发现是+8 时区。</li>
+<li>驱动开始应用错误的转换规则，它心里想：“我收到的这个’11:40:00’字符串，根据我的<code>&#39;local&#39;</code>规则，我需要把它当作一个+8 时区的本地时间来理解。”</li>
+<li>为了生成标准的 JS Date 对象，它执行了关键的转换计算：将这个它错误认定的+08:00 时间转换为 UTC 时间。</li>
+<li>计算过程: ‘11:40:00’ (被错误地当作+08:00) 减去 8 个小时 &#x3D; 03:40:00 (UTC)。</li>
+</ul>
+</li>
+<li><p>最终结果:</p>
+<ul>
+<li>驱动最终创建并返回一个代表 03:40:00Z 的 Date 对象。而此时真实的 UTC 时间是 11:40:00Z。一个悄无声息的 8 小时差异就此诞生。</li>
+</ul>
+</li>
+</ul>
+<p>结论：问题的根源在于，驱动基于<code>&#39;local&#39;</code>的默认设置，错误地解读了来自 UTC 时区数据库的时间字符串，并在客户端进行了不必要的、错误的“修正”。</p>
+<h2 id="解决方法-让时区对齐"><a href="#解决方法-让时区对齐" class="headerlink" title="解决方法: 让时区对齐"></a>解决方法: 让时区对齐</h2><p>要解决这个问题，就必须打破驱动的错误假设，让客户端和服务器对时区的理解达成一致。有两种清晰的策略：</p>
+<h3 id="方案一：让驱动适应服务器（最直观的方法）"><a href="#方案一：让驱动适应服务器（最直观的方法）" class="headerlink" title="方案一：让驱动适应服务器（最直观的方法）"></a>方案一：让驱动适应服务器（最直观的方法）</h3><p>这是最符合 timezone 参数设计初衷的方案。核心思想是：明确告诉驱动，数据库服务器的时区是什么，让它以正确的方式去解读时间。<br>如何实施：<br>在 mysql2 的连接配置中，将 timezone 明确设置为你的 MySQL 服务器所使用的时区。如果你的服务器使用 UTC，那么就这样做：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// dbConfig.ts</span></span><br><span class="line"><span class="keyword">import</span> mysql <span class="keyword">from</span> <span class="string">&quot;mysql2/promise&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">dbConfig</span>: mysql.<span class="property">PoolOptions</span> = &#123;</span><br><span class="line">  <span class="attr">host</span>: process.<span class="property">env</span>.<span class="property">DB_HOST</span>,</span><br><span class="line">  <span class="attr">user</span>: process.<span class="property">env</span>.<span class="property">DB_USER</span>,</span><br><span class="line">  <span class="comment">// ... 其他配置</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 明确告诉驱动：服务器的时区是UTC (&#x27;Z&#x27;代表Zulu time, 即UTC)</span></span><br><span class="line">  <span class="comment">// 这样驱动收到 &#x27;11:40:00&#x27; 时，就会正确地将其理解为UTC时间，不再做任何加减。</span></span><br><span class="line">  <span class="attr">timezone</span>: <span class="string">&quot;Z&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> dbConfig;</span><br></pre></td></tr></table></figure>
+
+<p>同理，如果 mysql 服务器在东八区，则 timezone 设置为’+08:00’。</p>
+<p>优点：</p>
+<ul>
+<li>优雅简单：只需一行配置，就从根本上修正了驱动的解读行为。</li>
+<li>逻辑清晰：配置的含义是“同步到服务器时区”，非常直观。</li>
+<li>环境无关：无论 Node.js 应用部署在哪个时区，驱动的行为都是一致的。</li>
+</ul>
+<h3 id="方案二：让服务器适应驱动（手动设置会话）"><a href="#方案二：让服务器适应驱动（手动设置会话）" class="headerlink" title="方案二：让服务器适应驱动（手动设置会话）"></a>方案二：让服务器适应驱动（手动设置会话）</h3><p>这种方案放弃依赖 timezone 配置项（换个说法就是让他保持为 local），通过更底层的 SQL 命令来强制统一时区。手动设置 session 为 local 的时区。</p>
+<p>不依赖 timezone 配置，而是在每次从连接池获取连接后，立即执行 SET time_zone 命令，将数据库会话时区强制设置为与你的应用服务器时区一致。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mysql <span class="keyword">from</span> <span class="string">&quot;mysql2/promise&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 一个辅助函数，用于获取Node.js环境的本地时区偏移量字符串</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getLocalTimezoneOffset</span>(<span class="params"></span>): <span class="built_in">string</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> offsetMinutes = -<span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTimezoneOffset</span>();</span><br><span class="line">  <span class="keyword">const</span> sign = offsetMinutes &gt;= <span class="number">0</span> ? <span class="string">&quot;+&quot;</span> : <span class="string">&quot;-&quot;</span>;</span><br><span class="line">  <span class="keyword">const</span> hours = <span class="title class_">String</span>(<span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">abs</span>(offsetMinutes) / <span class="number">60</span>)).<span class="title function_">padStart</span>(</span><br><span class="line">    <span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;0&quot;</span></span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">const</span> minutes = <span class="title class_">String</span>(<span class="title class_">Math</span>.<span class="title function_">abs</span>(offsetMinutes % <span class="number">60</span>)).<span class="title function_">padStart</span>(<span class="number">2</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;sign&#125;</span><span class="subst">$&#123;hours&#125;</span>:<span class="subst">$&#123;minutes&#125;</span>`</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> localTimezone = <span class="title function_">getLocalTimezoneOffset</span>(); <span class="comment">// e.g., &quot;+08:00&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">someDatabaseOperation</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> <span class="attr">connection</span>: mysql.<span class="property">PoolConnection</span> | <span class="literal">null</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    connection = <span class="keyword">await</span> pool.<span class="title function_">getConnection</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 手动将数据库会话时区设置为与本应用服务器一致</span></span><br><span class="line">    <span class="keyword">await</span> connection.<span class="title function_">query</span>(<span class="string">`SET time_zone = &#x27;<span class="subst">$&#123;localTimezone&#125;</span>&#x27;;`</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在此之后，应用服务器和数据库会话的时区完全同步</span></span><br><span class="line">    <span class="comment">// `SELECT NOW()` 将返回 `+8` 时区的时间，驱动也能正确处理</span></span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (connection) connection.<span class="title function_">release</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>优点：</p>
+<ul>
+<li>绝对可靠：使用标准 SQL 命令，绕开了所有可能存在兼容性问题的驱动配置。</li>
+<li>本地时间直观：数据库中 NOW()的结果与应用服务器 new Date()的本地时间一致。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>代码稍显繁琐：需要在每次获取连接时都执行额外操作。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实这不只是 nodejs 的问题，其他语言的 mysql 驱动也存在这个问题。只要驱动认为的时区和 session 时区（默认是 server 时区）不一致，那么就会有问题。</p>
+<p>比如 java，解法也是类似的。java 里这个类似的参数叫做<code>connectionTimeZone </code>，用方法 1 就是将他设定为 mysql 服务器的时区(<code>connectionTimeZone=SERVER</code>)，用方法 2 就是设置他为<code>LOCAL</code>（这个是默认值）然后再追加一个参数<code>forceConnectionTimeZoneToSession=true</code></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/en/connector-j-time-instants.html">connector-j-time-instants</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mysqljs/mysql?tab=readme-ov-file#connection-options">mysqljs&#x2F;mysql Connection options</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/" data-id="cmeah36wn002j4sva3o2wfw1r" data-title="timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/08/02/drizzle-mysql-bit-type/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">drizzle如何处理mysql的bit类型</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 10px;">CSR</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/SPA/" style="font-size: 10px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 12px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 12px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/timestamp/" style="font-size: 10px;">timestamp</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">八月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/07/">七月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/08/14/nodejs-mysql-timezone-problem/">timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置</a>
+          </li>
+        
+          <li>
+            <a href="/2025/08/02/drizzle-mysql-bit-type/">drizzle如何处理mysql的bit类型</a>
+          </li>
+        
+          <li>
+            <a href="/2025/07/17/nextjs-client-navigation-get-previous-page/">Next.js 如何在客户端导航时获取上一页(referer)</a>
+          </li>
+        
+          <li>
+            <a href="/2025/06/25/nextjs-lose-rsc-params-and-head/">Next.js RSC _rsc参数丢失的那些坑以及解决方案</a>
+          </li>
+        
+          <li>
+            <a href="/2025/06/17/how-i-use-claude-code/">[翻译]我如何使用 Claude Code</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 在 .article-title 后面插入一个 div，class 为 toc
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+      articleTitle.insertAdjacentElement('afterend', tocDiv);
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc', // 将目录插入到刚刚创建的 .toc 中
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>

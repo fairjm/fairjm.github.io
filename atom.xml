@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-08-02T12:25:00.000Z</updated>
+  <updated>2025-08-13T20:45:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置</title>
+    <link href="https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/"/>
+    <id>https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/</id>
+    <published>2025-08-13T20:45:00.000Z</published>
+    <updated>2025-08-13T20:45:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在 Node.js 应用中使用 MySQL 时，时间戳（TIMESTAMP）字段出现的“8 小时差异”是一个经典难题。这个问题的根源并非单一因素，而是由 MySQL 自身的时区机制、mysql2 驱动的特定行为，以及一个极具迷惑性的默认配置共同造成的。&lt;/p&gt;
+&lt;p&gt;本文将澄清 MySQL TIMESTAMP 的存储与转换原理，并深入剖析 mysql2 驱动中 timezone 配置项的真正含义及其默认值&lt;code&gt;&amp;#39;local&amp;#39;&lt;/code&gt;所带来的陷阱，最终提供两套清晰的最佳实践方案。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="javascript" scheme="https://bingowith.me/tags/javascript/"/>
+    
+    <category term="mysql" scheme="https://bingowith.me/tags/mysql/"/>
+    
+    <category term="nodejs" scheme="https://bingowith.me/tags/nodejs/"/>
+    
+    <category term="timestamp" scheme="https://bingowith.me/tags/timestamp/"/>
+    
+    <category term="timezone" scheme="https://bingowith.me/tags/timezone/"/>
+    
+  </entry>
   
   <entry>
     <title>drizzle如何处理mysql的bit类型</title>
@@ -411,9 +437,9 @@
     
     
     
-    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
-    
     <category term="nodejs" scheme="https://bingowith.me/tags/nodejs/"/>
+    
+    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
     
     <category term="shopify CLI" scheme="https://bingowith.me/tags/shopify-CLI/"/>
     
@@ -561,27 +587,6 @@
     <category term="C#" scheme="https://bingowith.me/tags/C/"/>
     
     <category term="dotnet" scheme="https://bingowith.me/tags/dotnet/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用Azure openai java SDK在流式输出时处理functioncall</title>
-    <link href="https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/"/>
-    <id>https://bingowith.me/2023/11/15/azure-openai-java-sdk-stream-function-handle/</id>
-    <published>2023-11-14T18:54:00.000Z</published>
-    <updated>2023-11-14T18:54:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;emmm,新的功能和api都出了,还在写旧格式的感觉有点过时。&lt;br&gt;之前都是用非流式的使用function, 刚好遇到这个处理了下顺便记录一下。&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="openai" scheme="https://bingowith.me/tags/openai/"/>
-    
-    <category term="azure" scheme="https://bingowith.me/tags/azure/"/>
-    
-    <category term="SSE" scheme="https://bingowith.me/tags/SSE/"/>
     
   </entry>
   
