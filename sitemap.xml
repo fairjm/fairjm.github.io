@@ -737,13 +737,6 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/SSE/</loc>
-    <lastmod>2025-09-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://bingowith.me/tags/java/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
@@ -780,6 +773,13 @@
   
   <url>
     <loc>https://bingowith.me/tags/dotnet/</loc>
+    <lastmod>2025-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/SSE/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -877,20 +877,6 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/mybatis/</loc>
-    <lastmod>2025-09-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://bingowith.me/tags/JOOQ/</loc>
-    <lastmod>2025-09-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://bingowith.me/tags/llm/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
@@ -899,6 +885,20 @@
   
   <url>
     <loc>https://bingowith.me/tags/claude/</loc>
+    <lastmod>2025-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/mybatis/</loc>
+    <lastmod>2025-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/JOOQ/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1052,14 +1052,14 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/H2/</loc>
+    <loc>https://bingowith.me/tags/spring-boot/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/spring-boot/</loc>
+    <loc>https://bingowith.me/tags/H2/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
