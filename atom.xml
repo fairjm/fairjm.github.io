@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-08-13T20:45:00.000Z</updated>
+  <updated>2025-09-28T16:13:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在容器中运行的mysql数据库定时备份脚本</title>
+    <link href="https://bingowith.me/2025/09/29/mysql-docker-mysqldump-backup-script/"/>
+    <id>https://bingowith.me/2025/09/29/mysql-docker-mysqldump-backup-script/</id>
+    <published>2025-09-28T16:13:00.000Z</published>
+    <updated>2025-09-28T16:13:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;单次备份直接跑:&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td</summary>
+        
+      
+    
+    
+    
+    
+    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
+    
+    <category term="mysql" scheme="https://bingowith.me/tags/mysql/"/>
+    
+    <category term="mysqldump" scheme="https://bingowith.me/tags/mysqldump/"/>
+    
+    <category term="linux" scheme="https://bingowith.me/tags/linux/"/>
+    
+    <category term="shell" scheme="https://bingowith.me/tags/shell/"/>
+    
+  </entry>
   
   <entry>
     <title>timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置</title>
@@ -560,33 +592,6 @@
     <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
     
     <category term="docker compose" scheme="https://bingowith.me/tags/docker-compose/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>blazor maui hybrid app显示本地图片</title>
-    <link href="https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/"/>
-    <id>https://bingowith.me/2023/12/25/blazor-maui-hybrid-app-display-local-image/</id>
-    <published>2023-12-25T04:54:00.000Z</published>
-    <updated>2023-12-25T04:54:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;啊… …&lt;br&gt;一通操作下来感觉就是两个字 折磨&lt;br&gt;跨平台有跨平台的好处 但框架本身支持的有限 很多东西做起来很曲折 哎&lt;/p&gt;
-&lt;p&gt;这里总结一下笔者为了折腾本地图片显示的尝试&lt;br&gt;为什么要做本地图片展示呢 如果是做需要网络连接的app 这个一般是不需要的(要做上传前预览&amp;#x2F;编辑的话还是要的)&lt;br&gt;但对于离线的app肯定是要的 总会有场景用户导入图片&amp;#x2F;文件之类的吧  &lt;/p&gt;
-&lt;p&gt;笔者只测试了windows和安卓这两个平台,mac和iOS因为没有设备和开发者账号所以调试不了😀&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="maui" scheme="https://bingowith.me/tags/maui/"/>
-    
-    <category term="blazor" scheme="https://bingowith.me/tags/blazor/"/>
-    
-    <category term="ASP.NET" scheme="https://bingowith.me/tags/ASP-NET/"/>
-    
-    <category term="C#" scheme="https://bingowith.me/tags/C/"/>
-    
-    <category term="dotnet" scheme="https://bingowith.me/tags/dotnet/"/>
     
   </entry>
   
