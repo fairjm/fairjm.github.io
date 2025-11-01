@@ -290,7 +290,7 @@
 <td>1 year</td>
 </tr>
 </tbody></table>
-<p>expire 要大于 stale，stable 不要小于 30s（不然缓存没意义）。</p>
+<p>expire 要大于 stale，stale 不要小于 30s（不然缓存没意义）。</p>
 <p><strong>自定义配置</strong>：</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; cacheLife &#125; <span class="keyword">from</span> <span class="string">&quot;next/cache&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">CustomCache</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="string">&quot;use cache&quot;</span>;</span><br><span class="line">  <span class="title function_">cacheLife</span>(&#123;</span><br><span class="line">    <span class="attr">stale</span>: <span class="number">60</span>, <span class="comment">// 60 秒内视为新鲜</span></span><br><span class="line">    <span class="attr">revalidate</span>: <span class="number">300</span>, <span class="comment">// 300 秒后后台重新验证</span></span><br><span class="line">    <span class="attr">expire</span>: <span class="number">3600</span>, <span class="comment">// 3600 秒后过期</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&quot;https://api.example.com/data&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -598,7 +598,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/" data-id="cmhg21571002dwwva1dua8z4q" data-title="Next.js 16 Cache Components 完全指南" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/" data-id="cmhgbgj8a002c10va3lpobh2f" data-title="Next.js 16 Cache Components 完全指南" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
