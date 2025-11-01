@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-09-28T16:13:00.000Z</updated>
+  <updated>2025-11-01T08:58:02.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,64 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next.js 16 Cache Components 完全指南</title>
+    <link href="https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/"/>
+    <id>https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/</id>
+    <published>2025-11-01T08:58:02.000Z</published>
+    <updated>2025-11-01T08:58:02.000Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;基于 Next.js 16.0.1 官方文档整理&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;目录&quot;&gt;&lt;a href=&quot;#目录&quot; class=&quot;headerlink&quot; title=&quot;目录&quot;&gt;&lt;/a&gt;目录&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;#%E4%BB%80%E4%B9%88%E6%98%AF-cache-components&quot;&gt;什么是 Cache Components&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86&quot;&gt;核心工作原理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E4%BD%BF%E7%94%A8-suspense-%E8%BE%B9%E7%95%8C&quot;&gt;使用 Suspense 边界&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E4%BD%BF%E7%94%A8-use-cache&quot;&gt;使用 use cache&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E5%90%AF%E7%94%A8-cache-components&quot;&gt;启用 Cache Components&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E4%BB%8E%E6%97%A7%E7%89%88%E6%9C%AC%E8%BF%81%E7%A7%BB&quot;&gt;从旧版本迁移&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B&quot;&gt;实战示例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5&quot;&gt;最佳实践&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E5%92%8C-Next-intl-%E7%BB%93%E5%90%88&quot;&gt;和 Next-intl 结合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88&quot;&gt;常见错误与解决方案&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#faq&quot;&gt;FAQ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99&quot;&gt;参考资料&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;p&gt;这边文档主要是 AI 总结+我补充实际遇到的问题，大部分是 AI 写的。&lt;/p&gt;
+&lt;p&gt;注意，文档里不包含&lt;code&gt;use cache: private&lt;/code&gt;的内容，在写的时候本来官方文档里说依赖&lt;code&gt;unstable_prefetch&lt;/code&gt;，但是后来一看这个内容又被移除了，不知道后续会不会再改，先不写了，以官方文档为准。&lt;a href=&quot;https://nextjs.org/docs/app/api-reference/directives/use-cache-private&quot;&gt;API Reference &amp;gt; Directives &amp;gt; use cache: private&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;注意，现在的 16.0 还在不断变化中，还是等 16.1，16.2 再用吧。这东西太不稳了。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Cache components&lt;/code&gt;除了方便的 PPR+显式缓存，另外一个就是在框架层面（主要是 dev 和构建的时候），防止用户写出动态内容卡住整个页面加载的事，这在之前很容易写出来，网上也有很多批评的文章和视频，一看连&lt;code&gt;loading.tsx&lt;/code&gt;和&lt;code&gt;Suspense&lt;/code&gt;都不会用。😂&lt;br&gt;现在官方强制了，也是件好事吧。&lt;/p&gt;
+&lt;h2 id=&quot;什么是-Cache-Components&quot;&gt;&lt;a href=&quot;#什么是-Cache-Components&quot; class=&quot;headerlink&quot; title=&quot;什么是 Cache Components&quot;&gt;&lt;/a&gt;什么是 Cache Components&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Cache Components&lt;/strong&gt; 是 Next.js 16 中一种新的渲染和缓存方法，通过 &lt;strong&gt;Partial Prerendering (PPR)&lt;/strong&gt; 提供细粒度的缓存控制，同时确保出色的用户体验。&lt;/p&gt;
+&lt;h3 id=&quot;核心关系&quot;&gt;&lt;a href=&quot;#核心关系&quot; class=&quot;headerlink&quot; title=&quot;核心关系&quot;&gt;&lt;/a&gt;核心关系&lt;/h3&gt;&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Cache Components = PPR + use cache&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;PPR&lt;/strong&gt; 提供静态外壳和流式传输基础设施&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;use cache&lt;/code&gt;&lt;/strong&gt; 让你在外壳中包含优化的动态输出&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;解决的问题&quot;&gt;&lt;a href=&quot;#解决的问题&quot; class=&quot;headerlink&quot; title=&quot;解决的问题&quot;&gt;&lt;/a&gt;解决的问题&lt;/h3&gt;&lt;p&gt;在开发动态应用时，你需要在两种方式之间权衡：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;❌ &lt;strong&gt;完全静态页面&lt;/strong&gt;：加载快，但无法显示个性化或实时数据&lt;/li&gt;
+&lt;li&gt;❌ &lt;strong&gt;完全动态页面&lt;/strong&gt;：可显示最新数据，但每次请求都需要渲染所有内容，导致初始加载慢&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    
+    <category term="Next.js" scheme="https://bingowith.me/tags/Next-js/"/>
+    
+    <category term="Cache Components" scheme="https://bingowith.me/tags/Cache-Components/"/>
+    
+    <category term="React" scheme="https://bingowith.me/tags/React/"/>
+    
+    <category term="Next.js 16" scheme="https://bingowith.me/tags/Next-js-16/"/>
+    
+    <category term="Web Development" scheme="https://bingowith.me/tags/Web-Development/"/>
+    
+  </entry>
   
   <entry>
     <title>在容器中运行的mysql数据库定时备份脚本</title>
@@ -571,27 +629,6 @@
     <category term="java" scheme="https://bingowith.me/tags/java/"/>
     
     <category term="playwright" scheme="https://bingowith.me/tags/playwright/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker container目录下log过大解决</title>
-    <link href="https://bingowith.me/2024/01/27/docker-container-log-too-large/"/>
-    <id>https://bingowith.me/2024/01/27/docker-container-log-too-large/</id>
-    <published>2024-01-26T16:16:00.000Z</published>
-    <updated>2024-01-26T16:16:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;现在和朋友一起搞点东西,部署都很简单,服务器上装个&lt;code&gt;docker&lt;/code&gt;,服务丢上去,写个docker compose配置就跑着.&lt;br&gt;有个服务最近流量涨的比较多,再加上有段时间没有部署,看服务器上的磁盘使用越来越多.  &lt;/p&gt;
-&lt;p&gt;起初以为是应用的日志太多了,应用日志每天归档为gzip,保留60天,看了下并没有多少,用lsof检查也确认没有roll掉的被持有,再去容器内部看了下发现体积远没有这么大.  &lt;/p&gt;
-&lt;p&gt;于是开始用&lt;code&gt;du --max-depth=1&lt;/code&gt; 检查发现是&lt;code&gt;/var/lib/docker/containers/&lt;/code&gt;目录, 再一看容器id就是这个服务, 再定位是&lt;code&gt;&amp;lt;container-id&amp;gt;-json.log &lt;/code&gt;文件.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
-    
-    <category term="docker compose" scheme="https://bingowith.me/tags/docker-compose/"/>
     
   </entry>
   
