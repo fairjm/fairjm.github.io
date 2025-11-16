@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-11-01T08:58:02.000Z</updated>
+  <updated>2025-11-16T12:30:00.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,24 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</title>
+    <link href="https://bingowith.me/2025/11/16/nextjs-docker-deploy-pitfalls/"/>
+    <id>https://bingowith.me/2025/11/16/nextjs-docker-deploy-pitfalls/</id>
+    <published>2025-11-16T12:30:00.000Z</published>
+    <updated>2025-11-16T12:30:00.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Next.js 作为目前最受欢迎的 React 全栈框架之一，凭借其强大的功能和“开箱即用”的体验赢得了大量开发者。然而，这种便利性很大程度上依赖于其创造者 Vercel 提供的原生托管平台。但是一旦开发者选择通过 Docker 自行部署，便会发现这条路并非坦途，充满了各种不易察觉的“坑”，并且会逐渐感受到框架本身的臃肿与对特定平台的深度绑定。&lt;/p&gt;
+&lt;p&gt;这里就总结了一下我这一年实践遇到的问题，建议没有 SEO 需求还是不要碰他了。&lt;/p&gt;
+&lt;h2 id=&quot;路由与请求类型的“黑盒”&quot;&gt;&lt;a href=&quot;#路由与请求类型的“黑盒”&quot; class=&quot;headerlink&quot; title=&quot;路由与请求类型的“黑盒”&quot;&gt;&lt;/a&gt;路由与请求类型的“黑盒”&lt;/h2&gt;&lt;p&gt;在自行部署的环境中，Next.js 的一些内部机制会变得异常棘手。以 React Server Components (RSC) 的请求为例，它与页面的请求路径一致，但会附加一个 &lt;code&gt;?_rsc=...&lt;/code&gt; 参数以区分（也会增加一些 header）。问题在于，这个参数（以及额外的 header）在到达我们自己的应用逻辑之前，往往已被 Next.js 框架内部“消化”。这意味着，&lt;strong&gt;在&lt;code&gt;proxy.ts&lt;/code&gt;（16 之前的&lt;code&gt;middleware.ts&lt;/code&gt;），无法捕获到 &lt;code&gt;_rsc&lt;/code&gt; 这个参数&lt;/strong&gt;。因此，从代码层面来看，开发者无法轻易判断一个传入的请求究竟是完整的页面加载请求，还是一个用于更新部分 UI 的 RSC 请求。&lt;/p&gt;
+&lt;p&gt;这在一些重定向场景中会造成一些问题。&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Next.js 16 Cache Components 完全指南</title>
@@ -607,28 +625,6 @@
     
     
     <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>playwright 一些方法解决被cloudflare block的问题</title>
-    <link href="https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/"/>
-    <id>https://bingowith.me/2024/02/01/playwright-cloudflare-bypass/</id>
-    <published>2024-01-31T17:30:00.000Z</published>
-    <updated>2024-01-31T16:30:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;在尝试从一个使用Cloudflare Web应用程序防火墙（WAF）保护的网站获取数据时,我遇到了一些挑战.该网站的安全措施非常严格,以至于在正常浏览几个页面后,Cloudflare的检查页面就会出现.&lt;/p&gt;
-&lt;p&gt;传统的HTTP客户端方法,如直接使用httpclient来抓取页面数据,很快就会遭遇阻碍.&lt;/p&gt;
-&lt;p&gt;即便尝试使用代理IP池,问题依旧存在,因为Cloudflare的检测机制能够在短时间内多次访问后迅速触发.在多次尝试后,我决定使用playwright这个自动化库来模拟正常的浏览器行为.&lt;/p&gt;
-&lt;p&gt;虽然在使用playwright的过程中遇到了一些问题,但我最终找到了解决方案.现在,尽管速度稍慢,但我能够正常地从网站获取数据.接下来,我将分享如何克服这些挑战的经验.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="java" scheme="https://bingowith.me/tags/java/"/>
-    
-    <category term="playwright" scheme="https://bingowith.me/tags/playwright/"/>
     
   </entry>
   

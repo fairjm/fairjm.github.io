@@ -82,6 +82,58 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-translation-the-problem-with-shared-mutability" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/10/26/translation-the-problem-with-shared-mutability/" class="article-date">
+  <time class="dt-published" datetime="2022-10-26T04:12:00.000Z" itemprop="datePublished">2022-10-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/10/26/translation-the-problem-with-shared-mutability/">[翻译]单线程共享可变性的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原文链接: <a target="_blank" rel="noopener" href="https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/">https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/</a><br>作者: <a target="_blank" rel="noopener" href="https://manishearth.github.io/">Manish Goregaokar</a><br>翻译 by <a href="https://bingowith.me/">abaabaqua</a></p>
+<p><strong>注</strong>: 这篇文章写的比较早,早期的Rust编译器有很多不友善的地方,代码示例中部分当时无法编译的现在已经可以了,译者会增改一些代码导致和原文不同.</p>
+<hr>
+<p>Edit(2017年1月):我重新发现了<a target="_blank" rel="noopener" href="http://smallcultfollowing.com/babysteps/blog/2013/06/11/on-the-connection-between-memory-management-and-data-race-freedom/">Niko的文章</a>,文章也提到了这一点并达到了同样的认识.我怀疑我下意识地从这篇文章中得到了这个想法,至少是部分的想法.</p>
+<p>这是我一直想写的一篇文章;Rust 1.0的发布给了我继续接下去的完美动力.</p>
+<p>虽然这篇文章是讨论Rust设计中的一个选择,并且例子都是用Rust写的,但这里讨论的原则在很大程度上适用于其它语言.我还将尝试让那些没有Rust背景的人更容易理解这篇文章;如果需要解释一些代码或术语,请告诉我.</p>
+<p>我将在这里讨论的是Rust做的一个选择,不允许同一数据有多个可变别名(或者当有active的不可变别名时只能有一个可变别名) ，即使是在同一个线程.本质上讲,它不允许做这样的事情:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">ptr</span> = &amp;<span class="keyword">mut</span> x; <span class="comment">// 获取队`x`的可变引用</span></span><br><span class="line">    ptr.<span class="title function_ invoke__">push</span>(<span class="number">1</span>); <span class="comment">// 允许</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x[<span class="number">0</span>]; <span class="comment">// 不允许 (无法编译): 只要`ptr`是active的,</span></span><br><span class="line">                  <span class="comment">// x不能读取 ...</span></span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">1</span>);    <span class="comment">// .. 也不能写入</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, ptr); <span class="comment">// 这段是译者新加 现在的编译器限制判断是否active更加智能 不是看整个作用域了</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 另外一种,</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">x.<span class="title function_ invoke__">push</span>(<span class="number">1</span>); <span class="comment">// 允许</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">ptr</span> = &amp;x; <span class="comment">// 创建一个不可变引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = ptr[<span class="number">0</span>]; <span class="comment">// 允许, 不改变值</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x[<span class="number">0</span>]; <span class="comment">// 同样允许</span></span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">1</span>); <span class="comment">// 不允许 (无法编译): 只要`ptr`是active,</span></span><br><span class="line">               <span class="comment">// `x`被冻结了可变性</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, ptr); <span class="comment">// 译者新加 原因一样</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2022/10/26/translation-the-problem-with-shared-mutability/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2022/10/26/translation-the-problem-with-shared-mutability/" data-id="cmi1qo5w7003u08va2f9lckjs" data-title="[翻译]单线程共享可变性的问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-flink_kafka_avro_genericrecord" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2022/05/11/flink_kafka_avro_genericrecord/" class="article-date">
@@ -115,7 +167,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/" data-id="cmhgbgj7s000y10va9l072n8d" data-title="flink kafka source的avro反序列化问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/05/11/flink_kafka_avro_genericrecord/" data-id="cmi1qo5vd001108va976absfc" data-title="flink kafka source的avro反序列化问题" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -159,7 +211,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/" data-id="cmhgbgj8f002w10va1hii629g" data-title="windwos下运行hadoop相关代码(hdfs,mr)" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/04/17/run-hadoop-application-on-windows/" data-id="cmi1qo5vy003208va87bw8w7d" data-title="windwos下运行hadoop相关代码(hdfs,mr)" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -207,7 +259,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/" data-id="cmhgbgj8m003h10va6z1f84bz" data-title="spring boot应用 从mysql迁移h2" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/03/20/spring-boot-mysql-to-h2/" data-id="cmi1qo5w4003l08va31n3ffu9" data-title="spring boot应用 从mysql迁移h2" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -252,7 +304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" data-id="cmhgbgj8f002v10vahj80hpya" data-title="prestosql(trino) hive时间戳显示不正确排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/02/19/prestosql-prestodb-different-time-same-timestamp/" data-id="cmi1qo5vx002x08va7z8fb9t0" data-title="prestosql(trino) hive时间戳显示不正确排查" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -296,7 +348,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2022/01/08/hexo-github-action/" data-id="cmhgbgj7w001810va64ekfy3j" data-title="Hexo github action注意事项" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2022/01/08/hexo-github-action/" data-id="cmi1qo5vd001308vacd02gmlo" data-title="Hexo github action注意事项" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -342,7 +394,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/" data-id="cmhgbgj8o003p10vafhilcyk9" data-title="[翻译]async: 什么是blocking" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2021/05/09/translation-async-what-is-blocking/" data-id="cmi1qo5w6003r08va7ypk7ioj" data-title="[翻译]async: 什么是blocking" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -387,7 +439,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2021/05/05/hello-world/" data-id="cmhgbgj7u001310vadxqs72gg" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2021/05/05/hello-world/" data-id="cmi1qo5vc000z08va6vpn8ae6" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -432,7 +484,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2019/10/03/et-lt-intro/" data-id="cmhgbgj7r000w10va2vl25u74" data-title="理一理Edge-triggered和Level-triggered" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2019/10/03/et-lt-intro/" data-id="cmi1qo5vb000u08va7bkbf2xi" data-title="理一理Edge-triggered和Level-triggered" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -478,58 +530,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2019/08/16/learning-rust/" data-id="cmhgbgj84001y10vahwuza8at" data-title="rust学习感想" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2019/08/16/learning-rust/" data-id="cmi1qo5vm002308va2jly7x82" data-title="rust学习感想" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-2019-half-year-summary" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2019/06/12/2019-half-year-summary/" class="article-date">
-  <time class="dt-published" datetime="2019-06-11T17:22:00.000Z" itemprop="datePublished">2019-06-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2019/06/12/2019-half-year-summary/">2019年中总结~</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <img src="/2019/06/12/2019-half-year-summary/tendou.png" class="">
-
-<p>很快2019年已经过去了一半,机械般重复的工作和生活让时间有了一种停滞感,每天就像往瓶子里滴一滴水,没什么感觉,但一回过神来已经满了半瓶.  </p>
-        
-          <p class="article-more-link">
-            <a href="/2019/06/12/2019-half-year-summary/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2019/06/12/2019-half-year-summary/" data-id="cmhgbgj7d000410vagr3336ay" data-title="2019年中总结~" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
 
     </footer>
   </div>
@@ -592,6 +597,10 @@
       <ul>
         
           <li>
+            <a href="/2025/11/16/nextjs-docker-deploy-pitfalls/">自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</a>
+          </li>
+        
+          <li>
             <a href="/2025/11/01/nextjs-16-cache-components-complete-guide/">Next.js 16 Cache Components 完全指南</a>
           </li>
         
@@ -605,10 +614,6 @@
         
           <li>
             <a href="/2025/08/02/drizzle-mysql-bit-type/">drizzle如何处理mysql的bit类型</a>
-          </li>
-        
-          <li>
-            <a href="/2025/07/17/nextjs-client-navigation-get-previous-page/">Next.js 如何在客户端导航时获取上一页(referer)</a>
           </li>
         
       </ul>

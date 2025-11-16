@@ -82,6 +82,52 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-nextjs-docker-deploy-pitfalls" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/11/16/nextjs-docker-deploy-pitfalls/" class="article-date">
+  <time class="dt-published" datetime="2025-11-16T12:30:00.000Z" itemprop="datePublished">2025-11-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/11/16/nextjs-docker-deploy-pitfalls/">自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>Next.js 作为目前最受欢迎的 React 全栈框架之一，凭借其强大的功能和“开箱即用”的体验赢得了大量开发者。然而，这种便利性很大程度上依赖于其创造者 Vercel 提供的原生托管平台。但是一旦开发者选择通过 Docker 自行部署，便会发现这条路并非坦途，充满了各种不易察觉的“坑”，并且会逐渐感受到框架本身的臃肿与对特定平台的深度绑定。</p>
+<p>这里就总结了一下我这一年实践遇到的问题，建议没有 SEO 需求还是不要碰他了。</p>
+<h2 id="路由与请求类型的“黑盒”"><a href="#路由与请求类型的“黑盒”" class="headerlink" title="路由与请求类型的“黑盒”"></a>路由与请求类型的“黑盒”</h2><p>在自行部署的环境中，Next.js 的一些内部机制会变得异常棘手。以 React Server Components (RSC) 的请求为例，它与页面的请求路径一致，但会附加一个 <code>?_rsc=...</code> 参数以区分（也会增加一些 header）。问题在于，这个参数（以及额外的 header）在到达我们自己的应用逻辑之前，往往已被 Next.js 框架内部“消化”。这意味着，<strong>在<code>proxy.ts</code>（16 之前的<code>middleware.ts</code>），无法捕获到 <code>_rsc</code> 这个参数</strong>。因此，从代码层面来看，开发者无法轻易判断一个传入的请求究竟是完整的页面加载请求，还是一个用于更新部分 UI 的 RSC 请求。</p>
+<p>这在一些重定向场景中会造成一些问题。</p>
+        
+          <p class="article-more-link">
+            <a href="/2025/11/16/nextjs-docker-deploy-pitfalls/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/11/16/nextjs-docker-deploy-pitfalls/" data-id="cmi1qo5vt002i08va7qqxhnsr" data-title="自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-nextjs-16-cache-components-complete-guide" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/11/01/nextjs-16-cache-components-complete-guide/" class="article-date">
@@ -146,7 +192,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/" data-id="cmhgbgj8a002c10va3lpobh2f" data-title="Next.js 16 Cache Components 完全指南" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/11/01/nextjs-16-cache-components-complete-guide/" data-id="cmi1qo5vp002b08va2vwrdctw" data-title="Next.js 16 Cache Components 完全指南" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -197,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/09/29/mysql-docker-mysqldump-backup-script/" data-id="cmhgbgj88002810va4oe69ken" data-title="在容器中运行的mysql数据库定时备份脚本" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/09/29/mysql-docker-mysqldump-backup-script/" data-id="cmi1qo5vo002808va839h110u" data-title="在容器中运行的mysql数据库定时备份脚本" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -243,7 +289,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/" data-id="cmhgbgj8c002m10vac9rm2q2s" data-title="timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/08/14/nodejs-mysql-timezone-problem/" data-id="cmi1qo5vv002p08vadmotc4kf" data-title="timestamp存取差几小时? mysql timestamp的timezone问题以及如何在mysql2设置" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -294,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/08/02/drizzle-mysql-bit-type/" data-id="cmhgbgj7o000o10va9gt2cxzg" data-title="drizzle如何处理mysql的bit类型" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/08/02/drizzle-mysql-bit-type/" data-id="cmi1qo5va000s08va41q8dwi6" data-title="drizzle如何处理mysql的bit类型" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -343,7 +389,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/07/17/nextjs-client-navigation-get-previous-page/" data-id="cmhgbgj8a002f10va3l35gr6q" data-title="Next.js 如何在客户端导航时获取上一页(referer)" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/07/17/nextjs-client-navigation-get-previous-page/" data-id="cmi1qo5vs002d08vac57lhbst" data-title="Next.js 如何在客户端导航时获取上一页(referer)" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -396,7 +442,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/06/25/nextjs-lose-rsc-params-and-head/" data-id="cmhgbgj8c002k10va6mvwcy26" data-title="Next.js RSC _rsc参数丢失的那些坑以及解决方案" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/06/25/nextjs-lose-rsc-params-and-head/" data-id="cmi1qo5vu002n08va2m13c916" data-title="Next.js RSC _rsc参数丢失的那些坑以及解决方案" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -446,7 +492,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/06/17/how-i-use-claude-code/" data-id="cmhgbgj7x001d10vac97r4jgo" data-title="[翻译]我如何使用 Claude Code" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/06/17/how-i-use-claude-code/" data-id="cmi1qo5vf001a08va5ao3b7ib" data-title="[翻译]我如何使用 Claude Code" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -493,7 +539,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/05/18/nextjs-filerobot-image-editor/" data-id="cmhgbgj8b002h10va03yl4eqv" data-title="Next.js使用filerobot-image-editor" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/05/18/nextjs-filerobot-image-editor/" data-id="cmi1qo5vu002k08vaexot8gp2" data-title="Next.js使用filerobot-image-editor" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -541,158 +587,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/03/20/nextjs-auth-dirzzle-postgresql-error/" data-id="cmhgbgj89002a10vadvsv3jhi" data-title="Next.js使用auth.js+dirzzle+postgresql报错分析" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://bingowith.me/2025/03/20/nextjs-auth-dirzzle-postgresql-error/" data-id="cmi1qo5vt002f08vaaoed0jmt" data-title="Next.js使用auth.js+dirzzle+postgresql报错分析" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-gpu-ai-tops-tables" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2025/01/19/gpu-ai-tops-tables/" class="article-date">
-  <time class="dt-published" datetime="2025-01-19T08:16:00.000Z" itemprop="datePublished">2025-01-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2025/01/19/gpu-ai-tops-tables/">显卡的TOPS AI算力比较</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>虽然自己没设备但喜欢聊 😀，和别人讨论的时候经常要反复查，查询一下汇总，有可能填错了。。。到时候发现错误再订正吧。</p>
-<p>AMD 的没找到哪个表&#x2F;文档里有算 TOPS 的…就不列了</p>
-<h2 id="N-卡"><a href="#N-卡" class="headerlink" title="N 卡"></a>N 卡</h2><p>20 系到 40 系</p>
-<h3 id="GeForce-RTX-20-系列"><a href="#GeForce-RTX-20-系列" class="headerlink" title="GeForce RTX 20 系列"></a>GeForce RTX 20 系列</h3><table>
-<thead>
-<tr>
-<th>型号</th>
-<th>架构</th>
-<th>制程 (nm)</th>
-<th>显存大小</th>
-<th>显存类型</th>
-<th>显存位宽</th>
-<th>显存带宽 (GB&#x2F;s)</th>
-<th>峰值单精度 (FP32)</th>
-<th>TOPS (AI)</th>
-<th>TDP (W)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>RTX 2080 Ti</td>
-<td>Turing</td>
-<td>12</td>
-<td>11GB</td>
-<td>GDDR6</td>
-<td>352-bit</td>
-<td>616</td>
-<td>13.45 TFLOPS</td>
-<td>114 TOPS</td>
-<td>260</td>
-</tr>
-<tr>
-<td>RTX 2080 Super</td>
-<td>Turing</td>
-<td>12</td>
-<td>8GB</td>
-<td>GDDR6</td>
-<td>256-bit</td>
-<td>496</td>
-<td>11.15 TFLOPS</td>
-<td>89 TOPS</td>
-<td>250</td>
-</tr>
-<tr>
-<td>RTX 2080</td>
-<td>Turing</td>
-<td>12</td>
-<td>8GB</td>
-<td>GDDR6</td>
-<td>256-bit</td>
-<td>448</td>
-<td>10.07 TFLOPS</td>
-<td>81 TOPS</td>
-<td>225</td>
-</tr>
-<tr>
-<td>RTX 2070 Super</td>
-<td>Turing</td>
-<td>12</td>
-<td>8GB</td>
-<td>GDDR6</td>
-<td>256-bit</td>
-<td>448</td>
-<td>9.06 TFLOPS</td>
-<td>72 TOPS</td>
-<td>215</td>
-</tr>
-<tr>
-<td>RTX 2070</td>
-<td>Turing</td>
-<td>12</td>
-<td>8GB</td>
-<td>GDDR6</td>
-<td>256-bit</td>
-<td>448</td>
-<td>7.47 TFLOPS</td>
-<td>65 TOPS</td>
-<td>175</td>
-</tr>
-<tr>
-<td>RTX 2060 Super</td>
-<td>Turing</td>
-<td>12</td>
-<td>8GB</td>
-<td>GDDR6</td>
-<td>256-bit</td>
-<td>448</td>
-<td>7.19 TFLOPS</td>
-<td>57 TOPS</td>
-<td>175</td>
-</tr>
-<tr>
-<td>RTX 2060</td>
-<td>Turing</td>
-<td>12</td>
-<td>6GB</td>
-<td>GDDR6</td>
-<td>192-bit</td>
-<td>336</td>
-<td>6.45 TFLOPS</td>
-<td>52 TOPS</td>
-<td>160</td>
-</tr>
-</tbody></table>
-        
-          <p class="article-more-link">
-            <a href="/2025/01/19/gpu-ai-tops-tables/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://bingowith.me/2025/01/19/gpu-ai-tops-tables/" data-id="cmhgbgj7t001110va0rycb8i5" data-title="显卡的TOPS AI算力比较" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li></ul>
 
     </footer>
   </div>
@@ -755,6 +654,10 @@
       <ul>
         
           <li>
+            <a href="/2025/11/16/nextjs-docker-deploy-pitfalls/">自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</a>
+          </li>
+        
+          <li>
             <a href="/2025/11/01/nextjs-16-cache-components-complete-guide/">Next.js 16 Cache Components 完全指南</a>
           </li>
         
@@ -768,10 +671,6 @@
         
           <li>
             <a href="/2025/08/02/drizzle-mysql-bit-type/">drizzle如何处理mysql的bit类型</a>
-          </li>
-        
-          <li>
-            <a href="/2025/07/17/nextjs-client-navigation-get-previous-page/">Next.js 如何在客户端导航时获取上一页(referer)</a>
           </li>
         
       </ul>
