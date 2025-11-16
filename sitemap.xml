@@ -769,20 +769,6 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/GPT/</loc>
-    <lastmod>2025-11-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://bingowith.me/tags/python/</loc>
-    <lastmod>2025-11-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://bingowith.me/tags/maui/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -826,6 +812,20 @@
   
   <url>
     <loc>https://bingowith.me/tags/remix/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/GPT/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/python/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -888,20 +888,6 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/llm/</loc>
-    <lastmod>2025-11-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://bingowith.me/tags/claude/</loc>
-    <lastmod>2025-11-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://bingowith.me/tags/MySQL/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -917,6 +903,20 @@
   
   <url>
     <loc>https://bingowith.me/tags/JOOQ/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/llm/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/claude/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -986,13 +986,6 @@
   </url>
   
   <url>
-    <loc>https://bingowith.me/tags/SPA/</loc>
-    <lastmod>2025-11-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://bingowith.me/tags/js/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -1001,6 +994,13 @@
   
   <url>
     <loc>https://bingowith.me/tags/auth-js/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bingowith.me/tags/SPA/</loc>
     <lastmod>2025-11-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

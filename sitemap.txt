@@ -85,8 +85,6 @@ https://bingowith.me/tags/openai/
 https://bingowith.me/tags/azure/
 https://bingowith.me/tags/java/
 https://bingowith.me/tags/SSE/
-https://bingowith.me/tags/GPT/
-https://bingowith.me/tags/python/
 https://bingowith.me/tags/maui/
 https://bingowith.me/tags/blazor/
 https://bingowith.me/tags/ASP-NET/
@@ -94,6 +92,8 @@ https://bingowith.me/tags/C/
 https://bingowith.me/tags/dotnet/
 https://bingowith.me/tags/react/
 https://bingowith.me/tags/remix/
+https://bingowith.me/tags/GPT/
+https://bingowith.me/tags/python/
 https://bingowith.me/tags/docker/
 https://bingowith.me/tags/docker-compose/
 https://bingowith.me/tags/drizzle/
@@ -102,11 +102,11 @@ https://bingowith.me/tags/mysql/
 https://bingowith.me/tags/OS/
 https://bingowith.me/tags/rust/
 https://bingowith.me/tags/GPU/
-https://bingowith.me/tags/llm/
-https://bingowith.me/tags/claude/
 https://bingowith.me/tags/MySQL/
 https://bingowith.me/tags/mybatis/
 https://bingowith.me/tags/JOOQ/
+https://bingowith.me/tags/llm/
+https://bingowith.me/tags/claude/
 https://bingowith.me/tags/mysqldump/
 https://bingowith.me/tags/linux/
 https://bingowith.me/tags/shell/
@@ -116,9 +116,9 @@ https://bingowith.me/tags/React/
 https://bingowith.me/tags/Next-js-16/
 https://bingowith.me/tags/Web-Development/
 https://bingowith.me/tags/nextjs/
-https://bingowith.me/tags/SPA/
 https://bingowith.me/tags/js/
 https://bingowith.me/tags/auth-js/
+https://bingowith.me/tags/SPA/
 https://bingowith.me/tags/filerobot-image-editor/
 https://bingowith.me/tags/CSR/
 https://bingowith.me/tags/nginx/
