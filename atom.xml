@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-11-16T12:30:00.000Z</updated>
+  <updated>2025-11-28T13:12:54.645Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>6GB显存跑Z-Image-Turbo完全指南</title>
+    <link href="https://bingowith.me/2025/11/28/z-image-turbo-low-vram-setup/"/>
+    <id>https://bingowith.me/2025/11/28/z-image-turbo-low-vram-setup/</id>
+    <published>2025-11-27T16:00:00.000Z</published>
+    <updated>2025-11-28T13:12:54.645Z</updated>
+    
+    
+    <summary type="html">手把手教你用6GB显存跑通阿里的Z-Image-Turbo，拖拉机启动！</summary>
+    
+    
+    
+    <category term="AI" scheme="https://bingowith.me/categories/AI/"/>
+    
+    <category term="教程" scheme="https://bingowith.me/categories/AI/%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="ComfyUI" scheme="https://bingowith.me/tags/ComfyUI/"/>
+    
+    <category term="Z-Image" scheme="https://bingowith.me/tags/Z-Image/"/>
+    
+    <category term="低显存" scheme="https://bingowith.me/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/"/>
+    
+    <category term="量化" scheme="https://bingowith.me/tags/%E9%87%8F%E5%8C%96/"/>
+    
+  </entry>
   
   <entry>
     <title>自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</title>
@@ -609,24 +636,6 @@
     <category term="azure" scheme="https://bingowith.me/tags/azure/"/>
     
     <category term="java" scheme="https://bingowith.me/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Shopify App订阅 APPLY_ON_NEXT_BILLING_CYCLE实在太坑了</title>
-    <link href="https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/"/>
-    <id>https://bingowith.me/2024/03/08/shopify-app-subscription-apply-on-next-billing-cycle-sucks/</id>
-    <published>2024-03-08T08:16:00.000Z</published>
-    <updated>2024-03-08T08:16:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h2&gt;&lt;p&gt;最近，我们在开发Shopify应用时，遇到了一个非常恼人的问题。我们希望允许商家降级他们当前的订阅计划，但是要求降级要在下一个计费周期才生效，当前的计划应该保持不变直到下一个计费周期。&lt;/p&gt;
-&lt;p&gt;我们发现了Shopify的 &lt;code&gt;APPLY_ON_NEXT_BILLING_CYCLE&lt;/code&gt; 替换行为，本以为这就是我们想要的功能。但是，在测试时，我们发现当前的订阅立即被取消，降级后的订阅直接变成了 &lt;code&gt;ACTIVE&lt;/code&gt; 状态，而这个行为应该是在下一个计费周期才触发的。&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
     
   </entry>
   
