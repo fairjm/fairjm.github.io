@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-11-28T13:12:54.645Z</updated>
+  <updated>2025-12-09T15:20:27.622Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,37 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入理解 SSR/CSR 与 SPA/MPA：现代前端渲染模式详解</title>
+    <link href="https://bingowith.me/2025/12/09/understanding-ssr-csr-spa-mpa/"/>
+    <id>https://bingowith.me/2025/12/09/understanding-ssr-csr-spa-mpa/</id>
+    <published>2025-12-09T14:22:00.000Z</published>
+    <updated>2025-12-09T15:20:27.622Z</updated>
+    
+    
+    <summary type="html">深入理解 SSR/CSR 与 SPA/MPA 的概念关系，以及现代前端框架（Next.js、Nuxt、Remix）的 SSR 与传统后端 SSR 的本质区别</summary>
+    
+    
+    
+    <category term="前端开发" scheme="https://bingowith.me/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/"/>
+    
+    <category term="架构设计" scheme="https://bingowith.me/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"/>
+    
+    
+    <category term="Next.js" scheme="https://bingowith.me/tags/Next-js/"/>
+    
+    <category term="SPA" scheme="https://bingowith.me/tags/SPA/"/>
+    
+    <category term="CSR" scheme="https://bingowith.me/tags/CSR/"/>
+    
+    <category term="SSR" scheme="https://bingowith.me/tags/SSR/"/>
+    
+    <category term="MPA" scheme="https://bingowith.me/tags/MPA/"/>
+    
+    <category term="前端架构" scheme="https://bingowith.me/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/"/>
+    
+  </entry>
   
   <entry>
     <title>6GB显存跑Z-Image-Turbo完全指南</title>
@@ -615,27 +646,6 @@
     
     
     <category term="aws" scheme="https://bingowith.me/tags/aws/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用Azure openai java SDK序列化/反序列化message</title>
-    <link href="https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/"/>
-    <id>https://bingowith.me/2024/06/04/azure-openai-java-sdk-message-erialization-deserialization/</id>
-    <published>2024-06-04T08:15:00.000Z</published>
-    <updated>2024-06-05T04:57:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;有个功能需要在数据库中配置模板将用户输入填入占位符, 因为要配置多轮message以及各个参数,使用自己配置的方式会比较麻烦,就想着把&lt;code&gt;ChatCompletionsOptions&lt;/code&gt;整个序列化到数据库里,然后拿出来再填入占位符.&lt;br&gt;但是直接使用jackson会导致对于user的&lt;code&gt;ChatRequestUserMessage&lt;/code&gt;会序列化和反序列化都失败.  &lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="openai" scheme="https://bingowith.me/tags/openai/"/>
-    
-    <category term="azure" scheme="https://bingowith.me/tags/azure/"/>
-    
-    <category term="java" scheme="https://bingowith.me/tags/java/"/>
     
   </entry>
   
