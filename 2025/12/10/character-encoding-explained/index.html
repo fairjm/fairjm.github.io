@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>字符编码详解：UTF-8、Unicode、GBK 等 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="通俗易懂地讲解 UTF-8、Unicode、GBK 等字符编码的区别与应用，用快递系统类比帮助理解核心概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符编码详解：UTF-8、Unicode、GBK 等">
+<meta property="og:url" content="https://bingowith.me/2025/12/10/character-encoding-explained/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="通俗易懂地讲解 UTF-8、Unicode、GBK 等字符编码的区别与应用，用快递系统类比帮助理解核心概念">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-10T07:30:00.000Z">
+<meta property="article:modified_time" content="2025-12-10T16:19:17.512Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="UTF-8">
+<meta property="article:tag" content="Unicode">
+<meta property="article:tag" content="编码">
+<meta property="article:tag" content="GBK">
+<meta property="article:tag" content="字符集">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-character-encoding-explained" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/12/10/character-encoding-explained/" class="article-date">
+  <time class="dt-published" datetime="2025-12-10T07:30:00.000Z" itemprop="datePublished">2025-12-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>►<a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      字符编码详解：UTF-8、Unicode、GBK 等
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><strong>编辑说明</strong>：本文初稿完成后，通过 Claude Code 进行了技术审阅和优化润色，修正了 UTF-16 编码方式的描述，补充了 Unicode 平面结构、代理对机制、MySQL utf8mb4 等深度内容，使文章在保持通俗易懂的同时更加准确严谨。</p>
+</blockquote>
+<hr>
+<h1 id="字符编码详解：UTF-8、Unicode、GBK-等"><a href="#字符编码详解：UTF-8、Unicode、GBK-等" class="headerlink" title="字符编码详解：UTF-8、Unicode、GBK 等"></a>字符编码详解：UTF-8、Unicode、GBK 等</h1><h2 id="一、核心概念：Unicode-vs-UTF-8"><a href="#一、核心概念：Unicode-vs-UTF-8" class="headerlink" title="一、核心概念：Unicode vs UTF-8"></a>一、核心概念：Unicode vs UTF-8</h2><h3 id="用快递系统来理解"><a href="#用快递系统来理解" class="headerlink" title="用快递系统来理解"></a>用快递系统来理解</h3><p><strong>Unicode（统一字符集）</strong></p>
+<ul>
+<li>相当于：全国统一的地址编号系统</li>
+<li>作用：给世界上每个文字、符号分配唯一编号</li>
+<li>例子：<ul>
+<li>‘A’ → U+0041（编号 65）</li>
+<li>‘中’ → U+4E2D（编号 20013）</li>
+<li>‘😊’ → U+1F60A（编号 128522）</li>
+</ul>
+</li>
+<li>特点：<strong>只定义编号，不管怎么存储</strong></li>
+</ul>
+<p><strong>UTF-8（编码方式）</strong></p>
+<p>UTF-8 根据 Unicode 码点的大小，使用不同长度的字节：</p>
+<table>
+<thead>
+<tr>
+<th>Unicode 范围</th>
+<th>字节数</th>
+<th>UTF-8 格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>U+0000 ~ U+007F</td>
+<td>1 字节</td>
+<td><code>0xxxxxxx</code></td>
+</tr>
+<tr>
+<td>U+0080 ~ U+07FF</td>
+<td>2 字节</td>
+<td><code>110xxxxx 10xxxxxx</code></td>
+</tr>
+<tr>
+<td>U+0800 ~ U+FFFF</td>
+<td>3 字节</td>
+<td><code>1110xxxx 10xxxxxx 10xxxxxx</code></td>
+</tr>
+<tr>
+<td>U+10000 ~ U+10FFFF</td>
+<td>4 字节</td>
+<td><code>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li>相当于：快递打包和运输方式</li>
+<li>作用：把 Unicode 编号转换成实际的字节数据</li>
+<li>例子：<ul>
+<li>‘A’ (U+0041) → <code>01000001</code>（1 字节）</li>
+<li>‘中’ (U+4E2D) → <code>11100100 10111000 10101101</code>（3 字节）</li>
+<li>‘😊’ (U+1F60A) → <code>11110000 10011111 10011000 10001010</code>（4 字节）</li>
+</ul>
+</li>
+<li>特点：<strong>变长编码，节省空间</strong></li>
+</ul>
+<p>上面的例子详解:</p>
+<ol>
+<li><p><strong>固定的前缀</strong>：告诉解码器这是几字节的字符</p>
+<ul>
+<li><code>0</code> &#x3D; 1 字节</li>
+<li><code>110</code> &#x3D; 2 字节</li>
+<li><code>1110</code> &#x3D; 3 字节</li>
+<li><code>11110</code> &#x3D; 4 字节</li>
+</ul>
+</li>
+<li><p><strong>后续字节都以 <code>10</code> 开头</strong>：便于识别和同步</p>
+</li>
+<li><p><strong>x 的位置</strong>：填入 Unicode 码点的二进制数据</p>
+</li>
+</ol>
+<h4 id="例-1：’A’-U-0041"><a href="#例-1：’A’-U-0041" class="headerlink" title="例 1：’A’ (U+0041)"></a>例 1：’A’ (U+0041)</h4><ul>
+<li>Unicode: U+0041 &#x3D; 十进制 65</li>
+<li>范围判断：65 &lt; 128，使用 <strong>1 字节</strong></li>
+<li>二进制：<code>01000001</code></li>
+<li>套用格式 <code>0xxxxxxx</code>：直接就是 <code>01000001</code></li>
+</ul>
+<h4 id="例-2：’中’-U-4E2D"><a href="#例-2：’中’-U-4E2D" class="headerlink" title="例 2：’中’ (U+4E2D)"></a>例 2：’中’ (U+4E2D)</h4><ul>
+<li>Unicode: U+4E2D &#x3D; 十六进制 4E2D &#x3D; 二进制 <code>0100111000101101</code></li>
+<li>范围判断：4E2D 在 0800-FFFF 之间，使用 <strong>3 字节</strong></li>
+<li>格式：<code>1110xxxx 10xxxxxx 10xxxxxx</code>（共 16 个 x）</li>
+</ul>
+<p><strong>填充步骤：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">原始二进制：0100 111000 101101</span><br><span class="line">           ↓    ↓      ↓</span><br><span class="line">填入格式：  1110|0100 10|111000 10|101101</span><br><span class="line">结果：     11100100 10111000 10101101</span><br></pre></td></tr></table></figure>
+
+<h4 id="例-3：’😊’-U-1F60A"><a href="#例-3：’😊’-U-1F60A" class="headerlink" title="例 3：’😊’ (U+1F60A)"></a>例 3：’😊’ (U+1F60A)</h4><ul>
+<li>Unicode: U+1F60A &#x3D; 二进制 <code>000011111011000001010</code>（21 位）</li>
+<li>范围判断：1F60A &gt; 10000，使用 <strong>4 字节</strong></li>
+<li>格式：<code>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</code>（共 21 个 x）</li>
+</ul>
+<p><strong>填充步骤：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">原始二进制：000 011111 011000 001010</span><br><span class="line">           ↓   ↓      ↓      ↓</span><br><span class="line">填入格式：  11110|000 10|011111 10|011000 10|001010</span><br><span class="line">结果：     11110000 10011111 10011000 10001010</span><br></pre></td></tr></table></figure>
+
+<h3 id="关系总结"><a href="#关系总结" class="headerlink" title="关系总结"></a>关系总结</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Unicode = 字典（定义每个字是什么编号）</span><br><span class="line">UTF-8   = 书写方式（如何用字节把编号写下来）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、UTF-8-的优势"><a href="#二、UTF-8-的优势" class="headerlink" title="二、UTF-8 的优势"></a>二、UTF-8 的优势</h2><h3 id="为什么-UTF-8-最流行？"><a href="#为什么-UTF-8-最流行？" class="headerlink" title="为什么 UTF-8 最流行？"></a>为什么 UTF-8 最流行？</h3><ol>
+<li><p><strong>节省空间</strong></p>
+<ul>
+<li>英文字母：1 字节（和 ASCII 一样）</li>
+<li>中文汉字：3 字节（够用）</li>
+<li>复杂符号：4 字节（罕见）</li>
+</ul>
+</li>
+<li><p><strong>兼容 ASCII</strong></p>
+<ul>
+<li>前 128 个字符完全一样</li>
+<li>老程序无需修改就能用</li>
+</ul>
+</li>
+<li><p><strong>容错性好</strong></p>
+<ul>
+<li>损坏一个字节不会影响其他字符</li>
+<li>UTF-16&#x2F;UTF-32 字节损坏后可能导致多个字符解析错误</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="三、其他-Unicode-编码方式"><a href="#三、其他-Unicode-编码方式" class="headerlink" title="三、其他 Unicode 编码方式"></a>三、其他 Unicode 编码方式</h2><h3 id="UTF-16"><a href="#UTF-16" class="headerlink" title="UTF-16"></a>UTF-16</h3><ul>
+<li><strong>常用字符 2 字节，emoji 等特殊符号 4 字节</strong></li>
+<li>使用场景：Windows 内部、Java 字符串</li>
+<li>优点：处理中文等字符效率较高</li>
+<li>缺点：不兼容 ASCII，浪费空间</li>
+</ul>
+<h4 id="🔍-深入理解：为什么-UTF-16-有时-2-字节有时-4-字节？"><a href="#🔍-深入理解：为什么-UTF-16-有时-2-字节有时-4-字节？" class="headerlink" title="🔍 深入理解：为什么 UTF-16 有时 2 字节有时 4 字节？"></a>🔍 深入理解：为什么 UTF-16 有时 2 字节有时 4 字节？</h4><p>这涉及 Unicode 的”平面”（Plane）概念：</p>
+<p><strong>Unicode 的分区结构</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Unicode 字符空间 = 17 个平面 × 每个平面 65536 个字符</span><br><span class="line">总共可以表示 1,114,112 个字符</span><br></pre></td></tr></table></figure>
+
+<p><strong>1. BMP 基本多文种平面（Basic Multilingual Plane）</strong></p>
+<ul>
+<li><strong>范围</strong>：U+0000 到 U+FFFF（0 到 65535）</li>
+<li><strong>包含内容</strong>：<ul>
+<li>英文字母、数字、标点</li>
+<li>中日韩常用汉字（CJK）</li>
+<li>阿拉伯文、西里尔文等各国文字</li>
+<li>常用符号（©、®、™ 等）</li>
+</ul>
+</li>
+<li><strong>UTF-16 编码</strong>：直接用 2 字节表示</li>
+<li><strong>覆盖率</strong>：99% 的日常使用字符都在这里</li>
+</ul>
+<p><strong>2. 补充平面（Supplementary Planes）</strong></p>
+<ul>
+<li><strong>范围</strong>：U+10000 到 U+10FFFF（65536 到 1,114,111）</li>
+<li><strong>包含内容</strong>：<ul>
+<li>Emoji 表情：😊 🚀 🎉</li>
+<li>罕见汉字：𠮷（吉的异体字）、𩸽（鱼名）</li>
+<li>古代文字：𒀀（楔形文字）、𓀀（埃及圣书体）</li>
+<li>数学符号：𝕏（双线体字母）</li>
+</ul>
+</li>
+<li><strong>UTF-16 编码</strong>：用”代理对”（Surrogate Pair）表示</li>
+</ul>
+<p><strong>什么是代理对？</strong></p>
+<p>因为补充平面的字符编号超过了 65535，2 字节装不下，UTF-16 用了一个巧妙方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">代理对 = 高代理（High Surrogate）+ 低代理（Low Surrogate）</span><br><span class="line">         ↓                      ↓</span><br><span class="line">       2 字节                 2 字节</span><br><span class="line"></span><br><span class="line">总共 4 字节来表示一个补充平面的字符</span><br></pre></td></tr></table></figure>
+
+<p><strong>实际例子</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">字符：😊（笑脸 emoji）</span><br><span class="line">Unicode 编号：U+1F60A（在补充平面）</span><br><span class="line">UTF-16 编码：0xD83D 0xDE0A（代理对，共 4 字节）</span><br><span class="line">            ↑高代理  ↑低代理</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么这么设计？</strong></p>
+<ul>
+<li>当年设计 UTF-16 时，以为 65536 个字符够用了</li>
+<li>后来发现不够（emoji、古文字不断增加）</li>
+<li>为了向后兼容，只能用代理对这个”补丁”方案</li>
+</ul>
+<h3 id="UTF-32"><a href="#UTF-32" class="headerlink" title="UTF-32"></a>UTF-32</h3><ul>
+<li><strong>固定 4 字节</strong>，直接存储 Unicode 码点值</li>
+<li>使用场景：内部处理（很少用于存储）</li>
+<li>优点：每个字符长度一致，索引方便</li>
+<li>缺点：极度浪费空间</li>
+</ul>
+<h3 id="对比表"><a href="#对比表" class="headerlink" title="对比表"></a>对比表</h3><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>Unicode 编号</th>
+<th>UTF-8</th>
+<th>UTF-16</th>
+<th>UTF-32</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>U+0041</td>
+<td>1 字节</td>
+<td>2 字节</td>
+<td>4 字节</td>
+</tr>
+<tr>
+<td>中</td>
+<td>U+4E2D</td>
+<td>3 字节</td>
+<td>2 字节</td>
+<td>4 字节</td>
+</tr>
+<tr>
+<td>😊</td>
+<td>U+1F60A</td>
+<td>4 字节</td>
+<td>4 字节</td>
+<td>4 字节</td>
+</tr>
+</tbody></table>
+<p><strong>说明</strong>：UTF-8 对英文友好，UTF-16 对中文友好，UTF-32 对所有字符等长但浪费空间</p>
+<hr>
+<h2 id="四、历史遗留：GBK、GB2312-等"><a href="#四、历史遗留：GBK、GB2312-等" class="headerlink" title="四、历史遗留：GBK、GB2312 等"></a>四、历史遗留：GBK、GB2312 等</h2><h3 id="背景故事"><a href="#背景故事" class="headerlink" title="背景故事"></a>背景故事</h3><p>在 Unicode 普及之前，各国都有自己的编码标准：</p>
+<ul>
+<li>中国：GB2312、GBK、GB18030</li>
+<li>日本：Shift-JIS</li>
+<li>韩国：EUC-KR</li>
+<li>台湾：Big5</li>
+</ul>
+<h3 id="中文编码演进"><a href="#中文编码演进" class="headerlink" title="中文编码演进"></a>中文编码演进</h3><h4 id="1-GB2312（1980-年）"><a href="#1-GB2312（1980-年）" class="headerlink" title="1. GB2312（1980 年）"></a>1. <strong>GB2312</strong>（1980 年）</h4><ul>
+<li>收录：6763 个汉字 + 682 个符号</li>
+<li>范围：常用简体中文</li>
+<li>编码：2 字节（定长）</li>
+<li>缺点：繁体字、生僻字都没有</li>
+</ul>
+<h4 id="2-GBK（1995-年）"><a href="#2-GBK（1995-年）" class="headerlink" title="2. GBK（1995 年）"></a>2. <strong>GBK</strong>（1995 年）</h4><ul>
+<li>收录：21003 个汉字</li>
+<li>范围：简体 + 繁体 + 生僻字</li>
+<li>编码：2 字节（定长）</li>
+<li>特点：向下兼容 GB2312</li>
+<li>缺点：不是国际标准，只能表示中文</li>
+</ul>
+<h4 id="3-GB18030（2000-年）"><a href="#3-GB18030（2000-年）" class="headerlink" title="3. GB18030（2000 年）"></a>3. <strong>GB18030</strong>（2000 年）</h4><ul>
+<li>收录：70244 个汉字</li>
+<li>范围：中日韩统一汉字 + 少数民族文字</li>
+<li>编码：1&#x2F;2&#x2F;4 字节（变长）</li>
+<li>特点：国家强制标准，兼容 GBK</li>
+<li>现状：逐渐被 UTF-8 取代</li>
+</ul>
+<h3 id="GBK-vs-UTF-8-对比"><a href="#GBK-vs-UTF-8-对比" class="headerlink" title="GBK vs UTF-8 对比"></a>GBK vs UTF-8 对比</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>GBK</th>
+<th>UTF-8</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>国际通用性</td>
+<td>❌ 只用于中文</td>
+<td>✅ 全球标准</td>
+</tr>
+<tr>
+<td>中文效率</td>
+<td>✅ 2 字节</td>
+<td>⚠️ 3 字节</td>
+</tr>
+<tr>
+<td>英文效率</td>
+<td>❌ 2 字节</td>
+<td>✅ 1 字节</td>
+</tr>
+<tr>
+<td>兼容 ASCII</td>
+<td>❌ 不兼容</td>
+<td>✅ 完全兼容</td>
+</tr>
+<tr>
+<td>emoji 支持</td>
+<td>❌ 不支持</td>
+<td>✅ 支持</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、实际应用场景"><a href="#五、实际应用场景" class="headerlink" title="五、实际应用场景"></a>五、实际应用场景</h2><h3 id="什么时候用-UTF-8？"><a href="#什么时候用-UTF-8？" class="headerlink" title="什么时候用 UTF-8？"></a>什么时候用 UTF-8？</h3><ul>
+<li>✅ 网页开发（HTML&#x2F;CSS&#x2F;JS）</li>
+<li>✅ 数据库存储（MySQL、PostgreSQL）</li>
+<li>✅ API 接口（JSON&#x2F;XML）</li>
+<li>✅ 跨平台文件（Linux&#x2F;Mac&#x2F;Windows）</li>
+<li>✅ 开源项目（国际协作）</li>
+</ul>
+<h3 id="什么时候可能遇到-GBK？"><a href="#什么时候可能遇到-GBK？" class="headerlink" title="什么时候可能遇到 GBK？"></a>什么时候可能遇到 GBK？</h3><ul>
+<li>⚠️ 老旧 Windows 系统（中文版）</li>
+<li>⚠️ 某些政府&#x2F;银行系统</li>
+<li>⚠️ 老式数据库导出文件</li>
+<li>⚠️ 古老的文本文件</li>
+</ul>
+<h3 id="编码混乱的典型问题"><a href="#编码混乱的典型问题" class="headerlink" title="编码混乱的典型问题"></a>编码混乱的典型问题</h3><p><strong>乱码示例</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">原文：你好世界</span><br><span class="line">UTF-8 误读为 GBK：浣犲ソ涓栫晫</span><br><span class="line">GBK 误读为 UTF-8：���������</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因</strong>：写入时用 UTF-8，读取时用 GBK（或反过来）</p>
+<p><strong>解决</strong>：统一使用 UTF-8，在文件头声明编码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- HTML --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、快速判断指南"><a href="#六、快速判断指南" class="headerlink" title="六、快速判断指南"></a>六、快速判断指南</h2><h3 id="遇到乱码怎么办？"><a href="#遇到乱码怎么办？" class="headerlink" title="遇到乱码怎么办？"></a>遇到乱码怎么办？</h3><ol>
+<li><p><strong>检查文件编码</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux/Mac</span></span><br><span class="line">file -i 文件名.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示: charset=utf-8 或 charset=iso-8859-1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>转换编码</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将 GBK 转为 UTF-8</span></span><br><span class="line">iconv -f GBK -t UTF-8 input.txt &gt; output.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Python 读取指定编码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取 GBK 文件</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;file.txt&#x27;</span>, encoding=<span class="string">&#x27;gbk&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    content = f.read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存为 UTF-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;file_utf8.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(content)</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h2 id="七、记忆口诀"><a href="#七、记忆口诀" class="headerlink" title="七、记忆口诀"></a>七、记忆口诀</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Unicode 是身份证号，给每个字编号；</span><br><span class="line">UTF-8 是快递方式，决定怎么打包送；</span><br><span class="line">GBK 是地方标准，只在中文区能用；</span><br><span class="line">现代项目选 UTF-8，兼容全球不出错！</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、常见误区"><a href="#八、常见误区" class="headerlink" title="八、常见误区"></a>八、常见误区</h2><p>❌ <strong>误区 1</strong>：”UTF-8 是一种字符集”<br>✅ <strong>正确</strong>：UTF-8 是编码方式，Unicode 才是字符集</p>
+<p>❌ <strong>误区 2</strong>：”GBK 比 UTF-8 更省空间”<br>✅ <strong>正确</strong>：仅对纯中文文本成立，混合英文时 UTF-8 更优</p>
+<p>❌ <strong>误区 3</strong>：”Unicode 只有 UTF-8 一种编码”<br>✅ <strong>正确</strong>：还有 UTF-16、UTF-32 等多种编码</p>
+<p>❌ <strong>误区 4</strong>：”UTF-8 每个字符都是 8 位”<br>✅ <strong>正确</strong>：UTF-8 是变长编码，1-4 字节不等</p>
+<p>❌ <strong>误区 5</strong>：”UTF-8 文件必须有 BOM”<br>✅ <strong>正确</strong>：UTF-8 不需要 BOM（字节顺序标记），加上反而可能导致问题</p>
+<hr>
+<h2 id="九、推荐做法"><a href="#九、推荐做法" class="headerlink" title="九、推荐做法"></a>九、推荐做法</h2><h3 id="新项目开发"><a href="#新项目开发" class="headerlink" title="新项目开发"></a>新项目开发</h3><ol>
+<li><p><strong>一律使用 UTF-8</strong></p>
+<ul>
+<li>源代码文件：UTF-8</li>
+<li>数据库：UTF-8（MySQL 使用 <code>utf8mb4</code>，因为 MySQL 的 <code>utf8</code> 是阉割版只支持最多 3 字节）</li>
+<li>网页：<code>&lt;meta charset=&quot;UTF-8&quot;&gt;</code></li>
+<li>API 响应头：<code>Content-Type: application/json; charset=utf-8</code></li>
+</ul>
+</li>
+<li><p><strong>避免使用 GBK</strong></p>
+<ul>
+<li>除非对接古老系统必须用 GBK</li>
+<li>转换时先转成 UTF-8 再处理</li>
+</ul>
+</li>
+<li><p><strong>文本编辑器设置</strong></p>
+<ul>
+<li>VS Code：设置默认编码为 UTF-8</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>Unicode</strong>：全球字符大字典，定义编号规则</li>
+<li><strong>UTF-8</strong>：最流行的编码方式，节省空间、兼容好</li>
+<li><strong>GBK&#x2F;GB2312</strong>：历史遗留的中文编码，逐渐淘汰</li>
+<li><strong>建议</strong>：新项目全部用 UTF-8，老项目遇到 GBK 及时转换</li>
+</ul>
+<p><strong>最终建议</strong>：如果不知道用什么编码，就用 UTF-8，99% 的情况下没问题！</p>
+<hr>
+<h2 id="更新记录"><a href="#更新记录" class="headerlink" title="更新记录"></a>更新记录</h2><ul>
+<li><strong>2025-12-10</strong>：文章创建</li>
+<li><strong>2025-12-10</strong>：通过 Claude Code 进行技术审阅，主要优化：<ul>
+<li>修正 UTF-16 编码方式的描述（从”固定字节”改为基于 Unicode 平面的准确表述）</li>
+<li>新增 Unicode 平面结构和代理对机制的深度解析</li>
+<li>补充 MySQL <code>utf8mb4</code> 的详细说明</li>
+<li>新增 BOM（字节顺序标记）相关误区</li>
+<li>优化对比表说明和容错性表述</li>
+<li>保持科普风格的同时提升技术准确性</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2025/12/10/character-encoding-explained/" data-id="cmj09y6sn000j6gva69keaccq" data-title="字符编码详解：UTF-8、Unicode、GBK 等" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GBK/" rel="tag">GBK</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Unicode/" rel="tag">Unicode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" rel="tag">字符集</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/12/09/understanding-ssr-csr-spa-mpa/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">深入理解 SSR/CSR 与 SPA/MPA：现代前端渲染模式详解</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/%E6%95%99%E7%A8%8B/">教程</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/">前端开发</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache-Components/" rel="tag">Cache Components</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ComfyUI/" rel="tag">ComfyUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GBK/" rel="tag">GBK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MPA/" rel="tag">MPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js/" rel="tag">Next.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js-16/" rel="tag">Next.js 16</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSR/" rel="tag">SSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unicode/" rel="tag">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-Development/" rel="tag">Web Development</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Z-Image/" rel="tag">Z-Image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysqldump/" rel="tag">mysqldump</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" rel="tag">低显存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" rel="tag">前端架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" rel="tag">字符集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%8F%E5%8C%96/" rel="tag">量化</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 12px;">CSR</a> <a href="/tags/Cache-Components/" style="font-size: 10px;">Cache Components</a> <a href="/tags/ComfyUI/" style="font-size: 10px;">ComfyUI</a> <a href="/tags/GBK/" style="font-size: 10px;">GBK</a> <a href="/tags/GPT/" style="font-size: 10px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MPA/" style="font-size: 10px;">MPA</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Next-js/" style="font-size: 14px;">Next.js</a> <a href="/tags/Next-js-16/" style="font-size: 10px;">Next.js 16</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/React/" style="font-size: 10px;">React</a> <a href="/tags/SPA/" style="font-size: 12px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/SSR/" style="font-size: 10px;">SSR</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/Web-Development/" style="font-size: 10px;">Web Development</a> <a href="/tags/Z-Image/" style="font-size: 10px;">Z-Image</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 14px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 12px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/mysqldump/" style="font-size: 10px;">mysqldump</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 12px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/timestamp/" style="font-size: 10px;">timestamp</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" style="font-size: 10px;">低显存</a> <a href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">前端架构</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" style="font-size: 10px;">字符集</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 10px;">编码</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a> <a href="/tags/%E9%87%8F%E5%8C%96/" style="font-size: 10px;">量化</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/12/">十二月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">十一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/09/">九月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">八月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/07/">七月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/12/10/character-encoding-explained/">字符编码详解：UTF-8、Unicode、GBK 等</a>
+          </li>
+        
+          <li>
+            <a href="/2025/12/09/understanding-ssr-csr-spa-mpa/">深入理解 SSR/CSR 与 SPA/MPA：现代前端渲染模式详解</a>
+          </li>
+        
+          <li>
+            <a href="/2025/11/28/z-image-turbo-low-vram-setup/">6GB显存跑Z-Image-Turbo完全指南</a>
+          </li>
+        
+          <li>
+            <a href="/2025/11/16/nextjs-docker-deploy-pitfalls/">自行部署 Next.js Docker 的挑战：臃肿、平台绑定与隐藏的“坑”</a>
+          </li>
+        
+          <li>
+            <a href="/2025/11/01/nextjs-16-cache-components-complete-guide/">Next.js 16 Cache Components 完全指南</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 检查是否是文章页面
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      // 创建侧边栏容器
+      const tocSidebar = document.createElement('div');
+      tocSidebar.className = 'toc-sidebar';
+
+      // 创建切换按钮
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'toc-toggle';
+      toggleBtn.innerHTML = '📑';
+      toggleBtn.title = '目录';
+
+      // 创建 TOC 内容容器
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+
+      tocSidebar.appendChild(toggleBtn);
+      tocSidebar.appendChild(tocDiv);
+      document.body.appendChild(tocSidebar);
+
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc',
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+
+      // 从 localStorage 读取收缩状态
+      const isCollapsed = localStorage.getItem('tocCollapsed') === 'true';
+      if (isCollapsed) {
+        tocSidebar.classList.add('collapsed');
+      }
+
+      // 切换按钮点击事件
+      toggleBtn.addEventListener('click', function () {
+        tocSidebar.classList.toggle('collapsed');
+        const collapsed = tocSidebar.classList.contains('collapsed');
+        localStorage.setItem('tocCollapsed', collapsed);
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>

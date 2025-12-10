@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-12-09T15:20:27.622Z</updated>
+  <updated>2025-12-10T16:19:17.512Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>字符编码详解：UTF-8、Unicode、GBK 等</title>
+    <link href="https://bingowith.me/2025/12/10/character-encoding-explained/"/>
+    <id>https://bingowith.me/2025/12/10/character-encoding-explained/</id>
+    <published>2025-12-10T07:30:00.000Z</published>
+    <updated>2025-12-10T16:19:17.512Z</updated>
+    
+    
+    <summary type="html">通俗易懂地讲解 UTF-8、Unicode、GBK 等字符编码的区别与应用，用快递系统类比帮助理解核心概念</summary>
+    
+    
+    
+    <category term="技术" scheme="https://bingowith.me/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    <category term="计算机基础" scheme="https://bingowith.me/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/"/>
+    
+    
+    <category term="UTF-8" scheme="https://bingowith.me/tags/UTF-8/"/>
+    
+    <category term="Unicode" scheme="https://bingowith.me/tags/Unicode/"/>
+    
+    <category term="编码" scheme="https://bingowith.me/tags/%E7%BC%96%E7%A0%81/"/>
+    
+    <category term="GBK" scheme="https://bingowith.me/tags/GBK/"/>
+    
+    <category term="字符集" scheme="https://bingowith.me/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/"/>
+    
+  </entry>
   
   <entry>
     <title>深入理解 SSR/CSR 与 SPA/MPA：现代前端渲染模式详解</title>
@@ -629,23 +658,6 @@
     <category term="react native" scheme="https://bingowith.me/tags/react-native/"/>
     
     <category term="expo router" scheme="https://bingowith.me/tags/expo-router/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>AWS安装cloudwatch agent后没有指标出现解决</title>
-    <link href="https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/"/>
-    <id>https://bingowith.me/2024/06/05/aws_cloudwatch_agent_no_metric/</id>
-    <published>2024-06-05T05:10:00.000Z</published>
-    <updated>2024-06-05T05:10:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;EC2的指标没有内存相关,而内存是个很重要的指标,要在cloudwatch中监控需要使用cloudwatch agent(CWAgent), 照着官方文档做结果发现没有指标… 最后发现文档里少说了一步&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="aws" scheme="https://bingowith.me/tags/aws/"/>
     
   </entry>
   
