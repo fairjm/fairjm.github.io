@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2025-12-10T17:24:34.356Z</updated>
+  <updated>2026-01-08T17:38:55.234Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,55 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Astro 项目集成 Better Auth 指南(使用drizzle+PG)</title>
+    <link href="https://bingowith.me/2026/01/09/astro-better-auth-integration/"/>
+    <id>https://bingowith.me/2026/01/09/astro-better-auth-integration/</id>
+    <published>2026-01-08T16:00:00.000Z</published>
+    <updated>2026-01-08T17:38:55.234Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文档说明如何在 Astro 项目中集成 Better Auth，使用 Drizzle 作为数据库适配器，PostgreSQL 作为数据库。&lt;/p&gt;
+&lt;p&gt;emmmm,文档是在实践完之后写的，不是边实践边写的，可能会有所遗漏，但是扫了几遍源码，应该八九不离十。&lt;/p&gt;
+&lt;p&gt;注意这个需要 server 支持，所以需要 server adapter，比如 node 的&lt;a href=&quot;https://docs.astro.build/en/guides/integrations-guide/node/&quot;&gt;@astrojs&amp;#x2F;node&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;我使用的是默认 static，需要后端运行时渲染的地方用&lt;code&gt;export const prerender = false;&lt;/code&gt;，如果你的 output 设置为了 server，那么就不需要 prerender&amp;#x3D;false。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;官方文档参考&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.better-auth.com/docs/installation&quot;&gt;Better Auth 安装指南&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.better-auth.com/docs/adapters/drizzle&quot;&gt;Better Auth Drizzle 适配器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.better-auth.com/docs/integrations/astro&quot;&gt;Better Auth Astro 集成&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;步骤-1：安装依赖&quot;&gt;&lt;a href=&quot;#步骤-1：安装依赖&quot; class=&quot;headerlink&quot; title=&quot;步骤 1：安装依赖&quot;&gt;&lt;/a&gt;步骤 1：安装依赖&lt;/h2&gt;&lt;p&gt;首先，安装 Better Auth 及相关依赖：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 安装核心依赖&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;pnpm add better-auth drizzle-orm pg dotenv&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 安装开发依赖&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;pnpm add -D drizzle-kit tsx @types/pg&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;依赖说明&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;better-auth&lt;/code&gt;: 认证核心库&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;drizzle-orm&lt;/code&gt;: ORM 库，用于数据库操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pg&lt;/code&gt;: PostgreSQL 驱动&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;drizzle-kit&lt;/code&gt;: Drizzle 开发工具（用于数据库迁移）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dotenv&lt;/code&gt;: 环境变量加载（&lt;strong&gt;drizzle.config.ts 需要&lt;/strong&gt;）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;</summary>
+    
+    
+    
+    
+    <category term="Astro" scheme="https://bingowith.me/tags/Astro/"/>
+    
+    <category term="Better Auth" scheme="https://bingowith.me/tags/Better-Auth/"/>
+    
+    <category term="React" scheme="https://bingowith.me/tags/React/"/>
+    
+    <category term="PostgreSQL" scheme="https://bingowith.me/tags/PostgreSQL/"/>
+    
+    <category term="Drizzle" scheme="https://bingowith.me/tags/Drizzle/"/>
+    
+  </entry>
   
   <entry>
     <title>字符编码详解：UTF-8、Unicode、GBK 等</title>
@@ -169,11 +218,11 @@
     
     
     
+    <category term="React" scheme="https://bingowith.me/tags/React/"/>
+    
     <category term="Next.js" scheme="https://bingowith.me/tags/Next-js/"/>
     
     <category term="Cache Components" scheme="https://bingowith.me/tags/Cache-Components/"/>
-    
-    <category term="React" scheme="https://bingowith.me/tags/React/"/>
     
     <category term="Next.js 16" scheme="https://bingowith.me/tags/Next-js-16/"/>
     
@@ -639,25 +688,6 @@
     <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
     
     <category term="shopify CLI" scheme="https://bingowith.me/tags/shopify-CLI/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>react native的expo router安卓下modal不生效的解法</title>
-    <link href="https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/"/>
-    <id>https://bingowith.me/2024/06/19/react-native-expo-router-android-modal-not-working-solution/</id>
-    <published>2024-06-19T05:33:00.000Z</published>
-    <updated>2024-06-19T05:33:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近跟着教程学&lt;code&gt;react native&lt;/code&gt;,教程使用的是iOS,而我在windows下开发用的安卓真机,除了一些样式上的区别大体的功能差不多.&lt;br&gt;但路由的&lt;code&gt;modal&lt;/code&gt;显示不一样感觉观感差的有点多.&lt;br&gt;这是因为安卓原生是没有iOS那种modal的路由的,&lt;code&gt;expo router&lt;/code&gt;使用的是&lt;code&gt;react navigation&lt;/code&gt;的&lt;code&gt;native stack&lt;/code&gt;,这个设置项在安卓下没有效果.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="react native" scheme="https://bingowith.me/tags/react-native/"/>
-    
-    <category term="expo router" scheme="https://bingowith.me/tags/expo-router/"/>
     
   </entry>
   
