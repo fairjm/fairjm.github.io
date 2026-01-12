@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-01-08T17:38:55.234Z</updated>
+  <updated>2026-01-12T08:23:43.677Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Vercel AI SDK 的工具审批（Approval）流程详解</title>
+    <link href="https://bingowith.me/2026/01/12/vercel-ai-sdk-tool-approval-flow/"/>
+    <id>https://bingowith.me/2026/01/12/vercel-ai-sdk-tool-approval-flow/</id>
+    <published>2026-01-11T16:00:00.000Z</published>
+    <updated>2026-01-12T08:23:43.677Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;在 AI 应用中，当 AI 助手需要调用本地文件系统或其他敏感工具时，出于安全考虑，需要在执行前获得用户的明确批准。Vercel AI SDK（文中使用 v6 版本，这狗东西 API 一直变来变去的）提供了工具审批（Tool Approval）机制，允许开发者在 AI 执行工具前拦截并请求用户确认。&lt;/p&gt;
+&lt;p&gt;注意这个参数主要是为了配合&lt;code&gt;stopWhen&lt;/code&gt;（也就是工具自动调用），也就是:&lt;/p&gt;
+&lt;figure class=&quot;highlight typescript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; result = &lt;span class=&quot;title function_&quot;&gt;streamText&lt;/span&gt;(&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;attr&quot;&gt;model&lt;/span&gt;: newapi.&lt;span class=&quot;title function_&quot;&gt;chat&lt;/span&gt;(config.&lt;span class=&quot;property&quot;&gt;model&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;model&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  messages,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  tools,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;attr&quot;&gt;stopWhen&lt;/span&gt;: &lt;span class=&quot;title function_&quot;&gt;stepCountIs&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;), &lt;span class=&quot;comment&quot;&gt;// 这里 自动工具调用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;同时也注意这东西的调用方式灵活的很，毕竟他不是应用级别的封装，不用这套自己也可以搓一个出来。&lt;/p&gt;
+&lt;p&gt;同时在 AI SDK UI 中的调用流程是完全不一样的，这里只针对 Core 的 API。（但是其实也八九不离十了）&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="AI" scheme="https://bingowith.me/tags/AI/"/>
+    
+    <category term="Vercel AI SDK" scheme="https://bingowith.me/tags/Vercel-AI-SDK/"/>
+    
+    <category term="Tool Approval" scheme="https://bingowith.me/tags/Tool-Approval/"/>
+    
+    <category term="TypeScript" scheme="https://bingowith.me/tags/TypeScript/"/>
+    
+  </entry>
   
   <entry>
     <title>Astro 项目集成 Better Auth 指南(使用drizzle+PG)</title>
@@ -656,38 +684,6 @@
     <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
     
     <category term="spring boot" scheme="https://bingowith.me/tags/spring-boot/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>shopify CLI国内开发配置</title>
-    <link href="https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/"/>
-    <id>https://bingowith.me/2024/09/22/shopify-cli-china-development-setup/</id>
-    <published>2024-09-22T06:01:00.000Z</published>
-    <updated>2025-05-18T09:38:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;Shopify CLI 是开发 Shopify 应用和主题的重要工具,但在中国等网络受限地区使用时常遇到困难。&lt;br&gt;官方仓库有一些 issue 都提到了这些问题, 但是官方一直没有加对应的配置。&lt;br&gt;比如: &lt;a href=&quot;https://github.com/Shopify/cli/issues/3225&quot;&gt;[Bug]: Execute Shopify theme dev with error message: request to xxx.theme.json?xxx processing failed, reason: read ETIMEDOUT&lt;/a&gt;&lt;br&gt;本文将指导你如何正确配置 Shopify CLI,以便在中国顺利进行 Shopify 开发。&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;2025&amp;#x2F;05&amp;#x2F;18 更新 官方已经加入了 proxy 参数&lt;br&gt;参考: &lt;a href=&quot;https://github.com/Shopify/cli/blob/d0bbf05c28e22ad8b4ba17767bf7aff28ac71ddc/RELEASE_NOTES/3.78.md?plain=1#L2&quot;&gt;Release Note 3.78&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Add HTTP proxy support with the environment variables &lt;code&gt;SHOPIFY_HTTP_PROXY&lt;/code&gt; and &lt;code&gt;SHOPIFY_HTTPS_PROXY&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;主要问题&quot;&gt;&lt;a href=&quot;#主要问题&quot; class=&quot;headerlink&quot; title=&quot;主要问题&quot;&gt;&lt;/a&gt;主要问题&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;Shopify CLI 默认不支持配置代理&lt;/li&gt;
-&lt;li&gt;不读取系统环境变量&lt;/li&gt;
-&lt;li&gt;内置的 Cloudflare tunneling 在中国连接不稳定&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;本指南基于 Shopify CLI 3.67.1 版本。&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="nodejs" scheme="https://bingowith.me/tags/nodejs/"/>
-    
-    <category term="shopify" scheme="https://bingowith.me/tags/shopify/"/>
-    
-    <category term="shopify CLI" scheme="https://bingowith.me/tags/shopify-CLI/"/>
     
   </entry>
   
