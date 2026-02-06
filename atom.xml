@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-01-12T08:23:43.677Z</updated>
+  <updated>2026-02-06T08:51:51.068Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Windows 下 Codex 执行 bash 中文乱码问题排查与解决</title>
+    <link href="https://bingowith.me/2026/02/06/windows-codex-bash-wrong-encoding/"/>
+    <id>https://bingowith.me/2026/02/06/windows-codex-bash-wrong-encoding/</id>
+    <published>2026-02-05T16:00:00.000Z</published>
+    <updated>2026-02-06T08:51:51.068Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近在 Windows 上使用 Codex CLI 时，遇到了一个很诡异的问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接在终端执行 &lt;code&gt;bash -lc &amp;quot;echo 你好&amp;quot;&lt;/code&gt;，输出正常。&lt;/li&gt;
+&lt;li&gt;让 Claude Code 帮我执行 bash，输出也正常。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;只有 Codex 执行 bash 会出现中文乱码&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;先放结论：这个问题最后不是靠 PowerShell 编码设置解决的，而是要给 Codex 设置 &lt;code&gt;WSL_UTF8=1&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/windows-codex-bash-wrong-encoding/wrong.png&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="编码" scheme="https://bingowith.me/tags/%E7%BC%96%E7%A0%81/"/>
+    
+    <category term="AI" scheme="https://bingowith.me/tags/AI/"/>
+    
+    <category term="Codex" scheme="https://bingowith.me/tags/Codex/"/>
+    
+    <category term="Windows" scheme="https://bingowith.me/tags/Windows/"/>
+    
+    <category term="OpenAI" scheme="https://bingowith.me/tags/OpenAI/"/>
+    
+    <category term="WSL" scheme="https://bingowith.me/tags/WSL/"/>
+    
+  </entry>
   
   <entry>
     <title>Vercel AI SDK 的工具审批（Approval）流程详解</title>
@@ -654,36 +688,6 @@
     <category term="react" scheme="https://bingowith.me/tags/react/"/>
     
     <category term="remix" scheme="https://bingowith.me/tags/remix/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Spring Boot Docker优雅关机总结</title>
-    <link href="https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/"/>
-    <id>https://bingowith.me/2024/12/04/spring-boot-docker-graceful-shutdown-guide/</id>
-    <published>2024-12-04T04:50:00.000Z</published>
-    <updated>2024-12-04T04:50:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;1-问题背景&quot;&gt;&lt;a href=&quot;#1-问题背景&quot; class=&quot;headerlink&quot; title=&quot;1. 问题背景&quot;&gt;&lt;/a&gt;1. 问题背景&lt;/h2&gt;&lt;p&gt;在 Docker 环境中运行 Spring Boot 应用时，为了确保应用能够优雅关机（Graceful Shutdown），需要正确配置多个组件。错误的配置可能导致应用无法正常接收关闭信号，从而无法执行优雅关机流程。&lt;/p&gt;
-&lt;p&gt;今天才发现服务器上配置有问题没支持, 本地是没问题的。。。最后发现是配置有问题, 这里总结一下。&lt;/p&gt;
-&lt;p&gt;日志中出现&lt;code&gt;INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete&lt;/code&gt;表示成功(我使用的是 tomcat 容器, 其他的日志内容可能不太一样)。&lt;/p&gt;
-&lt;h2 id=&quot;2-Docker-关机流程&quot;&gt;&lt;a href=&quot;#2-Docker-关机流程&quot; class=&quot;headerlink&quot; title=&quot;2. Docker 关机流程&quot;&gt;&lt;/a&gt;2. Docker 关机流程&lt;/h2&gt;&lt;p&gt;Docker 容器的关闭过程如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Docker 向容器的 1 号进程（PID 1）发送 SIGTERM 信号&lt;/li&gt;
-&lt;li&gt;等待 &lt;code&gt;stop_grace_period&lt;/code&gt; 时间（默认 10 秒）&lt;/li&gt;
-&lt;li&gt;如果进程还未退出，发送 SIGKILL 信号强制终止&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;3-常见配置错误&quot;&gt;&lt;a href=&quot;#3-常见配置错误&quot; class=&quot;headerlink&quot; title=&quot;3. 常见配置错误&quot;&gt;&lt;/a&gt;3. 常见配置错误&lt;/h2&gt;</summary>
-    
-    
-    
-    
-    <category term="java" scheme="https://bingowith.me/tags/java/"/>
-    
-    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
-    
-    <category term="spring boot" scheme="https://bingowith.me/tags/spring-boot/"/>
     
   </entry>
   
