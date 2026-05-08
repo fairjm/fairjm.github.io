@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-02-06T08:51:51.068Z</updated>
+  <updated>2026-05-08T16:16:11.000Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>谷歌GenAI Java SDK tts示例 (gemini-3.1-flash-tts-preview)</title>
+    <link href="https://bingowith.me/2026/05/09/google-genai-java-sdk-tts-example/"/>
+    <id>https://bingowith.me/2026/05/09/google-genai-java-sdk-tts-example/</id>
+    <published>2026-05-08T16:16:11.000Z</published>
+    <updated>2026-05-08T16:16:11.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;谷歌官方文档是: &lt;a href=&quot;https://ai.google.dev/gemini-api/docs/speech-generation&quot;&gt;https://ai.google.dev/gemini-api/docs/speech-generation&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;但是很尴尬,他没有java sdk的示例,而且java sdk的example里也没有对应的例子,&lt;a href=&quot;https://github.com/googleapis/java-genai/tree/main/examples&quot;&gt;https://github.com/googleapis/java-genai/tree/main/examples&lt;/a&gt;.&lt;br&gt;这两个和文档不一致&lt;a href=&quot;https://github.com/googleapis/java-genai/blob/1e1f20c96a729c8030015c2d3812fac79715ba24/examples/src/main/java/com/google/genai/examples/InteractionMultimodalResponseAudio.java#L63&quot;&gt;examples&amp;#x2F;src&amp;#x2F;main&amp;#x2F;java&amp;#x2F;com&amp;#x2F;google&amp;#x2F;genai&amp;#x2F;examples&amp;#x2F;InteractionMultimodalResponseAudio.java&lt;/a&gt;, &lt;a href=&quot;https://github.com/googleapis/java-genai/blob/1e1f20c96a729c8030015c2d3812fac79715ba24/examples/src/main/java/com/google/genai/examples/InteractionMultimodalResponseAudioWithGenerateContent.java#L79&quot;&gt;examples&amp;#x2F;src&amp;#x2F;main&amp;#x2F;java&amp;#x2F;com&amp;#x2F;google&amp;#x2F;genai&amp;#x2F;examples&amp;#x2F;InteractionMultimodalResponseAudioWithGenerateContent.java&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;但其实只需要用他统一的generateContent方法就可以了.&lt;/p&gt;
+&lt;p&gt;调用方式其实和文档里的python一样,只要知道对应的类即可.&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="AIGC" scheme="https://bingowith.me/tags/AIGC/"/>
+    
+    <category term="gemini" scheme="https://bingowith.me/tags/gemini/"/>
+    
+  </entry>
   
   <entry>
     <title>Windows 下 Codex 执行 bash 中文乱码问题排查与解决</title>
@@ -664,30 +686,6 @@
     <category term="cloudflare" scheme="https://bingowith.me/tags/cloudflare/"/>
     
     <category term="route53" scheme="https://bingowith.me/tags/route53/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>在remix中谨慎使用useFetcher进行poll</title>
-    <link href="https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/"/>
-    <id>https://bingowith.me/2024/12/13/cautious-use-of-usefetcher-polling-in-remix/</id>
-    <published>2024-12-12T18:18:00.000Z</published>
-    <updated>2024-12-13T03:52:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;问题概述&quot;&gt;&lt;a href=&quot;#问题概述&quot; class=&quot;headerlink&quot; title=&quot;问题概述&quot;&gt;&lt;/a&gt;问题概述&lt;/h2&gt;&lt;p&gt;今天在开发时遇到了一个有趣的问题。我在实现一个异步任务提交和状态轮询的功能时，使用了两个 useFetcher：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;第一个 fetcher 用于任务提交，使用 submit 方法（这样可以触发页面 credit 的自动刷新）&lt;/li&gt;
-&lt;li&gt;第二个 fetcher 用于状态轮询，使用 load 方法（因为不需要页面刷新数据）&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;结果发现了一个奇怪的现象：第一个任务能正常工作，但提交第二个任务后，轮询返回的却始终是第一个任务的数据, 后面也是返回的永远是第一个任务的结果.&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="react" scheme="https://bingowith.me/tags/react/"/>
-    
-    <category term="remix" scheme="https://bingowith.me/tags/remix/"/>
     
   </entry>
   
