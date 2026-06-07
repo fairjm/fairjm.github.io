@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-05-08T16:16:11.000Z</updated>
+  <updated>2026-06-07T09:00:54.830Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Astro v6 Node Adapter后端的环境变量设置（v5 到 v6 的一个 breaking change）</title>
+    <link href="https://bingowith.me/2026/06/07/astro-v6-node-adapter-environment-variables/"/>
+    <id>https://bingowith.me/2026/06/07/astro-v6-node-adapter-environment-variables/</id>
+    <published>2026-06-06T16:00:00.000Z</published>
+    <updated>2026-06-07T09:00:54.830Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;这其实是Astro v6的一个改动，&lt;a href=&quot;https://docs.astro.build/en/guides/upgrade-to/v6/#changed-importmetaenv-values-are-always-inlined&quot;&gt;Changed: &lt;code&gt;import.meta.env&lt;/code&gt; values are always inlined&lt;/a&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In Astro 5.13, the experimental.staticImportMetaEnv flag was introduced to update the behavior when accessing import.meta.env directly to align with Vite’s handling of environment variables and ensures that import.meta.env values are always inlined.&lt;/p&gt;
+&lt;p&gt;In Astro 5.x, non-public environment variables were replaced by a reference to process.env. Additionally, Astro could also convert the value type of your environment variables used through import.meta.env, which could prevent access to some values such as the strings “true” (which was converted to a boolean value), and “1” (which was converted to a number).&lt;/p&gt;
+&lt;p&gt;Astro 6 removes this experimental flag and makes this the new default behavior in Astro: import.meta.env values are always inlined and never coerced.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;所以下面这篇文章讨论的前提，都是Astro v6。&lt;/p&gt;
+&lt;p&gt;Astro官方文档里有关于环境变量的章节，&lt;a href=&quot;https://docs.astro.build/en/guides/environment-variables/&quot;&gt;Using environment variables&lt;/a&gt;，里面有个例子：&lt;/p&gt;
+&lt;figure class=&quot;highlight typescript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// When import.meta.env.SSR === true&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; data = &lt;span class=&quot;keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;db&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;meta&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;env&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;DB_PASSWORD&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// When import.meta.env.SSR === false&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; data = &lt;span class=&quot;title function_&quot;&gt;fetch&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;`&lt;span class=&quot;subst&quot;&gt;$&amp;#123;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt;.meta.env.PUBLIC_POKEAPI&amp;#125;&lt;/span&gt;/pokemon/squirtle`&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;它主要使用Vite的环境变量，&lt;a href=&quot;https://vite.dev/guide/env-and-mode.html&quot;&gt;Env Variables and Modes&lt;/a&gt;，但这里其实就有个坑点，那就是这种方式的值会在build的时候被替换成实际的值，而不是在运行时动态获取，这意味着：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在build的时候就需要提供这个环境变量，不然无法替换；&lt;/li&gt;
+&lt;li&gt;在运行时无法改变这个变量，因为他已经被写入了构造物里。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;假设你在代码里写了：&lt;/p&gt;
+&lt;figure class=&quot;highlight typescript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; db = &lt;span class=&quot;title function_&quot;&gt;drizzle&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;meta&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;env&lt;/span&gt;.&lt;span class=&quot;property&quot;&gt;DATABASE_URL&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;那么在build时提供了系统环境变量或者&lt;code&gt;.env&lt;/code&gt;的时候，且值是 &lt;code&gt;mysql://user:password@localhost:3306/db&lt;/code&gt;，它最终的dist会变成（也就是直接inline替换了）：&lt;/p&gt;
+&lt;figure class=&quot;highlight typescript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; db = &lt;span class=&quot;title function_&quot;&gt;drizzle&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&amp;quot;mysql://user:password@localhost:3306/db&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    
+    <category term="Astro" scheme="https://bingowith.me/tags/Astro/"/>
+    
+    <category term="SSR" scheme="https://bingowith.me/tags/SSR/"/>
+    
+  </entry>
   
   <entry>
     <title>谷歌GenAI Java SDK tts示例 (gemini-3.1-flash-tts-preview)</title>
@@ -195,13 +233,13 @@
     <category term="架构设计" scheme="https://bingowith.me/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"/>
     
     
+    <category term="SSR" scheme="https://bingowith.me/tags/SSR/"/>
+    
     <category term="Next.js" scheme="https://bingowith.me/tags/Next-js/"/>
     
     <category term="SPA" scheme="https://bingowith.me/tags/SPA/"/>
     
     <category term="CSR" scheme="https://bingowith.me/tags/CSR/"/>
-    
-    <category term="SSR" scheme="https://bingowith.me/tags/SSR/"/>
     
     <category term="MPA" scheme="https://bingowith.me/tags/MPA/"/>
     
@@ -663,29 +701,6 @@
     
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>聊一聊AWS Route 53的托管区</title>
-    <link href="https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/"/>
-    <id>https://bingowith.me/2025/01/14/aws-route-53-hosted-zones-features-pitfalls-migration-tips/</id>
-    <published>2025-01-13T17:50:00.000Z</published>
-    <updated>2025-01-14T03:52:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;AWS-坑爹啊&quot;&gt;&lt;a href=&quot;#AWS-坑爹啊&quot; class=&quot;headerlink&quot; title=&quot;AWS 坑爹啊&quot;&gt;&lt;/a&gt;AWS 坑爹啊&lt;/h2&gt;&lt;p&gt;最近查看 AWS 的账单才发现，在 route53 买的每个域名每个月都会额外收 0.5 刀，并且还有解析费，一看是因为用了托管区（hosted zone）,这个收费是托管区的。&lt;/p&gt;
-&lt;p&gt;这个托管区的作用其实就是 DNS 管理，emmmmm….那可不得不迁移到赛博大善人 Cloudflare 了。&lt;/p&gt;
-&lt;p&gt;这里记录一些遇到的问题吧，并把一些概念阐述下。&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="aws" scheme="https://bingowith.me/tags/aws/"/>
-    
-    <category term="cloudflare" scheme="https://bingowith.me/tags/cloudflare/"/>
-    
-    <category term="route53" scheme="https://bingowith.me/tags/route53/"/>
     
   </entry>
   
