@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-06-07T09:00:54.830Z</updated>
+  <updated>2026-07-22T12:48:51.166Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Codex 通过中转使用 GPT-5.6 时 Web Search 失败的解决办法</title>
+    <link href="https://bingowith.me/2026/07/22/codex-proxy-gpt-5-6-web-search-fix/"/>
+    <id>https://bingowith.me/2026/07/22/codex-proxy-gpt-5-6-web-search-fix/</id>
+    <published>2026-07-21T16:00:00.000Z</published>
+    <updated>2026-07-22T12:48:51.166Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;随着GPT-5.6 的发布，Codex 也为其进行了特殊的修改。&lt;/p&gt;
+&lt;p&gt;使用中转&amp;#x2F;反代在 Codex 中调用 GPT-5.6 时，如果 Web Search 调用失败，常见原因并不在 Codex</summary>
+        
+      
+    
+    
+    
+    
+    <category term="GPT" scheme="https://bingowith.me/tags/GPT/"/>
+    
+    <category term="Codex" scheme="https://bingowith.me/tags/Codex/"/>
+    
+  </entry>
   
   <entry>
     <title>Astro v6 Node Adapter后端的环境变量设置（v5 到 v6 的一个 breaking change）</title>
@@ -98,9 +124,9 @@
     
     <category term="编码" scheme="https://bingowith.me/tags/%E7%BC%96%E7%A0%81/"/>
     
-    <category term="AI" scheme="https://bingowith.me/tags/AI/"/>
-    
     <category term="Codex" scheme="https://bingowith.me/tags/Codex/"/>
+    
+    <category term="AI" scheme="https://bingowith.me/tags/AI/"/>
     
     <category term="Windows" scheme="https://bingowith.me/tags/Windows/"/>
     
@@ -680,27 +706,6 @@
     
     
     <category term="GPU" scheme="https://bingowith.me/tags/GPU/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Jina ReaderLM v2 测试记录</title>
-    <link href="https://bingowith.me/2025/01/16/jina-readerlm-v2-test/"/>
-    <id>https://bingowith.me/2025/01/16/jina-readerlm-v2-test/</id>
-    <published>2025-01-16T03:33:00.000Z</published>
-    <updated>2025-01-16T03:33:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;jina 出了 ReaderLM v2 版本，这个版本的 ReaderLM 在处理文本数据时更加高效和准确。&lt;br&gt;之前简单测试了下 v1, 结论是:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;幻觉严重, 尤其特别喜欢造 url&lt;/li&gt;
-&lt;li&gt;很容易触发无限生成 比如 example1 example2…. 一直生成下去&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;第一眼就是不可用就没继续了。&lt;br&gt;这次 v2 来了，测试了一下，幻觉问题好了很多，无限生成测试了几个也没遇到，但最为一个 html 转 markdown 的工具还是不够稳定。&lt;br&gt;这里的稳定性主要是指，与传统的基于语法树解析的工具相比，它在处理速度和结构识别的准确性上还有差距。他的确能生成不错的 markdown，但是很容易被正确结构但是内容文本里有特殊构造的&amp;#x2F;或者有一些语法错误的 html 页面所影响。&lt;/p&gt;
-&lt;p&gt;注意：这个博客里的测试只是为了列出 v2 的一些问题，针对问题进行特殊构造的测试，实际网页可能也遇不到文中提到的问题，具体以实际场景为准了。&lt;br&gt;顺道一提，这个模型是以 CC 协议发布的，所以商用场景需要遵守相关协议。&lt;/p&gt;</summary>
-    
-    
-    
     
   </entry>
   
