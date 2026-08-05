@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7QSVE1SQW7');
+</script>
+<!-- End Google Analytics -->
+
+  
+  <title>从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="前几天完成了一次 WordPress 博客到 Astro 静态博客的迁移。背景是博客更新没这么频繁，而且很多动态能力不需要了，开了评论，结果后台几百个各类广告的评论没有任何意义了。博客内容本身不多，就是特别要注意旧链接和旧资源要依然可靠地工作，不然SEO就全清空了。 这篇文章记录迁移过程中的关键判断、实现方式和一些容易被忽略的细节。新站以 Astro 7 和 Tailwind CSS 4 为基础；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧">
+<meta property="og:url" content="https://bingowith.me/2026/08/05/wordpress-to-astro-static-blog-migration/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="前几天完成了一次 WordPress 博客到 Astro 静态博客的迁移。背景是博客更新没这么频繁，而且很多动态能力不需要了，开了评论，结果后台几百个各类广告的评论没有任何意义了。博客内容本身不多，就是特别要注意旧链接和旧资源要依然可靠地工作，不然SEO就全清空了。 这篇文章记录迁移过程中的关键判断、实现方式和一些容易被忽略的细节。新站以 Astro 7 和 Tailwind CSS 4 为基础；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-05T15:21:07.956Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="Astro">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="WordPress">
+<meta property="article:tag" content="Tailwind CSS">
+<meta property="article:tag" content="静态网站">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-wordpress-to-astro-static-blog-migration" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/08/05/wordpress-to-astro-static-blog-migration/" class="article-date">
+  <time class="dt-published" datetime="2026-08-04T16:00:00.000Z" itemprop="datePublished">2026-08-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前几天完成了一次 WordPress 博客到 Astro 静态博客的迁移。背景是博客更新没这么频繁，而且很多动态能力不需要了，开了评论，结果后台几百个各类广告的评论没有任何意义了。博客内容本身不多，就是特别要注意旧链接和旧资源要依然可靠地工作，不然SEO就全清空了。</p>
+<p>这篇文章记录迁移过程中的关键判断、实现方式和一些容易被忽略的细节。新站以 Astro 7 和 Tailwind CSS 4 为基础；使用了 Codex + GPT-5.6-terra 作为协作工具。</p>
+<span id="more"></span>
+
+<h2 id="迁移目标：不是重做网站，而是保住内容资产"><a href="#迁移目标：不是重做网站，而是保住内容资产" class="headerlink" title="迁移目标：不是重做网站，而是保住内容资产"></a>迁移目标：不是重做网站，而是保住内容资产</h2><p>从动态博客迁移到静态博客，最容易产生的误解是：导出文章、换一个主题、部署完成，就算迁移成功。</p>
+<p>实际上，内容站迁移至少要同时满足几件事：</p>
+<ul>
+<li>已发布文章能够继续访问；</li>
+<li>历史链接尽量不变，尤其是来自搜索引擎、社交平台和其他文章的链接；</li>
+<li>图片、表格、引用和代码等正文内容不出现明显损坏；</li>
+<li>新站的维护方式比旧站更简单，特别是静态站点，生成托管就结束了；</li>
+<li>视觉风格可以更新，但不应以牺牲阅读体验为代价。</li>
+</ul>
+<p>因此，这次迁移的目标并不是复刻旧主题，也不是把 WordPress 的全部功能搬到静态站，而是建立一个内容优先、生成结果稳定、后续维护成本更低的博客。</p>
+<h2 id="第一步：先审计导出数据，再决定迁移范围"><a href="#第一步：先审计导出数据，再决定迁移范围" class="headerlink" title="第一步：先审计导出数据，再决定迁移范围"></a>第一步：先审计导出数据，再决定迁移范围</h2><p>先从 WordPress 的后台，<code>tools &gt; export</code> 导出全部数据的 xml 。<br>然后再把 wp-content 文件夹原封不动的复制到 astro 的 public 文件夹下。</p>
+<p>WordPress 导出文件看起来像是一份内容备份，但它实际混合了多种记录：文章、页面、附件、草稿、评论、导航数据，以及主题或插件写入的元信息。</p>
+<p>如果不先分类，后面很容易把无用数据也带进新站，或者漏掉真正需要保留的内容。我的处理方式是先回答四个问题：</p>
+<ol>
+<li>哪些是已经公开发布的文章？</li>
+<li>哪些页面仍然需要保留访问入口？</li>
+<li>正文引用了哪些上传资源，它们是否已在本地保存？</li>
+<li>哪些内容不适合、也没有必要迁移？</li>
+</ol>
+<p>最终，迁移范围被限定为已发布文章和一个必要的兼容页面。评论、评论元数据、WordPress 后台、附件详情页、搜索、订阅源、主题模板记录和未发布草稿均不迁移。</p>
+<p>这个“先决定不迁移什么”的步骤很重要。静态站不应机械复制动态系统，而应只保留真正有价值、可长期维护的部分。</p>
+<h2 id="第二步：把历史-URL-当作迁移契约"><a href="#第二步：把历史-URL-当作迁移契约" class="headerlink" title="第二步：把历史 URL 当作迁移契约"></a>第二步：把历史 URL 当作迁移契约</h2><p>内容迁移中最有价值的资产，除了文章本身，就是既有 URL。</p>
+<p>旧文章使用的是按日期组织的永久链接：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/YYYY/MM/post-slug/</span><br></pre></td></tr></table></figure>
+
+<p>但是如果是使用query string也就是 <code>?slug=xxx</code> 的就很难办了，静态托管不太支持这种形式的链接，好在默认的是用 path 区分的。</p>
+<p>新站继续生成完全相同的路径，而不是改成更短的 <code>/post-slug/</code>。后者看似更简洁，却会让已经被收录、转发或收藏的链接全部失效，并把大量本可避免的 404 留给读者和搜索引擎。</p>
+<p>在 Astro 中，这种路径可以通过动态页面路由实现。文章元数据中保留发布日期和 slug，在构建阶段生成对应的年、月、slug 参数；最终输出仍是静态 HTML，却能稳定覆盖每一篇历史文章。</p>
+<p>路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src\pages\[year]\[month]\[slug].astro</span><br></pre></td></tr></table></figure>
+
+<p>获取静态路径的函数：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getStaticPaths</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> posts = <span class="keyword">await</span> <span class="title function_">getCollection</span>(<span class="string">&quot;posts&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> posts.<span class="title function_">map</span>(<span class="function">(<span class="params">post</span>) =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">params</span>: &#123;</span><br><span class="line">      <span class="attr">year</span>: post.<span class="property">data</span>.<span class="property">year</span>,</span><br><span class="line">      <span class="attr">month</span>: post.<span class="property">data</span>.<span class="property">month</span>,</span><br><span class="line">      <span class="attr">slug</span>: post.<span class="property">data</span>.<span class="property">slug</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">props</span>: &#123; post &#125;,</span><br><span class="line">  &#125;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里还有两个细节：</p>
+<ul>
+<li>输出形式要兼容结尾斜杠；部署平台、静态站生成设置和站内链接应保持一致。</li>
+<li><code>?p=123</code> 这类旧式查询参数链接不能由纯静态页面天然接住，是否保留要看部署平台是否支持重定向规则。它的优先级通常低于公开文章的永久链接，但上线前仍应单独审计。</li>
+</ul>
+<p>页面可以改版，URL 尽量不要改。</p>
+<h2 id="第三步：从-Gutenberg-HTML-到可维护的-Markdown"><a href="#第三步：从-Gutenberg-HTML-到可维护的-Markdown" class="headerlink" title="第三步：从 Gutenberg HTML 到可维护的 Markdown"></a>第三步：从 Gutenberg HTML 到可维护的 Markdown</h2><p>WordPress 的正文常常来自 Gutenberg 编辑器。导出后的内容虽然是 HTML，但里面往往夹杂区块注释、展示性类名、内联样式和编辑器遗留结构。</p>
+<p>迁移时的原则是保留语义，而不是保留原始标签结构。</p>
+<p>需要保留的通常包括：</p>
+<ul>
+<li>标题、段落和强调；</li>
+<li>超链接与图片；</li>
+<li>有序或无序列表；</li>
+<li>引用块、代码块；</li>
+<li>对比表格等承载信息的结构。</li>
+</ul>
+<p>而 WordPress 区块注释、纯展示用途的 class、编辑器生成的空容器，以及主题相关的样式说明，都应该去掉。它们在新站没有意义，反而会让 Markdown 难读、难维护。</p>
+<p>尤其要留意表格。普通段落转 Markdown 通常比较顺利，但表格、嵌入内容和含有转义 CSS 的文章很容易出现格式残留。与其追求一次自动转换全部正确，不如先完成批量转换，再进行针对性人工复查。重点检查：</p>
+<ul>
+<li>表格的列数和表头是否正确；</li>
+<li>代码块是否被错误拆分；</li>
+<li>图片链接是否仍然有效；</li>
+<li>HTML 实体和转义字符是否污染正文；</li>
+<li>长文章的标题层级是否合理。</li>
+</ul>
+<p>迁移完成后，清理过的 Markdown 应当成为仓库里的正式内容源。一次性的导入脚本可以不保留；真正重要的是让以后编辑文章时，不必重新理解旧 CMS 的导出格式。</p>
+<h2 id="第四步：图片不急着“优化”，先确保不丢"><a href="#第四步：图片不急着“优化”，先确保不丢" class="headerlink" title="第四步：图片不急着“优化”，先确保不丢"></a>第四步：图片不急着“优化”，先确保不丢</h2><p>图片往往是迁移中最容易被低估的部分。文章正文能渲染，不代表资源一定齐全；一旦原站下线或上传目录路径发生变化，历史文章中的图片就会全部变成断链。</p>
+<p>这次采用的策略很朴素：保留原有上传目录结构，将文章中的图片路径继续指向本地静态资源。例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/wp-content/uploads/2024/01/example-image.png</span><br></pre></td></tr></table></figure>
+
+<p>只要同样的文件存在于静态站的 <code>public/wp-content/uploads</code> 下，构建后的访问路径就能保持不变。</p>
+<p>这有几个好处：</p>
+<ul>
+<li>不需要逐篇修改图片 URL；</li>
+<li>不会因为文件改名导致旧内容失效；</li>
+<li>可以先完成可靠迁移，再选择性做 WebP、压缩、尺寸优化或图片组件改造；</li>
+<li>导入流程不会移动、重命名或修改原始资源，降低误操作风险。</li>
+</ul>
+<p>迁移时建议把“文章中引用到的唯一图片 URL”与本地资源目录做一次逐项比对。构建成功只说明代码没有报错，不代表每一张图片都存在。</p>
+<h2 id="第五步：用内容集合约束文章元数据"><a href="#第五步：用内容集合约束文章元数据" class="headerlink" title="第五步：用内容集合约束文章元数据"></a>第五步：用内容集合约束文章元数据</h2><p>Astro 的内容集合适合承接 Markdown 博客。相比把文章文件当作完全自由的文本，它可以为 Front Matter 建立 Schema，让标题、日期、slug、摘要、标签等字段在构建时得到校验。</p>
+<p>例如，一篇文章至少应有标题和发布日期，实际使用的定义如下：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineCollection &#125; <span class="keyword">from</span> <span class="string">&quot;astro:content&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; glob &#125; <span class="keyword">from</span> <span class="string">&quot;astro/loaders&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; z &#125; <span class="keyword">from</span> <span class="string">&quot;astro/zod&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> posts = <span class="title function_">defineCollection</span>(&#123;</span><br><span class="line">  <span class="attr">loader</span>: <span class="title function_">glob</span>(&#123;</span><br><span class="line">    <span class="attr">base</span>: <span class="string">&quot;./src/content/posts&quot;</span>,</span><br><span class="line">    <span class="attr">pattern</span>: <span class="string">&quot;**/*.md&quot;</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">schema</span>: z.<span class="title function_">object</span>(&#123;</span><br><span class="line">    <span class="attr">title</span>: z.<span class="title function_">string</span>(),</span><br><span class="line">    <span class="attr">description</span>: z.<span class="title function_">string</span>(),</span><br><span class="line">    <span class="attr">publishedAt</span>: z.<span class="title function_">string</span>(),</span><br><span class="line">    <span class="attr">year</span>: z.<span class="title function_">string</span>().<span class="title function_">regex</span>(<span class="regexp">/^\d&#123;4&#125;$/</span>),</span><br><span class="line">    <span class="attr">month</span>: z.<span class="title function_">string</span>().<span class="title function_">regex</span>(<span class="regexp">/^\d&#123;2&#125;$/</span>),</span><br><span class="line">    <span class="attr">slug</span>: z.<span class="title function_">string</span>(),</span><br><span class="line">    <span class="attr">categories</span>: z.<span class="title function_">array</span>(z.<span class="title function_">string</span>()),</span><br><span class="line">    <span class="attr">tags</span>: z.<span class="title function_">array</span>(z.<span class="title function_">string</span>()),</span><br><span class="line">  &#125;),</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> collections = &#123; posts &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>对应的 md 的frontmatter:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: &quot;Title&quot;</span><br><span class="line">description: &quot;Description&quot;</span><br><span class="line">publishedAt: &quot;2026-08-01 12:06:44&quot;</span><br><span class="line">year: &quot;2026&quot;</span><br><span class="line">month: &quot;08&quot;</span><br><span class="line">slug: &quot;Slug&quot;</span><br><span class="line">categories: [&quot;guides&quot;]</span><br><span class="line">tags: [&quot;codex&quot;]</span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">内容</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这种看似简单的约束，能尽早发现日期格式错误、漏填标题、标签结构不一致等问题。对于需要按年月生成路由、按日期排序、生成首页归档和 sitemap 的静态博客来说，内容元数据就是整个站点的基础数据层。</p>
+<h2 id="第六步：视觉重做应服务于阅读"><a href="#第六步：视觉重做应服务于阅读" class="headerlink" title="第六步：视觉重做应服务于阅读"></a>第六步：视觉重做应服务于阅读</h2><p>迁移是重新设计信息层级的机会，但不是给页面堆更多装饰的理由。</p>
+<p>新站采用了克制的单色编辑式视觉：浅色背景、深色文字、细规则、明确的排版层级，以及较少的元信息干扰。首页以归档和文章索引为主，文章页则让正文占据视觉中心。</p>
+<p>Tailwind CSS 4 很适合这类工作。它把颜色、间距、断点和排版规则集中在一套可组合的样式体系中，既能快速完成页面，也便于后续逐渐收敛为稳定的设计令牌。</p>
+<p>如果要加入粒子、网格等氛围装饰，也应遵守几个边界：</p>
+<ul>
+<li>仅作为背景，不阻塞阅读或点击；</li>
+<li>密度和对比度保持很低；</li>
+<li>不要在所有页面重复出现；</li>
+<li>对 <code>prefers-reduced-motion</code> 提供静态效果或直接关闭动效。</li>
+</ul>
+<p>好的博客视觉通常不会抢走文章的注意力，而是在读者没有察觉时让阅读更顺畅。</p>
+<h2 id="第七步：不要遗漏分页、404-和兼容页面"><a href="#第七步：不要遗漏分页、404-和兼容页面" class="headerlink" title="第七步：不要遗漏分页、404 和兼容页面"></a>第七步：不要遗漏分页、404 和兼容页面</h2><p>静态站常见的遗漏不在文章详情页，而在边缘页面。</p>
+<p>首页需要稳定的排序和分页策略。如果旧站已经存在 <code>/page/2/</code> 一类的访问入口，最好一起生成对应的静态兼容页面。即使首页的文章数量不多，也应考虑它未来增长后的行为，而不是只为当前数据量设计。</p>
+<p>同样需要补齐的还有：</p>
+<ul>
+<li>404 页面；</li>
+<li>旧占位页面的替代内容；</li>
+<li>站内导航和页脚链接；</li>
+<li>canonical URL；</li>
+<li>sitemap；</li>
+<li>部署平台支持的重定向配置。</li>
+</ul>
+<p>这些页面和配置平时不显眼，却直接决定迁移后的完整度，也影响搜索引擎对新站结构的理解。</p>
+<h2 id="Codex-GPT-5-6-terra-在这次迁移中做了什么"><a href="#Codex-GPT-5-6-terra-在这次迁移中做了什么" class="headerlink" title="Codex + GPT-5.6-terra 在这次迁移中做了什么"></a>Codex + GPT-5.6-terra 在这次迁移中做了什么</h2><p>这次没有把 AI 当成“点一下就自动完成迁移”的工具，而是把 Codex + GPT-5.6-terra 放在适合它的位置：处理重复劳动、协助建立检查框架，以及加快局部实现。</p>
+<p>它尤其适合协助完成以下工作：</p>
+<ul>
+<li>阅读导出说明并整理迁移范围；</li>
+<li>归纳内容字段、路由规则和资产清单；</li>
+<li>生成 Astro 内容集合、动态路由和分页的初始实现；</li>
+<li>对 HTML 转 Markdown 后的残留内容进行模式识别；</li>
+<li>编写构建前检查清单和人工验收项；</li>
+<li>在已有设计方向下协助搭建组件和 Tailwind 样式。</li>
+</ul>
+<p>但有几件事仍然必须人工确认：</p>
+<ul>
+<li>每一篇公开文章是否对应正确的历史 URL；</li>
+<li>图片和表格是否在语义与视觉上都正确；</li>
+<li>是否错误迁入草稿、评论或敏感元数据；</li>
+<li>站点文案和视觉是否符合预期；</li>
+<li>生产构建、部署规则和真实访问结果是否一致。</li>
+</ul>
+<p>AI 很擅长把模糊任务拆成可执行步骤，也很擅长处理大量重复格式；但迁移的最终责任仍在于人对内容、兼容性和发布结果的验收。</p>
+<h2 id="上线前检查清单"><a href="#上线前检查清单" class="headerlink" title="上线前检查清单"></a>上线前检查清单</h2><p>最后，给这类迁移留一份简单但实用的检查清单：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 所有已发布文章均已迁入，草稿没有被发布；</li>
+<li><input disabled="" type="checkbox"> 历史文章 URL 的年、月、slug 和结尾斜杠符合旧链接；</li>
+<li><input disabled="" type="checkbox"> 文章内图片、链接、表格、代码块和引用显示正常；</li>
+<li><input disabled="" type="checkbox"> 首页排序、分页和兼容分页路径正常；</li>
+<li><input disabled="" type="checkbox"> 404 与必要兼容页面已经提供；</li>
+<li><input disabled="" type="checkbox"> canonical、sitemap 和基础 SEO 信息已配置；</li>
+<li><input disabled="" type="checkbox"> 生产构建通过；</li>
+<li><input disabled="" type="checkbox"> 在部署后的真实域名环境中抽查访问与资源加载；</li>
+<li><input disabled="" type="checkbox"> 根据托管平台能力，为低优先级旧链接补充重定向。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次迁移最重要的收获是：静态化不只是换一个框架，而是一次重新梳理内容边界和长期维护方式的机会。</p>
+<p>保住 URL，保住内容语义，保住资源路径；把不再需要的动态功能留在过去；再用一套足够轻、足够明确的内容模型和页面结构承接未来更新。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2026/08/05/wordpress-to-astro-static-blog-migration/" data-id="cmsg8mdxj0098j4va4ewrfi6q" data-title="从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Astro/" rel="tag">Astro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Codex/" rel="tag">Codex</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tailwind-CSS/" rel="tag">Tailwind CSS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WordPress/" rel="tag">WordPress</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/" rel="tag">静态网站</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/07/22/codex-proxy-gpt-5-6-web-search-fix/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Codex 通过中转使用 GPT-5.6 时 Web Search 失败的解决办法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/%E6%95%99%E7%A8%8B/">教程</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/">前端开发</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AIGC/" rel="tag">AIGC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Astro/" rel="tag">Astro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Better-Auth/" rel="tag">Better Auth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache-Components/" rel="tag">Cache Components</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codex/" rel="tag">Codex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ComfyUI/" rel="tag">ComfyUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Drizzle/" rel="tag">Drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GBK/" rel="tag">GBK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MPA/" rel="tag">MPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js/" rel="tag">Next.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js-16/" rel="tag">Next.js 16</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenAI/" rel="tag">OpenAI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PostgreSQL/" rel="tag">PostgreSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSR/" rel="tag">SSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tailwind-CSS/" rel="tag">Tailwind CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tool-Approval/" rel="tag">Tool Approval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TypeScript/" rel="tag">TypeScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unicode/" rel="tag">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vercel-AI-SDK/" rel="tag">Vercel AI SDK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-Development/" rel="tag">Web Development</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WordPress/" rel="tag">WordPress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Z-Image/" rel="tag">Z-Image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gemini/" rel="tag">gemini</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysqldump/" rel="tag">mysqldump</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" rel="tag">低显存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" rel="tag">前端架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" rel="tag">字符集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%8F%E5%8C%96/" rel="tag">量化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/" rel="tag">静态网站</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 12px;">AI</a> <a href="/tags/AIGC/" style="font-size: 10px;">AIGC</a> <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/Astro/" style="font-size: 14px;">Astro</a> <a href="/tags/Better-Auth/" style="font-size: 10px;">Better Auth</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 12px;">CSR</a> <a href="/tags/Cache-Components/" style="font-size: 10px;">Cache Components</a> <a href="/tags/Codex/" style="font-size: 14px;">Codex</a> <a href="/tags/ComfyUI/" style="font-size: 10px;">ComfyUI</a> <a href="/tags/Drizzle/" style="font-size: 10px;">Drizzle</a> <a href="/tags/GBK/" style="font-size: 10px;">GBK</a> <a href="/tags/GPT/" style="font-size: 12px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MPA/" style="font-size: 10px;">MPA</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Next-js/" style="font-size: 14px;">Next.js</a> <a href="/tags/Next-js-16/" style="font-size: 10px;">Next.js 16</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/OpenAI/" style="font-size: 10px;">OpenAI</a> <a href="/tags/PostgreSQL/" style="font-size: 10px;">PostgreSQL</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/React/" style="font-size: 12px;">React</a> <a href="/tags/SPA/" style="font-size: 12px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/SSR/" style="font-size: 12px;">SSR</a> <a href="/tags/Tailwind-CSS/" style="font-size: 10px;">Tailwind CSS</a> <a href="/tags/Tool-Approval/" style="font-size: 10px;">Tool Approval</a> <a href="/tags/TypeScript/" style="font-size: 10px;">TypeScript</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/Vercel-AI-SDK/" style="font-size: 10px;">Vercel AI SDK</a> <a href="/tags/WSL/" style="font-size: 10px;">WSL</a> <a href="/tags/Web-Development/" style="font-size: 10px;">Web Development</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/WordPress/" style="font-size: 10px;">WordPress</a> <a href="/tags/Z-Image/" style="font-size: 10px;">Z-Image</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 14px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/gemini/" style="font-size: 10px;">gemini</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 12px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/mysqldump/" style="font-size: 10px;">mysqldump</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 12px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/timestamp/" style="font-size: 10px;">timestamp</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" style="font-size: 10px;">低显存</a> <a href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">前端架构</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" style="font-size: 10px;">字符集</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 12px;">编码</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a> <a href="/tags/%E9%87%8F%E5%8C%96/" style="font-size: 10px;">量化</a> <a href="/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/" style="font-size: 10px;">静态网站</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">一月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/12/">十二月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">十一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/09/">九月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">八月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/07/">七月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/08/05/wordpress-to-astro-static-blog-migration/">从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧</a>
+          </li>
+        
+          <li>
+            <a href="/2026/07/22/codex-proxy-gpt-5-6-web-search-fix/">Codex 通过中转使用 GPT-5.6 时 Web Search 失败的解决办法</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/07/astro-v6-node-adapter-environment-variables/">Astro v6 Node Adapter后端的环境变量设置（v5 到 v6 的一个 breaking change）</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/09/google-genai-java-sdk-tts-example/">谷歌GenAI Java SDK tts示例 (gemini-3.1-flash-tts-preview)</a>
+          </li>
+        
+          <li>
+            <a href="/2026/02/06/windows-codex-bash-wrong-encoding/">Windows 下 Codex 执行 bash 中文乱码问题排查与解决</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 检查是否是文章页面
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      // 创建侧边栏容器
+      const tocSidebar = document.createElement('div');
+      tocSidebar.className = 'toc-sidebar';
+
+      // 创建切换按钮
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'toc-toggle';
+      toggleBtn.innerHTML = '📑';
+      toggleBtn.title = '目录';
+
+      // 创建 TOC 内容容器
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+
+      tocSidebar.appendChild(toggleBtn);
+      tocSidebar.appendChild(tocDiv);
+      document.body.appendChild(tocSidebar);
+
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc',
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+
+      // 从 localStorage 读取收缩状态
+      const isCollapsed = localStorage.getItem('tocCollapsed') === 'true';
+      if (isCollapsed) {
+        tocSidebar.classList.add('collapsed');
+      }
+
+      // 切换按钮点击事件
+      toggleBtn.addEventListener('click', function () {
+        tocSidebar.classList.toggle('collapsed');
+        const collapsed = tocSidebar.classList.contains('collapsed');
+        localStorage.setItem('tocCollapsed', collapsed);
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>

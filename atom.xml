@@ -6,7 +6,7 @@
   <link href="https://bingowith.me/atom.xml" rel="self"/>
   
   <link href="https://bingowith.me/"/>
-  <updated>2026-07-22T12:48:51.166Z</updated>
+  <updated>2026-08-05T15:21:07.956Z</updated>
   <id>https://bingowith.me/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧</title>
+    <link href="https://bingowith.me/2026/08/05/wordpress-to-astro-static-blog-migration/"/>
+    <id>https://bingowith.me/2026/08/05/wordpress-to-astro-static-blog-migration/</id>
+    <published>2026-08-04T16:00:00.000Z</published>
+    <updated>2026-08-05T15:21:07.956Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;前几天完成了一次 WordPress 博客到 Astro 静态博客的迁移。背景是博客更新没这么频繁，而且很多动态能力不需要了，开了评论，结果后台几百个各类广告的评论没有任何意义了。博客内容本身不多，就是特别要注意旧链接和旧资源要依然可靠地工作，不然SEO就全清空了。&lt;/p&gt;
+&lt;p&gt;这篇文章记录迁移过程中的关键判断、实现方式和一些容易被忽略的细节。新站以 Astro 7 和 Tailwind CSS 4 为基础；使用了 Codex + GPT-5.6-terra 作为协作工具。&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="Astro" scheme="https://bingowith.me/tags/Astro/"/>
+    
+    <category term="Codex" scheme="https://bingowith.me/tags/Codex/"/>
+    
+    <category term="WordPress" scheme="https://bingowith.me/tags/WordPress/"/>
+    
+    <category term="Tailwind CSS" scheme="https://bingowith.me/tags/Tailwind-CSS/"/>
+    
+    <category term="静态网站" scheme="https://bingowith.me/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/"/>
+    
+  </entry>
   
   <entry>
     <title>Codex 通过中转使用 GPT-5.6 时 Web Search 失败的解决办法</title>
@@ -398,9 +424,9 @@
     
     
     
-    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
-    
     <category term="mysql" scheme="https://bingowith.me/tags/mysql/"/>
+    
+    <category term="docker" scheme="https://bingowith.me/tags/docker/"/>
     
     <category term="mysqldump" scheme="https://bingowith.me/tags/mysqldump/"/>
     
@@ -587,125 +613,6 @@
     <category term="js" scheme="https://bingowith.me/tags/js/"/>
     
     <category term="auth.js" scheme="https://bingowith.me/tags/auth-js/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>显卡的TOPS AI算力比较</title>
-    <link href="https://bingowith.me/2025/01/19/gpu-ai-tops-tables/"/>
-    <id>https://bingowith.me/2025/01/19/gpu-ai-tops-tables/</id>
-    <published>2025-01-19T08:16:00.000Z</published>
-    <updated>2025-01-19T08:16:00.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;虽然自己没设备但喜欢聊 😀，和别人讨论的时候经常要反复查，查询一下汇总，有可能填错了。。。到时候发现错误再订正吧。&lt;/p&gt;
-&lt;p&gt;AMD 的没找到哪个表&amp;#x2F;文档里有算 TOPS 的…就不列了&lt;/p&gt;
-&lt;h2 id=&quot;N-卡&quot;&gt;&lt;a href=&quot;#N-卡&quot; class=&quot;headerlink&quot; title=&quot;N 卡&quot;&gt;&lt;/a&gt;N 卡&lt;/h2&gt;&lt;p&gt;20 系到 40 系&lt;/p&gt;
-&lt;h3 id=&quot;GeForce-RTX-20-系列&quot;&gt;&lt;a href=&quot;#GeForce-RTX-20-系列&quot; class=&quot;headerlink&quot; title=&quot;GeForce RTX 20 系列&quot;&gt;&lt;/a&gt;GeForce RTX 20 系列&lt;/h3&gt;&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;型号&lt;/th&gt;
-&lt;th&gt;架构&lt;/th&gt;
-&lt;th&gt;制程 (nm)&lt;/th&gt;
-&lt;th&gt;显存大小&lt;/th&gt;
-&lt;th&gt;显存类型&lt;/th&gt;
-&lt;th&gt;显存位宽&lt;/th&gt;
-&lt;th&gt;显存带宽 (GB&amp;#x2F;s)&lt;/th&gt;
-&lt;th&gt;峰值单精度 (FP32)&lt;/th&gt;
-&lt;th&gt;TOPS (AI)&lt;/th&gt;
-&lt;th&gt;TDP (W)&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;&lt;tr&gt;
-&lt;td&gt;RTX 2080 Ti&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;11GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;352-bit&lt;/td&gt;
-&lt;td&gt;616&lt;/td&gt;
-&lt;td&gt;13.45 TFLOPS&lt;/td&gt;
-&lt;td&gt;114 TOPS&lt;/td&gt;
-&lt;td&gt;260&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2080 Super&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;8GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;256-bit&lt;/td&gt;
-&lt;td&gt;496&lt;/td&gt;
-&lt;td&gt;11.15 TFLOPS&lt;/td&gt;
-&lt;td&gt;89 TOPS&lt;/td&gt;
-&lt;td&gt;250&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2080&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;8GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;256-bit&lt;/td&gt;
-&lt;td&gt;448&lt;/td&gt;
-&lt;td&gt;10.07 TFLOPS&lt;/td&gt;
-&lt;td&gt;81 TOPS&lt;/td&gt;
-&lt;td&gt;225&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2070 Super&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;8GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;256-bit&lt;/td&gt;
-&lt;td&gt;448&lt;/td&gt;
-&lt;td&gt;9.06 TFLOPS&lt;/td&gt;
-&lt;td&gt;72 TOPS&lt;/td&gt;
-&lt;td&gt;215&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2070&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;8GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;256-bit&lt;/td&gt;
-&lt;td&gt;448&lt;/td&gt;
-&lt;td&gt;7.47 TFLOPS&lt;/td&gt;
-&lt;td&gt;65 TOPS&lt;/td&gt;
-&lt;td&gt;175&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2060 Super&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;8GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;256-bit&lt;/td&gt;
-&lt;td&gt;448&lt;/td&gt;
-&lt;td&gt;7.19 TFLOPS&lt;/td&gt;
-&lt;td&gt;57 TOPS&lt;/td&gt;
-&lt;td&gt;175&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RTX 2060&lt;/td&gt;
-&lt;td&gt;Turing&lt;/td&gt;
-&lt;td&gt;12&lt;/td&gt;
-&lt;td&gt;6GB&lt;/td&gt;
-&lt;td&gt;GDDR6&lt;/td&gt;
-&lt;td&gt;192-bit&lt;/td&gt;
-&lt;td&gt;336&lt;/td&gt;
-&lt;td&gt;6.45 TFLOPS&lt;/td&gt;
-&lt;td&gt;52 TOPS&lt;/td&gt;
-&lt;td&gt;160&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;&lt;/table&gt;</summary>
-    
-    
-    
-    
-    <category term="GPU" scheme="https://bingowith.me/tags/GPU/"/>
     
   </entry>
   
