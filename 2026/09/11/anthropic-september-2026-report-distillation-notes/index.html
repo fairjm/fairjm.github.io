@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7QSVE1SQW7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7QSVE1SQW7');
+</script>
+<!-- End Google Analytics -->
+
+  
+  <title>对Anthropic 2026年9月报告中的蒸馏指控的看法 | 小麦的杂货铺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="只依据 Anthropic 自己的博客、威胁情报报告和法律文档，分析 2026 年 9 月涉中国 AI 实验室的蒸馏指控：为什么蒸馏章节一条可核验指标都没有、归因方法上 2 月为何比 9 月讲得更清楚、以及报告里那处最该被追问的用户数据段落。附原文引用与自查清单。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对Anthropic 2026年9月报告中的蒸馏指控的看法">
+<meta property="og:url" content="https://bingowith.me/2026/09/11/anthropic-september-2026-report-distillation-notes/index.html">
+<meta property="og:site_name" content="小麦的杂货铺">
+<meta property="og:description" content="只依据 Anthropic 自己的博客、威胁情报报告和法律文档，分析 2026 年 9 月涉中国 AI 实验室的蒸馏指控：为什么蒸馏章节一条可核验指标都没有、归因方法上 2 月为何比 9 月讲得更清楚、以及报告里那处最该被追问的用户数据段落。附原文引用与自查清单。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-12T16:50:15.352Z">
+<meta property="article:author" content="abaabaqua">
+<meta property="article:tag" content="Anthropic">
+<meta property="article:tag" content="模型蒸馏">
+<meta property="article:tag" content="Claude">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="小麦的杂货铺" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css">
+
+  
+<!-- hexo injector head_end start -->
+    <link rel="stylesheet" href="/css/cc_custom.css">
+  <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">小麦的杂货铺</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">日常随笔~</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          
+            <a class="nav-icon" target="_blank" rel="noopener" href="https://github.com/fairjm"><span class="fa fa-github"></span></a>
+          
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://bingowith.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-anthropic-september-2026-report-distillation-notes" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/09/11/anthropic-september-2026-report-distillation-notes/" class="article-date">
+  <time class="dt-published" datetime="2026-09-10T16:00:00.000Z" itemprop="datePublished">2026-09-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      对Anthropic 2026年9月报告中的蒸馏指控的看法
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>本文以 Anthropic 2026 年 9 月发布的威胁情报报告中的蒸馏指控相关章节为基础，通过 AI 工具进行内容分析与文字润色。文中观点为作者个人解读，不构成官方立场，仅供交流参考。</p>
+<p>2026 年 9 月 10 日，Anthropic 发布月度威胁情报报告《Detecting and countering misuse of AI: September 2026》。其中”非法蒸馏”（illicit distillation）一节中点名了七家中国 AI 实验室：阿里、月之暗面、DeepSeek、智谱、小米、商汤、MiniMax。</p>
+<p>关于这份报告的讨论已经不少，但大部分都在转述同一份材料。这篇换个做法：<strong>只看 Anthropic 自己的材料——官方博客、报告全文、以及它自己的法律文档——然后看看这份报告本身说了什么。</strong></p>
+<p>这个限制不是为了替任何一方辩护，也不是为了预设立场，理由很实际：想知道一份报告经不经得起检验，二手转述帮不上忙，因为转述会同时放大它的结论和它的漏洞。而 Anthropic 公开的材料足够多，多到可以用它自己的话检验它自己。</p>
+<p>154 页的原文里，有几个中文讨论里几乎被漏掉的点，其中一条相当关键。</p>
+<p><strong>这篇会聊到</strong>：先把材料摆出来 → 9 月报告说了什么 → <strong>蒸馏章节为什么一条可核验指标都没有</strong> → 归因方法上 2 月反而比 9 月说得更清楚 → 报告里那句它自己承认”不知道”的话 → 动机里哪些能确认、哪些不能 → 以及一份可以用来检验任何威胁情报报告的 6 问清单。</p>
+<h2 id="一、先把材料摆出来"><a href="#一、先把材料摆出来" class="headerlink" title="一、先把材料摆出来"></a>一、先把材料摆出来</h2><p>下面这些来源全部出自 Anthropic 自己：</p>
+<ol>
+<li>《Detecting and preventing distillation attacks》，2026 年 2 月 23 日——<strong>第一次公开指控的原文</strong></li>
+<li>《Detecting and countering misuse of AI: September 2026》，2026 年 9 月 10 日（154 页 PDF）</li>
+<li>《Our position on open-weights models》，2026 年 7 月 27 日，署名 Dario Amodei</li>
+<li>《More details on Fable 5’s cyber safeguards and our jailbreak framework》，2026 年 7 月 2 日</li>
+<li>《Improving our alignment and security efforts》，2026 年 8 月 31 日</li>
+<li>消费者服务条款、隐私政策、支持国家名单等法律与管理文档</li>
+</ol>
+<p>本文<strong>刻意不引用媒体的报道。</strong> 不是媒体不可靠，而是当判断的是”这份报告自己说了什么”时，中间每多一层，噪声就多一分。</p>
+<span id="more"></span>
+
+<h2 id="二、9-月报告说了什么：数字、手法、编号"><a href="#二、9-月报告说了什么：数字、手法、编号" class="headerlink" title="二、9 月报告说了什么：数字、手法、编号"></a>二、9 月报告说了什么：数字、手法、编号</h2><p>先把事实摆清楚。以下全部出自报告原文（”Illicit distillation” 章节，第 143—154 页）：</p>
+<table>
+<thead>
+<tr>
+<th>被点名方</th>
+<th>观测窗口</th>
+<th>报告给出的量级</th>
+<th>报告编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阿里（Qwen &#x2F; 通义实验室）</td>
+<td>2026 年 5—7 月</td>
+<td>超 1.51 亿次交互，峰值近 300 万次&#x2F;日</td>
+<td>GTG-16005</td>
+</tr>
+<tr>
+<td>月之暗面</td>
+<td>10 天内转发近 30 万次客户请求</td>
+<td>超 2,300 万次交互</td>
+<td>GTG-16002</td>
+</tr>
+<tr>
+<td>DeepSeek</td>
+<td>2026 年 7 月的 14 天</td>
+<td>超 1,210 万次交互</td>
+<td>GTG-16001</td>
+</tr>
+<tr>
+<td>智谱（Z.ai &#x2F; GLM）</td>
+<td>2026 年 6—7 月的 17 天</td>
+<td>超 340 万次交互</td>
+<td>GTG-16006</td>
+</tr>
+<tr>
+<td>小米</td>
+<td>2026 年 3—4 月的 20 天</td>
+<td>超 40 万次请求</td>
+<td>GTG-16008</td>
+</tr>
+<tr>
+<td>商汤</td>
+<td>未给出量级</td>
+<td>未给出量级</td>
+<td>GTG-16012</td>
+</tr>
+<tr>
+<td>MiniMax</td>
+<td>未给出量级</td>
+<td>未给出量级</td>
+<td>GTG-16003</td>
+</tr>
+</tbody></table>
+<p>报告对”蒸馏”的定义本身是克制的。它先写明”蒸馏本身是一种合法的训练方法”（”Distillation itself is a legitimate training method”），然后把”非法蒸馏”限定为”工业规模的、隐蔽的、未经授权提取模型能力并复制到另一个模型中的行动”。</p>
+<p>它也写明了攻击者怎么进来：通过代理服务——报告管它叫”转运站”（transfer stations）——用虚假身份、假卡或被盗的卡，加上<strong>被盗的 API 密钥</strong>批量注册账号。其中有个细节值得注意：报告说这些代理网络会”使用属于合法公司或个人的被盗 API 凭证，来给未授权实体提供访问美国前沿模型的通道”。也就是说，被偷的不只是算力，还有别人的身份。</p>
+<p>具体手法里，最值得注意的是月之暗面被描述的那条技术链：Claude 返回推理内容时，给的不是原始思维链，而是一个推理签名（”thinking signature”）；攻击者把这个签名存下来，<strong>开一个新会话，再诱导 Claude 把签名还原成完整推理轨迹</strong>。报告把这种手法叫”跨会话重放”（cross-session replay），并指出这是它现有控制措施被绕过的具体路径。</p>
+<p>这类细节之所以有价值，是因为它<strong>可以被反驳</strong>。如果一家公司认为这个描述不成立，它可以针对这条技术路径具体回应，而不是只能笼统地说”我们没做”。</p>
+<h2 id="三、最值得注意的一点：蒸馏章节没有-Indicators-of-Compromise"><a href="#三、最值得注意的一点：蒸馏章节没有-Indicators-of-Compromise" class="headerlink" title="三、最值得注意的一点：蒸馏章节没有 Indicators of Compromise"></a>三、最值得注意的一点：蒸馏章节没有 Indicators of Compromise</h2><p>这一点在中文讨论里几乎没人提到。</p>
+<p>同一份报告，在网络安全章节里公开了什么？脱敏域名、<strong>带起止日期的攻击者出口 IP</strong>、Telegram 群组和机器人 ID、样本文件哈希。以 GTG-20006 那一节为例，它给了几十条域名、15 条带明确起止时间的出口 IP，以及若干哈希值。这些是安全行业的标准做法，也都是<strong>可以被第三方拿去复核的</strong>——域名注册时间查得到，IP 归属查得到。</p>
+<p>到了蒸馏章节，报告又给了什么？公司名称、GTG 编号、精确到个位数的数字（比如 770,609 次经清洗管道的交互、5,380 个账号、273 个账号）。</p>
+<p><strong>一条可核验指标都没有。</strong> 没有域名，没有 IP，没有账号编号，没有可供外部检查的样本。</p>
+<p>这个对比之所以重要，是因为它排除了一种解释。不能说”威胁情报本来就不能公开技术指标”——<strong>同一份报告在别的地方公开了。</strong> 所以这不是体裁限制，是逐章节的选择。</p>
+<p>而精确的数字会造成一种特定的阅读效果：看到”770,609”时，第一反应是”他们数过”，而不是”他们怎么数出来的”。但<strong>能被数出来，和能被验证，是两件事</strong>。前者只说明发布方持有并统计了相关数据，后者则需要提供足够材料，让第三方能够交叉核验。</p>
+<p>一句话总结：<strong>报告有能力公开可核验材料，却没有在承载实体归因和用户数据指控的蒸馏章节公开这些材料。</strong></p>
+<h2 id="四、归因方法：2-月比-9-月说得更清楚"><a href="#四、归因方法：2-月比-9-月说得更清楚" class="headerlink" title="四、归因方法：2 月比 9 月说得更清楚"></a>四、归因方法：2 月比 9 月说得更清楚</h2><p>按常理，2 月是第一份，应该更谨慎；9 月积累了更多材料，应该更详细。实际情况恰恰相反。</p>
+<p>2 月那篇博客里，Anthropic 是这么写的（原文）：</p>
+<blockquote>
+<p>“We attributed each campaign to a specific lab with high confidence through IP address correlation, request metadata, infrastructure indicators, and in some cases corroboration from industry partners who observed the same actors and behaviors on their platforms.”</p>
+</blockquote>
+<p>翻译：<strong>通过 IP 地址关联、请求元数据、基础设施指标，以及在某些情况下由观察到相同行为体的行业伙伴提供的佐证，以高确信度归因到具体实验室。</strong></p>
+<p>这句说明相当具体，它还给出了几个可检验的锚点：</p>
+<ul>
+<li>关于 DeepSeek：”通过检查请求元数据，我们能够把这些账号<strong>追溯到该实验室的具体研究人员</strong>。”</li>
+<li>关于月之暗面：”我们通过请求元数据归因，这些元数据<strong>与该实验室资深员工的公开资料相符</strong>。”</li>
+<li>关于 MiniMax：”通过请求元数据和基础设施指标归因，并<strong>对照其公开产品路线图确认了时间点</strong>。”</li>
+</ul>
+<p>到了 9 月，对应位置只剩一句：”we have detected and disrupted unauthorized distillation campaigns we have attributed <strong>with high confidence</strong> to specific PRC-based labs”。**”高确信度”变成了一个施加于整批归因的统一声明**，七条指控不再分别标注。</p>
+<p>问题不在”高确信度”这个词，而在于：<strong>同一份报告在别处的措辞强度并不一样。</strong> 9 月报告在俄罗斯国家媒体那节写了 “we assess with high confidence”，在马来西亚那节对行为体自己工具上报的数据写了 “we cannot independently verify them”，对小米和 MiniMax 的意图用的是 “suggests”。</p>
+<p>这句话有它的边界：这些例子分别出现在别的章节、针对别的对象，**不能直接推出”报告对实体归因也已具备分级能力”**。能确定的只有两点——报告在其他语境下用过不同强度的措辞；而在蒸馏章节，七条实体归因共用一句 “with high confidence”，报告没有说明这个统一判断的适用范围。</p>
+<p>结果是读者没法判断：这七条是同等强度，还是其中某几条只是”我们倾向于认为”。</p>
+<h2 id="五、一句”我们不知道”，不能单独成为可信度的证据"><a href="#五、一句”我们不知道”，不能单独成为可信度的证据" class="headerlink" title="五、一句”我们不知道”，不能单独成为可信度的证据"></a>五、一句”我们不知道”，不能单独成为可信度的证据</h2><p>关于月之暗面是否告知了自己的客户，报告原文写：</p>
+<blockquote>
+<p>“We do not know if Moonshot notified their customers that their requests were being rerouted to Anthropic and exposed to a third party.”</p>
+</blockquote>
+<p><strong>“我们不知道月之暗面是否通知了其客户，他们的请求正在被转发给 Anthropic 并暴露给第三方。”</strong></p>
+<p>有些人会把这句话视为报告足够克制、因而值得信任的证据。这个读法站不住，而且错在一个很具体的地方。</p>
+<p><strong>“承认不知道”能证明的，只是”这份文件里有一句承认不知道”。</strong> 它不能证明报告整体可信，不能证明那些指控成立，也不能证明发布方在别处同样克制。用一个无需举证的观察去支撑一个需要举证的结论，是这类讨论里最常见的失误。</p>
+<p>要看清这句话的分量，得先分清三种不确定性：</p>
+<table>
+<thead>
+<tr>
+<th>不确定性的类型</th>
+<th>报告有没有标注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心事实</strong>：转发这件事本身是否发生</td>
+<td>没有。报告以事实陈述给出</td>
+</tr>
+<tr>
+<td><strong>归因确信度</strong>：这一条指控有多确信</td>
+<td>没有。整批用一句 “with high confidence” 覆盖</td>
+</tr>
+<tr>
+<td><strong>周边事实</strong>：对方有没有通知客户</td>
+<td><strong>有。就是这一句</strong></td>
+</tr>
+</tbody></table>
+<p><strong>报告承认的，是最外围的那一类。</strong> 它并没有说”我们不确定转发是否发生”，它说的是”我们确信转发发生了，只是不知道对方告没告知客户”。这两种不确定性完全不是一个量级，而只有后者被写了出来。</p>
+<p>这也意味着，这句话<strong>并不”对己不利”<strong>。它在修辞上其实有利：它没有作出一个报告中未提供证据支持的具体断言（”他们没有通知客户”），同时保留了读者最可能自行填充的暗示。对一份指控文件来说，</strong>这比直接断言更安全，效果却接近</strong>。这未必出于刻意设计——但克制和修辞获益在这里可以同时存在，所以它不能被单独当成报告可信的证据。</p>
+<p>这句话真正的价值不在”它证明了报告可信”，而在于<strong>它加强了第三节那个对比</strong>：既然报告在这里能写出”我们不知道”，那么在同一章里对核心指控一条可核验指标都不提供，就更需要解释。<strong>它说明的不是这家公司诚实，而是报告知道怎么标注不确定性——然后选择了在哪里标注。</strong></p>
+<p>顺着这句往下看，报告在这一节里列出的内容也是具体的。它说 DeepSeek、小米、月之暗面”把其自身模型与用户之间的对话喂给了 Claude”，并给了两个打码后的样本：某制药公司的内部资本支出预测，以及某开发者贴在对话里的有效凭证（Telegram bot token、飞书 appSecret、Notion integration key）。</p>
+<p>报告还给出了受害者的分布：”其中许多对话是从<strong>美国和欧洲用户</strong>常用的第三方模型路由服务转发而来的。这些会话包含<strong>数百名终端用户</strong>的姓名、电子邮件地址、公司数据及其他敏感数据，涉及<strong>至少十几种语言</strong>。”</p>
+<p>这里需要非常小心地读。<strong>如果这一节成立，直接承受数据风险的主要是请求被转发的终端用户，而不只是 Anthropic 自身的用户</strong>——这些人以为自己在使用别的模型。报告还特意加了一句评价：”这些做法很可能不符合隐私法以及这些实验室自己的服务条款。”</p>
+<p>所以这一节的逻辑结构和其他章节不同：前面几节讲的是”企业拿了我们的能力”，这一节讲的是”企业可能拿了用户的数据”。</p>
+<p><strong>而这一点恰恰是整份报告里最需要外部证据、外部证据却最少的部分。</strong> 原因见下一节。</p>
+<p>顺便说一句：报告在这一节里同样列了中国用户受影响的具体案例（某大型国企工程师的内部代码与实时凭证、某市公安局的案件管理系统）。它没有把中国用户排除在受害者之外。</p>
+<h2 id="六、动机：可以确认的，和不能确认的"><a href="#六、动机：可以确认的，和不能确认的" class="headerlink" title="六、动机：可以确认的，和不能确认的"></a>六、动机：可以确认的，和不能确认的</h2><p>讨论这份报告，绕不开”它为什么发”这个问题。先把能确定的和不能确定的分开。</p>
+<p><strong>能确定的，是它在官方材料里明说的目标。</strong> 2 月那篇博客里有一段标题就叫”蒸馏攻击与出口管制”，逻辑是：蒸馏削弱了芯片管制的效果，所以”蒸馏攻击反而强化了出口管制的理由”。Dario 在 7 月那篇署名文章里说得更直接——他把打击”工业规模的蒸馏行动”列为应对中国 AI 的<strong>三项主张之一</strong>，理由是蒸馏比从头训练省算力得多，”让中国能造出比它的芯片数量通常允许的更好的模型，从而部分绕开芯片禁令”。</p>
+<p>这些都是官方立场，写在明面上，不需要推测。</p>
+<p><strong>同样写在官方材料里的，是它对”想封杀开源”这个说法的回应。</strong> Dario 那篇开头就写：”<strong>Anthropic 从未主张禁止开放权重模型</strong>“，并说这类禁令解决不了他最担心的两个问题。这个表态很明确，值得记录。</p>
+<p><strong>不能确定的，是它的主观动机。</strong> 有个基本区分需要说清楚：<strong>一件事符合某方的利益，不等于这件事是被利益驱动的</strong>。真实的身份识别工作、真实的商业损失、真实的安全关切，和”发布指控对自己有政策收益”这几件事，完全可以同时成立。外部观察者没有能力判断哪个占多少。</p>
+<p>不过有一把尺子必须两边都用：<strong>同一份报告自己写了这句</strong>（原文）：</p>
+<blockquote>
+<p>“Other frontier labs have faced distillation attacks. OpenAI has called attention to this activity since early 2025. Google published a threat tracker on adversarial distillation earlier this year.”</p>
+</blockquote>
+<p><strong>它主动承认这不是自己独有的问题。</strong> 这句话直接削弱了”独家叙事”这类动机指控——一家只想抢占叙事的公司，通常不会在报告里告诉你”我的竞争对手早就在说这件事了”。</p>
+<p>报告里还有一处值得记。Dario 那篇博文的脚注里，Anthropic 坦承了自己防护的局限：</p>
+<blockquote>
+<p>相关账号”往往只有在相当规模的蒸馏已经发生之后才能被识别出来”，而且蒸馏通常涉及”创建大量虚假账号，形成一个移动的靶子”。</p>
+</blockquote>
+<p>这是它自己说的——<strong>检测是滞后的</strong>。这既解释了为什么报告里的数字总是”事后统计”，也是一个由对方自己提供的、可被指控方使用的论据。</p>
+<h2 id="七、”用户数据被转发”这一节，恰恰是最依赖报告可信度的部分"><a href="#七、”用户数据被转发”这一节，恰恰是最依赖报告可信度的部分" class="headerlink" title="七、”用户数据被转发”这一节，恰恰是最依赖报告可信度的部分"></a>七、”用户数据被转发”这一节，恰恰是最依赖报告可信度的部分</h2><p>这里容易犯一个逻辑错误：把”这样做对不对”和”有没有这样做”当成同一个问题。</p>
+<p>面对这类指控，人们常有两种反应，而它们其实是两个层面的判断：</p>
+<ul>
+<li><strong>这是错的吗？</strong> 伦理判断，与报告无关。未经用户知情就把请求转发给第三方模型、再把对话留下来训练，这件事本身的对错，不取决于谁揭发它。<strong>在这个层面上，指控方是谁不影响结论。</strong></li>
+<li><strong>这件事发生了吗？</strong> 事实判断，<strong>完全依赖报告的可信度</strong>。而在 9 月这份报告里，这一节的证据是两个打码样本，加上”数百名终端用户””十几种语言”这类量化描述。没有可核验指标，没有第三方验证，被指控方也没有接触证据的途径。</li>
+</ul>
+<p>所以在事实层面必须承认：<strong>就本文查阅的公开材料而言，关于这一节的信息全部来自 Anthropic 的单方面陈述，而这份报告在同一章节里没有提供一条可供外部核验的指标。</strong> 那两个样本无法由外部核实，”数百名终端用户”的说法无法由外部核实，转发这件事是否真的发生过也无法仅凭现有公开材料判断。</p>
+<p>这里还有一组区别值得分清：</p>
+<ul>
+<li><strong>防护性主张</strong>（”有人批量注册欺诈账号”）——如果信错了，代价是 Anthropic 多封了几个账号，损失有限；</li>
+<li><strong>指控性主张</strong>（”这些公司在用用户的对话训练”）——如果信错了，代价是七家公司背上未经证实的指控，而受损方没有任何反驳的途径。</li>
+</ul>
+<p><strong>对后者的证据门槛，理应高于前者。</strong> 而 9 月报告在这两类主张上给出的证据强度恰好相反：防护性主张（网络安全章节）带了完整的可核验指标；指控性主张（蒸馏章节）一条都没有。</p>
+<p>在这一节所描述的场景里，<strong>普通用户和独立第三方都缺乏核实条件</strong>。如果一家公司真的在转发你的请求，它未必会主动说明；截至报告发布，Anthropic 也没有公开足以供外部核验的材料。用户既看不到自己的请求去了哪里，也很难证明或证伪它。<strong>因此，就目前的公开证据而言，”它是真的”仍然主要是报告发布方的一面之词。</strong></p>
+<p>它可能是整份报告里对普通人影响最直接的一节。而<strong>越是影响直接的信息，越不能只靠一句没有出处的结论去接受它。</strong></p>
+<h2 id="八、如果你想自己判断，可以问这-6-个问题"><a href="#八、如果你想自己判断，可以问这-6-个问题" class="headerlink" title="八、如果你想自己判断，可以问这 6 个问题"></a>八、如果你想自己判断，可以问这 6 个问题</h2><p>这份清单适用于任何一份威胁情报报告，不限于这一份，也不需要你选边：</p>
+<ol>
+<li>它给的是<strong>原始材料</strong>，还是<strong>结论的量化表达</strong>？</li>
+<li>同一份报告的不同章节，<strong>可核验程度是否一致</strong>？如果不一致，为什么？</li>
+<li>每条结论是否<strong>分别标注了确信度</strong>？如果有的标了有的没标，为什么？</li>
+<li>被指控方<strong>能不能接触到证据，并作出有针对性的反驳</strong>？</li>
+<li>同一指控在<strong>不同版本之间</strong>数字变了，有没有解释口径？</li>
+<li>报道链条里，<strong>有没有任何一环引入了新证据</strong>，还是全部在转述同一份原始主张？</li>
+</ol>
+<p>其中第 2、3 两条最实用。它们的好处是<strong>不需要你相信任何一方</strong>——只需要把同一份文件的不同部分放在一起看。</p>
+<h2 id="最后：这份报告应该怎么读"><a href="#最后：这份报告应该怎么读" class="headerlink" title="最后：这份报告应该怎么读"></a>最后：这份报告应该怎么读</h2><p><strong>一、它描述的行为是否真实发生，无法判定。</strong> 判定所需的原始数据（账号注册记录、支付流水、代理 IP、会话内容）只存在于 Anthropic 自己的系统里，外部没有任何工具可以调取。指出它的方法缺陷，不等于说那些指控是假的——这两件事经常被混为一谈。</p>
+<p><strong>二、它在方法上有几个可以内部检验的问题。</strong> 蒸馏章节的量化结论缺少报告其他章节具备的可核验指标；七条归因共用一句统一的高确信度声明而不分别标注；跨版本的量级跃升没有解释累计口径。</p>
+<p><strong>三、它也有几处比一般威胁情报产品更具体。</strong> 它公开了归因方法的抽象描述（IP 关联、请求元数据、基础设施指标，以及行业伙伴的旁证）；它把材料以打码样本的形式呈现，不只是给结论；它在蒸馏章节之外主动写明 OpenAI 和 Google 也遭遇过同类问题。</p>
+<p><strong>四、”我们不知道月之暗面是否通知了客户”这句话，不是可信度的加分项。</strong> 它承认的是最外围的一类不确定性（对方有没有告知客户），而不是核心事实（转发是否发生），也不是归因确信度；而且它在修辞上对报告有利。它值得被记住，是因为它<strong>划出了这份报告的证据边界</strong>：报告知道”不确定”该写在哪，却只在最外围写了一次。</p>
+<p><strong>五、所以在这个具体指控上，只能停在这里：截至现有公开材料，外部无法判断转发是否发生。</strong> 把”这不重要，重要的是用户可能被当成原料”当成结论，是站不住的——用户是不是原料，取决于转没转发。而这个前提目前只有一方的说法，且这一方在同一章里没有提供任何可供外部核验的材料。</p>
+<p>如果哪天有可核验的材料出现——不管是 Anthropic 公开指标，还是被点名方拿出可查的反驳——这一节才有资格被当成事实来讨论。在那之前，它只是一个指控。<strong>一个值得被记住、也值得被追问的指控。</strong></p>
+<hr>
+<h3 id="附：本文引用的官方来源"><a href="#附：本文引用的官方来源" class="headerlink" title="附：本文引用的官方来源"></a>附：本文引用的官方来源</h3><table>
+<thead>
+<tr>
+<th>来源</th>
+<th>性质</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/detecting-and-preventing-distillation-attacks">Detecting and preventing distillation attacks</a>（2026-02-23）</td>
+<td>Anthropic 官方博客，首次公开指控及归因方法说明</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/threat-intelligence-report-september-2026">Detecting and countering misuse of AI: September 2026</a>（2026-09-10，<a target="_blank" rel="noopener" href="https://www-cdn.anthropic.com/e50be2e51e7695dc4b1366a37a245a597377d3b5/Anthropic-Detecting-and-countering-091026.pdf">PDF</a>）</td>
+<td>报告全文，蒸馏章节见第 143—154 页</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/position-open-weights-models">Our position on open-weights models</a>（2026-07-27，署名 Dario Amodei）</td>
+<td>官方立场文章，含蒸馏与出口管制的关系、以及对开源禁令的回应</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/fable-safeguards-jailbreak-framework">More details on Fable 5’s cyber safeguards and our jailbreak framework</a>（2026-07-02）</td>
+<td>官方博客，网络安全防护分级</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/improving-alignment-security-efforts">Improving our alignment and security efforts</a>（2026-08-31）</td>
+<td>官方博客，安全事件与整改</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/legal/consumer-terms">Consumer Terms of Service</a> &#x2F; <a target="_blank" rel="noopener" href="https://www.anthropic.com/legal/privacy">Privacy Policy</a></td>
+<td>法律文档，含”非用户”数据类别</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://www.anthropic.com/supported-countries">Supported countries &amp; regions</a></td>
+<td>官方名单，中国大陆不在其中</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>方法说明</strong>：本文仅引用 Anthropic 官方公开材料，报告原文均可在上述 PDF 中核对，英文引文处已附原句。文中的事实性描述以这些公开材料为依据，分析与评价则是作者对材料的解读；本文不对相关指控的真实性作独立确认。本文不引用媒体转述，因为本文要检验的是报告自身的表述与内在一致性。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://bingowith.me/2026/09/11/anthropic-september-2026-report-distillation-notes/" data-id="cmtymi3ea000bz8va65gu9685" data-title="对Anthropic 2026年9月报告中的蒸馏指控的看法" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Anthropic/" rel="tag">Anthropic</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Claude/" rel="tag">Claude</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A8%A1%E5%9E%8B%E8%92%B8%E9%A6%8F/" rel="tag">模型蒸馏</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/08/05/wordpress-to-astro-static-blog-migration/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+    <aside id="sidebar" class="outer">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/%E6%95%99%E7%A8%8B/">教程</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/">前端开发</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AIGC/" rel="tag">AIGC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASP-NET/" rel="tag">ASP.NET</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Anthropic/" rel="tag">Anthropic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Astro/" rel="tag">Astro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Better-Auth/" rel="tag">Better Auth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSR/" rel="tag">CSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache-Components/" rel="tag">Cache Components</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Claude/" rel="tag">Claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codex/" rel="tag">Codex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ComfyUI/" rel="tag">ComfyUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Drizzle/" rel="tag">Drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GBK/" rel="tag">GBK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPT/" rel="tag">GPT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/H2/" rel="tag">H2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JOOQ/" rel="tag">JOOQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MPA/" rel="tag">MPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js/" rel="tag">Next.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Next-js-16/" rel="tag">Next.js 16</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenAI/" rel="tag">OpenAI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PostgreSQL/" rel="tag">PostgreSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RSC/" rel="tag">RSC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SPA/" rel="tag">SPA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSE/" rel="tag">SSE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSR/" rel="tag">SSR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tailwind-CSS/" rel="tag">Tailwind CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Tool-Approval/" rel="tag">Tool Approval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TypeScript/" rel="tag">TypeScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unicode/" rel="tag">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vercel-AI-SDK/" rel="tag">Vercel AI SDK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WSL/" rel="tag">WSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-Development/" rel="tag">Web Development</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WordPress/" rel="tag">WordPress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Z-Image/" rel="tag">Z-Image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/auth-js/" rel="tag">auth.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/azure/" rel="tag">azure</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blazor/" rel="tag">blazor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/claude/" rel="tag">claude</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-compose/" rel="tag">docker compose</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dotnet/" rel="tag">dotnet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/drizzle/" rel="tag">drizzle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/expo-router/" rel="tag">expo router</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filerobot-image-editor/" rel="tag">filerobot-image-editor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gemini/" rel="tag">gemini</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llm/" rel="tag">llm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maui/" rel="tag">maui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysqldump/" rel="tag">mysqldump</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nextjs/" rel="tag">nextjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/" rel="tag">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openai/" rel="tag">openai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/playwright/" rel="tag">playwright</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react-native/" rel="tag">react native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/remix/" rel="tag">remix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/route53/" rel="tag">route53</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify/" rel="tag">shopify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shopify-CLI/" rel="tag">shopify CLI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-boot/" rel="tag">spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timestamp/" rel="tag">timestamp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/" rel="tag">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/troubleshooting/" rel="tag">troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" rel="tag">低显存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" rel="tag">前端架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" rel="tag">字符集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E5%9E%8B%E8%92%B8%E9%A6%8F/" rel="tag">模型蒸馏</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag">翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%8F%E5%8C%96/" rel="tag">量化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/" rel="tag">静态网站</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 12px;">AI</a> <a href="/tags/AIGC/" style="font-size: 10px;">AIGC</a> <a href="/tags/ASP-NET/" style="font-size: 10px;">ASP.NET</a> <a href="/tags/Anthropic/" style="font-size: 10px;">Anthropic</a> <a href="/tags/Astro/" style="font-size: 14px;">Astro</a> <a href="/tags/Better-Auth/" style="font-size: 10px;">Better Auth</a> <a href="/tags/C/" style="font-size: 10px;">C#</a> <a href="/tags/CDN/" style="font-size: 10px;">CDN</a> <a href="/tags/CSR/" style="font-size: 12px;">CSR</a> <a href="/tags/Cache-Components/" style="font-size: 10px;">Cache Components</a> <a href="/tags/Claude/" style="font-size: 10px;">Claude</a> <a href="/tags/Codex/" style="font-size: 14px;">Codex</a> <a href="/tags/ComfyUI/" style="font-size: 10px;">ComfyUI</a> <a href="/tags/Drizzle/" style="font-size: 10px;">Drizzle</a> <a href="/tags/GBK/" style="font-size: 10px;">GBK</a> <a href="/tags/GPT/" style="font-size: 12px;">GPT</a> <a href="/tags/GPU/" style="font-size: 10px;">GPU</a> <a href="/tags/H2/" style="font-size: 10px;">H2</a> <a href="/tags/JOOQ/" style="font-size: 10px;">JOOQ</a> <a href="/tags/MPA/" style="font-size: 10px;">MPA</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Next-js/" style="font-size: 14px;">Next.js</a> <a href="/tags/Next-js-16/" style="font-size: 10px;">Next.js 16</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/OpenAI/" style="font-size: 10px;">OpenAI</a> <a href="/tags/PostgreSQL/" style="font-size: 10px;">PostgreSQL</a> <a href="/tags/RSC/" style="font-size: 10px;">RSC</a> <a href="/tags/React/" style="font-size: 12px;">React</a> <a href="/tags/SPA/" style="font-size: 12px;">SPA</a> <a href="/tags/SSE/" style="font-size: 10px;">SSE</a> <a href="/tags/SSR/" style="font-size: 12px;">SSR</a> <a href="/tags/Tailwind-CSS/" style="font-size: 10px;">Tailwind CSS</a> <a href="/tags/Tool-Approval/" style="font-size: 10px;">Tool Approval</a> <a href="/tags/TypeScript/" style="font-size: 10px;">TypeScript</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/Vercel-AI-SDK/" style="font-size: 10px;">Vercel AI SDK</a> <a href="/tags/WSL/" style="font-size: 10px;">WSL</a> <a href="/tags/Web-Development/" style="font-size: 10px;">Web Development</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/WordPress/" style="font-size: 10px;">WordPress</a> <a href="/tags/Z-Image/" style="font-size: 10px;">Z-Image</a> <a href="/tags/auth-js/" style="font-size: 10px;">auth.js</a> <a href="/tags/aws/" style="font-size: 12px;">aws</a> <a href="/tags/azure/" style="font-size: 12px;">azure</a> <a href="/tags/blazor/" style="font-size: 10px;">blazor</a> <a href="/tags/claude/" style="font-size: 10px;">claude</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/docker/" style="font-size: 14px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker compose</a> <a href="/tags/dotnet/" style="font-size: 10px;">dotnet</a> <a href="/tags/drizzle/" style="font-size: 12px;">drizzle</a> <a href="/tags/expo-router/" style="font-size: 10px;">expo router</a> <a href="/tags/filerobot-image-editor/" style="font-size: 10px;">filerobot-image-editor</a> <a href="/tags/gemini/" style="font-size: 10px;">gemini</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/javascript/" style="font-size: 12px;">javascript</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/life/" style="font-size: 12px;">life</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/llm/" style="font-size: 10px;">llm</a> <a href="/tags/maui/" style="font-size: 10px;">maui</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/mysqldump/" style="font-size: 10px;">mysqldump</a> <a href="/tags/nextjs/" style="font-size: 16px;">nextjs</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nodejs/" style="font-size: 12px;">nodejs</a> <a href="/tags/openai/" style="font-size: 12px;">openai</a> <a href="/tags/playwright/" style="font-size: 10px;">playwright</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/react-native/" style="font-size: 10px;">react native</a> <a href="/tags/remix/" style="font-size: 10px;">remix</a> <a href="/tags/route53/" style="font-size: 10px;">route53</a> <a href="/tags/rust/" style="font-size: 18px;">rust</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/shopify/" style="font-size: 14px;">shopify</a> <a href="/tags/shopify-CLI/" style="font-size: 10px;">shopify CLI</a> <a href="/tags/spring-boot/" style="font-size: 12px;">spring boot</a> <a href="/tags/timestamp/" style="font-size: 10px;">timestamp</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/troubleshooting/" style="font-size: 10px;">troubleshooting</a> <a href="/tags/%E4%BD%8E%E6%98%BE%E5%AD%98/" style="font-size: 10px;">低显存</a> <a href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">前端架构</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/" style="font-size: 10px;">字符集</a> <a href="/tags/%E6%A8%A1%E5%9E%8B%E8%92%B8%E9%A6%8F/" style="font-size: 10px;">模型蒸馏</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 12px;">编码</a> <a href="/tags/%E7%BF%BB%E8%AF%91/" style="font-size: 16px;">翻译</a> <a href="/tags/%E9%87%8F%E5%8C%96/" style="font-size: 10px;">量化</a> <a href="/tags/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99/" style="font-size: 10px;">静态网站</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">八月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">一月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/12/">十二月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">十一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/09/">九月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">八月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/07/">七月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">三月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">十一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/09/11/anthropic-september-2026-report-distillation-notes/">对Anthropic 2026年9月报告中的蒸馏指控的看法</a>
+          </li>
+        
+          <li>
+            <a href="/2026/08/05/wordpress-to-astro-static-blog-migration/">从 WordPress 到 Astro：一次静态博客迁移的过程、取舍与技巧</a>
+          </li>
+        
+          <li>
+            <a href="/2026/07/22/codex-proxy-gpt-5-6-web-search-fix/">Codex 通过中转使用 GPT-5.6 时 Web Search 失败的解决办法</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/07/astro-v6-node-adapter-environment-variables/">Astro v6 Node Adapter后端的环境变量设置（v5 到 v6 的一个 breaking change）</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/09/google-genai-java-sdk-tts-example/">谷歌GenAI Java SDK tts示例 (gemini-3.1-flash-tts-preview)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 abaabaqua<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+<!-- hexo injector body_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.30.0/tocbot.min.js"></script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.location.pathname === '/') {
+        return;
+      }
+      // 检查是否存在 .article-entry 元素
+      const articleEntry = document.querySelector('.article-entry');
+      if (!articleEntry) return; // 如果不存在，直接退出
+
+      // 检查是否是文章页面
+      const articleTitle = document.querySelector('header.article-header');
+      if (!articleTitle) {
+        return;
+      }
+
+      // 创建侧边栏容器
+      const tocSidebar = document.createElement('div');
+      tocSidebar.className = 'toc-sidebar';
+
+      // 创建切换按钮
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'toc-toggle';
+      toggleBtn.innerHTML = '📑';
+      toggleBtn.title = '目录';
+
+      // 创建 TOC 内容容器
+      const tocDiv = document.createElement('div');
+      tocDiv.className = 'toc';
+
+      tocSidebar.appendChild(toggleBtn);
+      tocSidebar.appendChild(tocDiv);
+      document.body.appendChild(tocSidebar);
+
+      // 初始化 tocbot
+      tocbot.init({
+        tocSelector: '.toc',
+        contentSelector: '.article-entry',
+        headingSelector: 'h2, h3, h4',
+        collapseDepth: 3,
+        scrollSmooth: true,
+        scrollSmoothDuration: 420,
+      });
+
+      // 从 localStorage 读取收缩状态
+      const isCollapsed = localStorage.getItem('tocCollapsed') === 'true';
+      if (isCollapsed) {
+        tocSidebar.classList.add('collapsed');
+      }
+
+      // 切换按钮点击事件
+      toggleBtn.addEventListener('click', function () {
+        tocSidebar.classList.toggle('collapsed');
+        const collapsed = tocSidebar.classList.contains('collapsed');
+        localStorage.setItem('tocCollapsed', collapsed);
+      });
+    });
+    </script>
+  
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 创建回到顶部按钮
+      const backToTopButton = document.createElement('div');
+      backToTopButton.id = 'back-to-top';
+      backToTopButton.innerHTML = '↑ TOP';
+      document.body.appendChild(backToTopButton);
+
+      // 监听滚动事件
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) { // 当滚动超过300px时显示按钮
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+
+      // 点击按钮回到顶部
+      backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    </script>
+  <!-- hexo injector body_end end --></body>
+</html>
